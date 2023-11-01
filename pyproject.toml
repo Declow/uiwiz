@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "uiwis"
+version = "0.1.0"
+description = ""
+authors = ["Declow <Ditlev.stjerne@gmai.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+uvicorn = "^0.23.2"
+fastapi = "^0.104.0"
+jinja2 = "^3.1.2"
+pandas = "^2.1.2"
+markdown2 = {extras = ["all"], version = "^2.4.10"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
