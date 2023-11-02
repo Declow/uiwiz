@@ -6,5 +6,7 @@
 }
 
 .footer {
-    margin-top: auto;
+    position: fixed;
+    bottom: 0;
+    height: 3rem;
 }
