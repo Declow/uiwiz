@@ -12,6 +12,17 @@ def create_nav():
         ui.button("this is from a method")
 
 
+@page("/second")
+async def test_2(request: Request):
+    create_nav()
+    with ui.element().classes(""):
+        ui.label("second page")
+        ui.link("page /", "/")
+
+
+    with ui.footer():
+        ui.label("some footer text")
+
 @page("/")
 async def test(request: Request):
     create_nav()
@@ -20,6 +31,7 @@ async def test(request: Request):
 if True:
     print "hi"
 ```""")
+        ui.link("some text", "/second")
 
 
     with ui.footer():
