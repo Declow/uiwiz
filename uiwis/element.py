@@ -42,20 +42,17 @@ class Event(TypedDict):
 class Element:
     def __init__(self, tag="div", indent_level=2, content="", render_html=True) -> None:
         self.stack = Frame.get_stack()
-        self.id: str = f"a-{self.stack.id}"
+        self.attributes: dict[str, str] = {}
+        self.attributes["id"] = f"a-{self.stack.id}"
         self.stack.id += 1
         self.tag: str = tag
-        self._classes: str = ""
-        self.placeholder: str = None
-        self.name: str = None
+
         self.auto_complete: bool = True
         self.events: list[Event] = []
-        self.style = []
         self.parent_element: Element = None
         self.children: list[Element] = []
         self.script: str = None
         self.render_html: bool = render_html
-        self.on_change: Callable = None
         self.target: str = "dummyframe" # See default template for hack
 
         self.content = content
@@ -75,9 +72,13 @@ class Element:
     
     def __exit__(self, *_):
         self.stack.current_element = self.parent_element
+    
+    @property
+    def id(self):
+        return self.attributes["id"]
 
     def classes(self, input: str):
-        self._classes = input
+        self.attributes["class"] = input
         return self
 
     def render(self, indent_level = 0, render_script_script: bool = True) -> str:
@@ -108,16 +109,8 @@ class Element:
     def render_attributes(self, indent_level) -> str:
         output = " " * indent_level
         output += f'<{self.tag} '
-        output += f'id="{self.id}" '
-        if self._classes:
-            output += f'class="{self._classes}" '
-
-        if self.placeholder:
-            output += f'placeholder="{self.placeholder}" '
-        if self.name:
-            output += f'name="{self.name}" '
-        if self.tag == "form":
-            output += f'target="{self.target}" '
+        for key, value in self.attributes.items():
+            output += f'{key}="{value}" '
         if not self.auto_complete:
             output += f'autocomplete="off"'
         output = self.render_events(output)
