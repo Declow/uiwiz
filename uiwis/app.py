@@ -67,9 +67,7 @@ class page:
         async def decorated(*dec_args, **dec_kwargs) -> Response:
             frame: Frame = Frame.get_stack()
             frame.app = app
-            el = Element().classes("flex flex-col min-h-screen")
-            frame.root_element = el
-            frame.current_element = el
+            Element().classes("flex flex-col h-screen")
             request = dec_kwargs['request']
             # NOTE cleaning up the keyword args so the signature is consistent with "func" again
             dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
