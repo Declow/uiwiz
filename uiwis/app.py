@@ -14,6 +14,7 @@ class UiWisApp(FastAPI):
 
     def setup(self):
         self.templates = Jinja2Templates(Path(__file__).parent / 'templates')
+        self.add_static_files('/static', Path(__file__).parent / 'static')
 
     def render(self, html_output: str, request: Request, status_code: int = 200):
         return self.templates.TemplateResponse("default.html",
