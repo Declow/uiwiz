@@ -9,4 +9,5 @@ from uiwis.elements.textarea import TextArea as textarea
 from uiwis.elements.table import Table as table
 from uiwis.elements.toast_ui_grid import ToastUIGrid as toastuigrid
 from uiwis.elements.drawer import Drawer as drawer
+from uiwis.elements.link import Link as link
 from uiwis.element import Element as element
