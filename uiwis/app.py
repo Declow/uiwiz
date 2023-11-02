@@ -116,13 +116,9 @@ class api:
             return app.render_api(html_output)
 
         parameters = [p for p in inspect.signature(func).parameters.values() if p.name != 'client']
-        n_lst = []
-        for par in parameters:
-            if par.name != "request":
-                n_lst.append(par)
-        if 'request' not in {p.name for p in n_lst}:
-            n_lst.append(inspect.Parameter('request', inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=Request))
-        decorated.__signature__ = inspect.Signature(n_lst)
+        if 'request' not in {p.name for p in parameters}:
+            parameters.append(inspect.Parameter('request', inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=Request))
+        decorated.__signature__ = inspect.Signature(parameters)
 
         if not app.route_exists(self.path):
             app.page_routes[decorated] = self.path
