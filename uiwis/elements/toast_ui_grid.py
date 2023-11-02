@@ -3,18 +3,21 @@ from uiwis.element import Element
 import json
 
 class ToastUIGrid(Element):
-    def __init__(self, df: pd.DataFrame) -> None:
+    def __init__(self, df: pd.DataFrame, id: str = None) -> None:
         super().__init__("div")
         self.classes("col")
-        cols = [{"header": item, "name": item} for item in df.columns.to_list()]
-        rows = json.dumps(df.to_dict("records"), default=str)
+        cols = []
+        rows = []
+        if df is not None:
+            cols = [{"header": item, "name": item} for item in df.columns.to_list()]
+            rows = json.dumps(df.to_dict("records"), default=str)
         self.script = f"""
-        const Grid = tui.Grid;
-            const instance = new Grid({{
+        var Grid = tui.Grid;
+            var instance = new Grid({{
               columnOptions: {{
                 minWidth: 180
             }},
-            el: document.getElementById('{self.id}'),
+            el: document.getElementById('{self.id if id is None else id}'),
             columns: {cols},
             data: {rows}
         }});
