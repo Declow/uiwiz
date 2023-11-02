@@ -8,8 +8,6 @@ import pandas as pd
 from pathlib import Path
 
 app.setup()
-# str(Path(__file__).parent 
-app.add_static_files('/static', Path(__file__).parent.parent / 'uiwis/static')
 
 df = pd.DataFrame([{
                 "col1": "val1",
@@ -117,7 +115,7 @@ if True:
         with Element() as res3:
             create_label(message)
 
-        ui.textarea("Placeholder", name="input", on_change=lambda request: update_res(request, message), target=lambda: res2.id)
+        ui.textarea("Placeholder", name="input", on_change=replace, target=lambda: res2.id)
         res2 = ui.label(message)
 
         ui.table(df)
