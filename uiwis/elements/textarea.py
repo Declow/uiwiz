@@ -12,7 +12,6 @@ class TextArea(Element):
             "target": target,
             "swap": "swap"
         })
-        self.name = name
-        self.placeholder = placeholder
-        self.on_change = on_change
-        self._classes = "textarea textarea-bordered"
+        self.attributes["name"] = name
+        self.attributes["placeholder"] = placeholder
+        self.classes("textarea textarea-bordered")

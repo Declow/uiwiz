@@ -22,8 +22,8 @@ class Input(Element):
             "target": target,
             "swap": "swap"
         })
-        self.name = name
-        self.placeholder = placeholder
-        self.on_change = on_change
+        self.attributes["name"] = name
+        self.attributes["placeholder"] = placeholder
+        self.attributes["placeholder"] = placeholder
         self.auto_complete = False
-        self._classes = "input input-bordered w-full max-w-xs"
+        self.classes("input input-bordered w-full max-w-xs")

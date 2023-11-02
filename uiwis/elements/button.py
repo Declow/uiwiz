@@ -6,7 +6,7 @@ class Button(Element):
     def __init__(self, title: str) -> None:
         super().__init__(tag="button")
         self.content = title
-        self._classes = "btn btn-neutral place-content-center"
+        self.classes("btn btn-neutral place-content-center")
 
 
     def on_click(self, func: Callable, inputs = None, endpoint=None, target: str = None, swap: str = None) -> "Button":
