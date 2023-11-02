@@ -126,6 +126,7 @@ class Element:
             Frame.api(endpoint)(event["func"])
             target = event.get("target") if event.get("target") is not None else "this"
             swap = event.get("swap") if event.get("swap") is not None else "outerHTML"
+            hx_encoding = event.get("hx-encoding")
 
             output += f'hx-post="{endpoint}" '
             output += f'hx-trigger="{event["_type"]}" '
@@ -137,7 +138,10 @@ class Element:
 
             output += f'hx-target="{_target}" '
             output += f'hx-swap="{swap}" '
-            output += "hx-ext='json-enc' "
+            if hx_encoding:
+                output += f'hx-encoding="{hx_encoding}" '
+            else:
+                output += "hx-ext='json-enc' "
 
         return output
     
