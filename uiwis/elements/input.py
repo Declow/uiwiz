@@ -24,6 +24,5 @@ class Input(Element):
         })
         self.attributes["name"] = name
         self.attributes["placeholder"] = placeholder
-        self.attributes["placeholder"] = placeholder
         self.auto_complete = False
         self.classes("input input-bordered w-full max-w-xs")
