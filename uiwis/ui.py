@@ -11,4 +11,9 @@ from uiwis.elements.toast_ui_grid import ToastUIGrid as toastuigrid
 from uiwis.elements.drawer import Drawer as drawer
 from uiwis.elements.link import Link as link
 from uiwis.elements.upload import Upload as upload
+from uiwis.elements.checkbox import Checkbox as checkbox
+from uiwis.elements.dropdown import Dropdown as dropdown
+from uiwis.elements.toggle import Toggle as toggle
+from uiwis.elements.code import Code as code
+from uiwis.elements.avatar import Avatar as avatar
 from uiwis.element import Element as element

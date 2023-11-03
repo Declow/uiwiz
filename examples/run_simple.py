@@ -1,4 +1,6 @@
+from pathlib import Path
 from fastapi import Request, UploadFile
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from uiwis.app import page, app
 from uiwis.element import Element
@@ -28,19 +30,28 @@ async def test_2(request: Request):
     with ui.footer():
         ui.label("some footer text")
 
+code = """```python
+class Test:
+    def __init__(self):
+        self.data = "asd"
+```"""
+
 @page("/")
 async def test(request: Request):
     create_nav()
     with ui.element().classes("col"):
-        ui.markdown("""```python
-if True:
-    print "hi"
-```""")
+        ui.markdown(code)
         ui.link("some text", "/second")
         async def handle_upload(file: UploadFile):
             await handle_upload_2(file, table.id)
         ui.upload(on_upload=handle_upload, target=lambda: table.id)
+        ui.checkbox("check")
         table = ui.toastuigrid(None)
+        ui.dropdown(["item 1", "item 2"], "Pick item")
+        ui.toggle("val")
+        ui.toggle("val2", True)
+
+        ui.code(code)
 
     with ui.footer():
         ui.label("some footer text")

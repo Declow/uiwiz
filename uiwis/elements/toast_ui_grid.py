@@ -19,7 +19,8 @@ class ToastUIGrid(Element):
             }},
             el: document.getElementById('{self.id if id is None else id}'),
             columns: {cols},
-            data: {rows}
+            data: {rows},
+            usageStatistics: false
         }});
 
         Grid.applyTheme('striped');
