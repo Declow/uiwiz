@@ -22,4 +22,5 @@ from uiwis.elements.tabs import TabPanel as tab_panel
 from uiwis.elements.tabs import TabPanels as tab_panels
 from uiwis.elements.divider import Divider as divider
 from uiwis.elements.form import Form as form
+from uiwis.elements.radio import Radio as radio
 from uiwis.element import Element as element
