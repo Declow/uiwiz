@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from fastapi import Request
-from uiwis.element import Element, Frame
+from uiwiz.element import Element, Frame
 
 class Tabs(Element):
     _classes: str = "tabs"

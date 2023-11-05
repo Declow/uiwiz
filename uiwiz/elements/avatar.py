@@ -1,4 +1,4 @@
-from uiwis.element import Element
+from uiwiz.element import Element
 
 class Avatar(Element):
     def __init__(self, path: str) -> None:

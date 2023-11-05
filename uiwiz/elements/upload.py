@@ -1,5 +1,5 @@
 from typing import Callable
-from uiwis.element import Element
+from uiwiz.element import Element
 
 class Upload(Element):
     _classes: str = "file-input file-input-bordered w-full max-w-xs"

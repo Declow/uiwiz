@@ -1,4 +1,4 @@
-from uiwis.element import Element
+from uiwiz.element import Element
 
 class Row(Element):
     _classes: str = "row"

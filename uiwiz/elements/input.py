@@ -1,5 +1,5 @@
 from typing import Callable
-from uiwis.element import Element
+from uiwiz.element import Element
 
 class Input(Element):
     _classes: str = "input input-bordered w-full max-w-xs"

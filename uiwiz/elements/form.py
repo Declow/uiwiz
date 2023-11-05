@@ -1,5 +1,5 @@
 from typing import Callable
-from uiwis.element import Element
+from uiwiz.element import Element
 
 class Form(Element):
     _classes: str = "col"

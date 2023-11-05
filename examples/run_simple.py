@@ -2,9 +2,9 @@ from pathlib import Path
 from fastapi import Request, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from uiwis.app import page, app
-from uiwis.element import Element
-import uiwis.ui as ui
+from uiwiz.app import page, app
+from uiwiz.element import Element
+import uiwiz.ui as ui
 import uvicorn
 import pandas as pd
 
