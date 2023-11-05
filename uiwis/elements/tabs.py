@@ -28,7 +28,7 @@ class Tab(Element):
         self.events.append({
             "func": handle_tab,
             "inputs": None,
-            "_type": "click",
+            "trigger": "click",
             "endpoint": None,
             "target": f"#{container.id}",
             "swap": None,

@@ -7,7 +7,7 @@ class TextArea(Element):
         self.events.append({
             "func": on_change,
             "inputs": None,
-            "_type": "keyup",
+            "trigger": "input",
             "endpoint": None,
             "target": target,
             "swap": "swap"

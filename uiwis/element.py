@@ -33,7 +33,7 @@ def get_task_id() -> int:
 class Event(TypedDict):
     func: Callable
     inputs: list[Any]
-    _type: str
+    trigger: str
     endpoint: Optional[str]
     target: Optional[str]
     swap: Optional[str]
@@ -137,8 +137,8 @@ class Element:
             hx_encoding = event.get("hx-encoding")
 
             output += f'hx-post="{endpoint}" '
-            if event.get("_type"):
-                output += f'hx-trigger="{event["_type"]}" '
+            if event.get("trigger"):
+                output += f'hx-trigger="{event["trigger"]}" '
 
             if isinstance(target, Callable):
                 _target = "next #" + str(target())
