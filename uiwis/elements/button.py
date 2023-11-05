@@ -13,7 +13,7 @@ class Button(Element):
         self.events.append({
             "func": func,
             "inputs": inputs,
-            "_type": "click",
+            "trigger": "click",
             "endpoint": endpoint,
             "target": target,
             "swap": swap

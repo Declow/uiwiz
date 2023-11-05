@@ -10,7 +10,7 @@ class Form(Element):
         self.events.append({
             "func": func,
             "endpoint": endpoint,
-            "_type": "submit",
+            "trigger": "submit",
             "target": "this",
             "swap": "beforeend",
         })
