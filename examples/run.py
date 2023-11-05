@@ -96,12 +96,13 @@ class DataInput(BaseModel):
 async def test(request: Request):
     create_nav()
     with ui.element().classes("col"):
-        ui.button("test").on_click(lambda: create_from_htmx(b), endpoint="/endpoint")
-        b = ui.button("asd").on_click(e)
+        with ui.row():
+            ui.button("test").on_click(lambda: create_from_htmx(b), endpoint="/endpoint")
+            b = ui.button("asd").on_click(e)
 
-        ui.button("Add toast").on_click(lambda: ui.toast("this is a toast very long toast"), swap="beforeend").classes("btn")
-        
-        ui.markdown('''This is **Markdown**.''')
+            ui.button("Add toast").on_click(lambda: ui.toast("this is a toast very long toast"), swap="beforeend").classes("btn")
+            
+            ui.markdown('''This is **Markdown**.''')
         ui.markdown("""```python
 if True:
     print "hi"
