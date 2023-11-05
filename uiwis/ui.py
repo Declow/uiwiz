@@ -16,4 +16,8 @@ from uiwis.elements.dropdown import Dropdown as dropdown
 from uiwis.elements.toggle import Toggle as toggle
 from uiwis.elements.code import Code as code
 from uiwis.elements.avatar import Avatar as avatar
+from uiwis.elements.tabs import Tabs as tabs
+from uiwis.elements.tabs import Tab as tab
+from uiwis.elements.tabs import TabPanel as tab_panel
+from uiwis.elements.tabs import TabPanels as tab_panels
 from uiwis.element import Element as element
