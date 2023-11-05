@@ -51,6 +51,8 @@ async def test(request: Request):
         ui.toggle("val")
         ui.toggle("val2", True)
 
+        ui.divider()
+
         ui.code(code)
 
     with ui.footer():
