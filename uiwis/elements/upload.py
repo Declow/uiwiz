@@ -2,11 +2,13 @@ from typing import Callable
 from uiwis.element import Element
 
 class Upload(Element):
+    _classes: str = "file-input file-input-bordered w-full max-w-xs"
+
     def __init__(self, on_upload: Callable, target: Callable, trigger: str = "change") -> None:
         super().__init__("input")
         self.attributes["type"] = "file"
-        self.classes("file-input file-input-bordered w-full max-w-xs")
         self.attributes["name"] = "file"
+        self.classes(Upload._classes)
 
         self.events.append({
             "func": on_upload,

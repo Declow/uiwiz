@@ -5,6 +5,7 @@ from uiwis.element import Element, Frame
 
 class Tabs(Element):
     _classes: str = "tabs"
+
     def __init__(self) -> None:
         with Element() as container:
             super().__init__("div")
@@ -13,13 +14,13 @@ class Tabs(Element):
 
 class Tab(Element):
     _classes: str = "tab tab-bordered"
+    _classes_active: str = " tab-active"
+
     def __init__(self, title: str) -> None:
         super().__init__("a")
         self.classes(Tab._classes)
         self.content = title
         container = self.parent_element.parent_element
-
-        self.attributes["name"] = "asd-tab"
 
         async def handle_tab(request: Request):
             data = await request.json()
@@ -46,7 +47,7 @@ class Tab(Element):
         tab: TabPanel
         for tab in tabs.children:
             if tab.tab.content == active_tab:
-                tab.tab.classes(Tab._classes + " tab-active")
+                tab.tab.classes(Tab._classes + Tab._classes_active)
                 tabs.active_tab = tab.tab
                 tab.render_html = True
             else:
@@ -64,7 +65,7 @@ class Tab(Element):
 class TabPanels(Element):
     def __init__(self, tabs: Tabs, active_tab: Tab) -> None:
         super().__init__("div")
-        active_tab.attributes["class"] = active_tab.attributes["class"] + " tab-active"
+        active_tab.attributes["class"] = active_tab.attributes["class"] + Tab._classes_active
         self.tabs = tabs
         self.active_tab = active_tab
 

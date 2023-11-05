@@ -2,11 +2,14 @@ from uiwis.element import Element
 import pandas as pd
 
 class Table(Element):
+    _classes_container: str = "overflow-x-auto"
+    _classes_table: str = "table table-zebra bg-base-300"
+
     def __init__(self, df: pd.DataFrame) -> None:
         super().__init__()
-        self.classes("overflow-x-auto")
+        self.classes(Table._classes_container)
         with self:
-            with Element("table").classes("table table-zebra bg-base-300"):
+            with Element("table").classes(Table._classes_table):
                 # columns
                 with Element("thead"):
                     with Element("tr"):
