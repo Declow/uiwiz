@@ -1,5 +1,5 @@
 import pandas as pd
-from uiwis.element import Element
+from uiwiz.element import Element
 import json
 
 class ToastUIGrid(Element):

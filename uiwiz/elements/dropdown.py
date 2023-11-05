@@ -1,4 +1,4 @@
-from uiwis.element import Element
+from uiwiz.element import Element
 
 class Dropdown(Element):
     _classes: str = "select select-bordered w-full max-w-xs"

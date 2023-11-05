@@ -1,4 +1,4 @@
-from uiwis.element import Element
+from uiwiz.element import Element
 
 class Footer(Element):
     _classes: str = "mt-auto items-center p-4 bg-neutral text-neutral-content"

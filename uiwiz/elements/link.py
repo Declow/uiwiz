@@ -1,4 +1,4 @@
-from uiwis.element import Element
+from uiwiz.element import Element
 
 class Link(Element):
     _classes: str = "link link-hover"

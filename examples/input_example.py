@@ -1,7 +1,7 @@
 from fastapi import Request
 from pydantic import BaseModel
-from uiwis.app import page, app
-import uiwis.ui as ui
+from uiwiz.app import page, app
+import uiwiz.ui as ui
 import uvicorn
 import pandas as pd
 

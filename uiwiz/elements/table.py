@@ -1,4 +1,4 @@
-from uiwis.element import Element
+from uiwiz.element import Element
 import pandas as pd
 
 class Table(Element):

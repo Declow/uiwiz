@@ -1,8 +1,8 @@
 from fastapi import Request
 from pydantic import BaseModel
-from uiwis.app import page, app
-from uiwis.element import Element
-import uiwis.ui as ui
+from uiwiz.app import page, app
+from uiwiz.element import Element
+import uiwiz.ui as ui
 import uvicorn
 import pandas as pd
 from pathlib import Path

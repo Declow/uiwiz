@@ -6,10 +6,10 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
-from uiwis.element import Element, Frame
+from uiwiz.element import Element, Frame
 import functools
 
-class UiWisApp(FastAPI):
+class uiwizApp(FastAPI):
     page_routes = {}
 
     def setup(self):
@@ -21,10 +21,10 @@ class UiWisApp(FastAPI):
             {
                 'request': request,
                 'root_element': [html_output],
-            }, status_code, {'Cache-Control': 'no-store', 'X-uiwis-Content': 'page'})
+            }, status_code, {'Cache-Control': 'no-store', 'X-uiwiz-Content': 'page'})
     
     def render_api(self, html_output: str, status_code: int = 200):
-        return HTMLResponse(html_output, status_code, {'Cache-Control': 'no-store', 'X-uiwis-Content': 'page'})
+        return HTMLResponse(html_output, status_code, {'Cache-Control': 'no-store', 'X-uiwiz-Content': 'page'})
     
     def route_exists(self, path: str) -> None:
         return path in self.routes
@@ -36,7 +36,7 @@ class UiWisApp(FastAPI):
     def add_static_files(self, url_path: str, local_directory: Union[str, Path]) -> None:
         self.mount(url_path, StaticFiles(directory=str(local_directory)))
 
-app = UiWisApp()
+app = uiwizApp()
 
 
 class page:

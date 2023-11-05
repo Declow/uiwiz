@@ -1,5 +1,5 @@
-from uiwis.element import Element
-from uiwis.elements.label import Label
+from uiwiz.element import Element
+from uiwiz.elements.label import Label
 
 class Drawer(Element):
     def __init__(self, left=True) -> None:

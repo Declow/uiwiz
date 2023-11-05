@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "uiwis"
+name = "uiwiz"
 version = "0.1.0"
 description = ""
 authors = ["Declow <Ditlev.stjerne@gmai.com>"]
