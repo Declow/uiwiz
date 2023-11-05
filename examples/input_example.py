@@ -29,6 +29,9 @@ async def test(request: Request):
         with ui.form().on_submit(handle_input):
             ui.input("input name", "first_name")
             ui.input("input last name", "last_name")
+            r = ui.radio("test-radio", "htmx")
+            ui.label("Test for asd radio", r)
+            ui.radio("test-radio", "javascript")
             ui.button("submit").attributes["type"] = "submit"
 
 
