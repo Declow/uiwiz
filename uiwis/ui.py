@@ -24,4 +24,5 @@ from uiwis.elements.divider import Divider as divider
 from uiwis.elements.form import Form as form
 from uiwis.elements.radio import Radio as radio
 from uiwis.elements.range import Range as range
+from uiwis.elements.row import Row as row
 from uiwis.element import Element as element
