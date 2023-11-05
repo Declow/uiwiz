@@ -21,4 +21,5 @@ from uiwis.elements.tabs import Tab as tab
 from uiwis.elements.tabs import TabPanel as tab_panel
 from uiwis.elements.tabs import TabPanels as tab_panels
 from uiwis.elements.divider import Divider as divider
+from uiwis.elements.form import Form as form
 from uiwis.element import Element as element
