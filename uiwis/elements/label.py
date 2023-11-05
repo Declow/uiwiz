@@ -18,6 +18,7 @@ class Label(Element):
             data = await request.json()
             l = Label(data[attribute])
             l.attributes["id"] = self.id
+            
         element.events.append(
             {
                 "target": f"#{self.id}",

@@ -2,6 +2,8 @@ from typing import Callable
 from uiwis.element import Element
 
 class Input(Element):
+    _classes: str = "input input-bordered w-full max-w-xs"
+
     def __init__(self, placeholder: str = None, name="input", on_change: Callable = None, target: Callable = None, trigger = "input") -> None:
         """Input
 
@@ -14,7 +16,7 @@ class Input(Element):
         :param trigger: keyup, keydown, load and more see htmx docs
         """
         super().__init__("input")
-        self.classes("input input-bordered w-full max-w-xs")
+        self.classes(Input._classes)
         self.attributes["name"] = name
         self.attributes["placeholder"] = placeholder
         self.auto_complete = False

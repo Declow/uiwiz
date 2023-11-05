@@ -2,6 +2,8 @@ from typing import Callable
 from uiwis.element import Element
 
 class TextArea(Element):
+    _classes: str = "textarea textarea-bordered"
+
     def __init__(self, placeholder: str = None, name="input", on_change: Callable = None, target: Callable = None) -> None:
         super().__init__("textarea")
         self.events.append({
@@ -14,4 +16,4 @@ class TextArea(Element):
         })
         self.attributes["name"] = name
         self.attributes["placeholder"] = placeholder
-        self.classes("textarea textarea-bordered")
+        self.classes(TextArea._classes)
