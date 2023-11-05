@@ -37,6 +37,8 @@ class Event(TypedDict):
     endpoint: Optional[str]
     target: Optional[str]
     swap: Optional[str]
+    include: Optional[str]
+    vals: Optional[str]
 
 
 class Element:
@@ -92,6 +94,7 @@ class Element:
     
     def render_self(self, indent_level = 0) -> str:
         output = ""
+        self.before_render()
         if self.render_html:
             output = self.render_attributes(indent_level)
             if self.children:
@@ -116,6 +119,9 @@ class Element:
         output = self.render_events(output)
         output += f'>'
         return output
+        
+    def before_render(self):
+        pass
 
     def render_events(self, output) -> str:
         for event in self.events:
@@ -126,6 +132,7 @@ class Element:
             Frame.api(endpoint)(event["func"])
             target = event.get("target") if event.get("target") is not None else "this"
             swap = event.get("swap") if event.get("swap") is not None else "outerHTML"
+            vals = event.get("vals")
             hx_encoding = event.get("hx-encoding")
 
             output += f'hx-post="{endpoint}" '
@@ -138,6 +145,7 @@ class Element:
 
             output += f'hx-target="{_target}" '
             output += f'hx-swap="{swap}" '
+            output += f"hx-vals='{vals}' "
             if hx_encoding:
                 output += f'hx-encoding="{hx_encoding}" '
             else:
@@ -147,3 +155,8 @@ class Element:
     
     def __str__(self) -> str:
         return self.render()
+    
+    def set_frame(self, frame: Frame):
+        self.stack = frame
+        for child in self.children:
+            child.set_frame(frame)
