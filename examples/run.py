@@ -120,7 +120,7 @@ if True:
 
         ui.table(df)
 
-        ui.toastuigrid(df)
+    ui.toastuigrid(df)
 
 
     with ui.footer():

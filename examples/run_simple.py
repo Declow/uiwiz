@@ -41,7 +41,7 @@ async def test(request: Request):
     create_nav()
     with ui.element().classes("col"):
         ui.markdown(code)
-        ui.link("some text", "/second")
+        ui.link("some text", "/second").classes("btn")
         async def handle_upload(file: UploadFile):
             await handle_upload_2(file, table.id)
         ui.upload(on_upload=handle_upload, target=lambda: table.id)

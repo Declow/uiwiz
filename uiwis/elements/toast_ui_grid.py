@@ -5,7 +5,7 @@ import json
 class ToastUIGrid(Element):
     def __init__(self, df: pd.DataFrame, id: str = None) -> None:
         super().__init__("div")
-        self.classes("col")
+        self.classes("toastgrid")
         cols = []
         rows = []
         if df is not None:

@@ -14,15 +14,18 @@ class Input(Element):
         :param event_type: keyup, keydown, load and more see htmx docs
         """
         super().__init__("input")
-        self.events.append({
-            "func": on_change,
-            "inputs": None,
-            "_type": event_type,
-            "endpoint": None,
-            "target": target,
-            "swap": "swap"
-        })
+        self.classes("input input-bordered w-full max-w-xs")
         self.attributes["name"] = name
         self.attributes["placeholder"] = placeholder
         self.auto_complete = False
-        self.classes("input input-bordered w-full max-w-xs")
+        if on_change is not None:
+            self.events.append({
+                "func": on_change,
+                "inputs": None,
+                "_type": event_type,
+                "endpoint": None,
+                "target": target,
+                "swap": "swap"
+            })
+            
+        

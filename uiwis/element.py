@@ -133,10 +133,12 @@ class Element:
             target = event.get("target") if event.get("target") is not None else "this"
             swap = event.get("swap") if event.get("swap") is not None else "outerHTML"
             vals = event.get("vals")
+            include = event.get("include")
             hx_encoding = event.get("hx-encoding")
 
             output += f'hx-post="{endpoint}" '
-            output += f'hx-trigger="{event["_type"]}" '
+            if event.get("_type"):
+                output += f'hx-trigger="{event["_type"]}" '
 
             if isinstance(target, Callable):
                 _target = "next #" + str(target())
@@ -145,7 +147,11 @@ class Element:
 
             output += f'hx-target="{_target}" '
             output += f'hx-swap="{swap}" '
-            output += f"hx-vals='{vals}' "
+
+            if vals:
+                output += f"hx-vals='{vals}' "
+            if include:
+                output += f'hx-include="{include}" '
             if hx_encoding:
                 output += f'hx-encoding="{hx_encoding}" '
             else:
