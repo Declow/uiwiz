@@ -13,10 +13,10 @@ class ToastUIGrid(Element):
             rows = json.dumps(df.to_dict("records"), default=str)
         self.script = f"""
         var Grid = tui.Grid;
-            var instance = new Grid({{
-              columnOptions: {{
-                minWidth: 180
-            }},
+        var instance = new Grid({{
+            columnOptions: {{
+            minWidth: 180
+        }},
             el: document.getElementById('{self.id if id is None else id}'),
             columns: {cols},
             data: {rows},
@@ -24,4 +24,5 @@ class ToastUIGrid(Element):
         }});
 
         Grid.applyTheme('striped');
+
         """
