@@ -8,9 +8,18 @@ from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
 from uiwiz.element import Element, Frame
 import functools
+import logging
 
-class uiwizApp(FastAPI):
+logger = logging.getLogger("uiwiz")
+logger.addHandler(logging.NullHandler())
+
+
+class UiwizApp(FastAPI):
     page_routes = {}
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.setup()
 
     def setup(self):
         self.templates = Jinja2Templates(Path(__file__).parent / 'templates')
@@ -36,7 +45,7 @@ class uiwizApp(FastAPI):
     def add_static_files(self, url_path: str, local_directory: Union[str, Path]) -> None:
         self.mount(url_path, StaticFiles(directory=str(local_directory)))
 
-app = uiwizApp()
+app = UiwizApp()
 
 
 class page:
@@ -78,7 +87,7 @@ class page:
                 return result
             html_output = frame.root_element.render()
             frame.del_stack()
-            print(html_output)
+            logger.debug(html_output)
             return app.render(html_output, request)
 
         parameters = [p for p in inspect.signature(func).parameters.values() if p.name != 'client']
@@ -111,7 +120,7 @@ class api:
                 return result
             html_output = frame.root_element.render()
             frame.del_stack()
-            print(html_output)
+            logger.debug(html_output)
             return app.render_api(html_output)
 
         parameters = [p for p in inspect.signature(func).parameters.values() if p.name != 'client']

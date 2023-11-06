@@ -4,8 +4,10 @@ from uiwiz.app import page, app
 import uiwiz.ui as ui
 import uvicorn
 import pandas as pd
+import logging
 
-app.setup()
+logging.basicConfig(level=logging.INFO)
+
 
 def create_nav():
     with ui.nav():
@@ -18,7 +20,6 @@ class FormInput(BaseModel):
 
 
 async def handle_input(data: FormInput):
-    print(data)
     ui.toast("data saved")
 
 

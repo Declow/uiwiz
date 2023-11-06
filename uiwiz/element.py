@@ -14,7 +14,6 @@ class Frame:
     @classmethod
     def get_stack(cls) -> "Frame":
         _id = get_task_id()
-        print(_id)
         if _id not in cls.stacks:
             cls.stacks[_id] = Frame()
         return cls.stacks[_id]
