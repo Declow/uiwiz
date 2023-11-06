@@ -83,12 +83,14 @@ class Element:
         self.attributes["class"] = input
         return self
 
-    def render(self, indent_level = 0, render_script_script: bool = True) -> str:
+    def render(self, render_script: bool = True) -> str:
         output = self.render_self()
-        if render_script_script:
+        if render_script:
             output += "<script>"
+            output += "(function () {"
             for script in self.stack.scripts:
                 output += script
+            output += "}());"
             output += "</script>"
         return output
     

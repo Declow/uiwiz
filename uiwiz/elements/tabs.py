@@ -34,7 +34,6 @@ class Tab(Element):
             "target": f"#{container.id}",
             "swap": None,
             "vals": f'{{"active_tab": "{title}"}}',
-            
         })
 
     

@@ -13,7 +13,7 @@ class Toast(Element):
         self.classes(Toast._classes)
         e = Element("span", content=message)
 
-        output = self.render(render_script_script=False).replace("\n", "")
+        output = self.render(render_script=False)
 
         self.script = f"""
 container = document.getElementById("toast");
