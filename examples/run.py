@@ -76,9 +76,6 @@ def e():
     ui.label("new label from htmx")
 
 async def create_from_htmx(b: ui.button):
-    print(b)
-    #TODO fix the first label
-    # This should be in the rendering code
     with ui.label("This label came from htmx aka the server"):
         ui.label("Text from button " + b.content)
 
@@ -105,7 +102,7 @@ async def test(request: Request):
             ui.markdown('''This is **Markdown**.''')
         ui.markdown("""```python
 if True:
-    print "hi"
+    print("hi")
 ```""")
 
         message = "New content:"
