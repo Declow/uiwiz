@@ -1,13 +1,12 @@
 from fastapi import Request
 from pydantic import BaseModel
-from uiwiz.app import page, app
+from uiwiz.app import UiwizApp
 from uiwiz.element import Element
 import uiwiz.ui as ui
 import uvicorn
 import pandas as pd
-from pathlib import Path
 
-app.setup()
+app = UiwizApp()
 
 df = pd.DataFrame([{
                 "col1": "val1",
@@ -89,7 +88,7 @@ async def update_res(request: Request, message: str):
 class DataInput(BaseModel):
     input: str
 
-@page("/")
+@app.page("/")
 async def test(request: Request):
     create_nav()
     with ui.element().classes("col"):

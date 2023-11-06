@@ -1,16 +1,16 @@
 from fastapi import Request
-from uiwiz.app import page, app
+from uiwiz.app import UiwizApp
 import uiwiz.ui as ui
 import uvicorn
 
-app.setup()
+app = UiwizApp()
 
 def create_nav():
     with ui.nav():
         ui.button("this is from a method")
 
 
-@page("/")
+@app.page("/")
 async def test(request: Request):
     create_nav()
     with ui.element().classes("col"):
