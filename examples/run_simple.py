@@ -1,14 +1,10 @@
-from pathlib import Path
 from fastapi import Request, UploadFile
-from fastapi.responses import FileResponse
-from pydantic import BaseModel
-from uiwiz.app import page, app
-from uiwiz.element import Element
+from uiwiz.app import UiwizApp
 import uiwiz.ui as ui
 import uvicorn
 import pandas as pd
 
-app.setup()
+app = UiwizApp()
 
 def create_nav():
     with ui.nav():
@@ -19,7 +15,7 @@ async def handle_upload_2(file: UploadFile, table_id: str):
     df = pd.read_excel(file_output, engine="openpyxl")
     ui.toastuigrid(df, id=table_id)
 
-@page("/second")
+@app.page("/second")
 async def test_2(request: Request):
     create_nav()
     with ui.element().classes(""):
@@ -36,7 +32,7 @@ class Test:
         self.data = "asd"
 ```"""
 
-@page("/")
+@app.page("/")
 async def test(request: Request):
     create_nav()
     with ui.element().classes("col"):

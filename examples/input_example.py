@@ -1,6 +1,6 @@
 from fastapi import Request
 from pydantic import BaseModel
-from uiwiz.app import page, app
+from uiwiz.app import UiwizApp
 import uiwiz.ui as ui
 import uvicorn
 import pandas as pd
@@ -8,6 +8,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
+app = UiwizApp()
 
 def create_nav():
     with ui.nav():
@@ -23,7 +24,7 @@ async def handle_input(data: FormInput):
     ui.toast("data saved")
 
 
-@page("/")
+@app.page("/")
 async def test(request: Request):
     create_nav()
     with ui.element().classes("col"):
