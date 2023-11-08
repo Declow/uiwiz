@@ -27,28 +27,29 @@ async def handle_input(data: FormInput):
 @app.page("/")
 async def test(request: Request):
     create_nav()
-    with ui.element().classes("col"):
-        with ui.form().on_submit(handle_input):
-            ui.input("input name", "first_name")
-            la_name = ui.input("input last name", "last_name")
-            ui.label().bind_text_from(la_name, "last_name", "input")
-            r = ui.radio("test-radio", "htmx")
-            ui.label("Test for asd radio", r)
-            ui.radio("test-radio", "javascript")
-            range = ui.range(0, 100, 0, "value")
-            ui.label(range.value).bind_text_from(range, "value", "input delay:20ms")
-            ui.button("submit").attributes["type"] = "submit"
+    with ui.element().classes("col lg:px-80"):
+        with ui.element().classes("w-full"):
+            with ui.form().on_submit(handle_input):
+                ui.input("input name", "first_name")
+                la_name = ui.input("input last name", "last_name")
+                ui.label().bind_text_from(la_name, "last_name", "input")
+                r = ui.radio("test-radio", "htmx")
+                ui.label("Test for asd radio", r)
+                ui.radio("test-radio", "javascript")
+                range = ui.range(0, 100, 0, "value")
+                ui.label(range.value).bind_text_from(range, "value")
+                ui.button("submit").attributes["type"] = "submit"
 
 
-        ui.toastuigrid(pd.DataFrame(
-                [
-                    {"asd": 2},
-                    {"asd": 3}
-                ]
+            ui.toastuigrid(pd.DataFrame(
+                    [
+                        {"asd": 2},
+                        {"asd": 3}
+                    ]
+                )
             )
-        )
-        range = ui.range(0, 100, 0, "value")
-        ui.label(range.value).bind_text_from(range, "value")
+            range = ui.range(0, 100, 0, "value")
+            ui.label(range.value).bind_text_from(range, "value")
     with ui.footer():
         ui.label("some footer text")
     
