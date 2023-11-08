@@ -15,12 +15,3 @@
     gap: 1rem;
     padding: 1rem;
 }
-
-
-.toastgrid {
-    display: flex;
-    flex-direction: column;
-    max-width: 100%;
-    gap: 1rem;
-    padding: 1rem;
-}
