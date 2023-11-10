@@ -26,11 +26,12 @@ class UiwizApp(FastAPI):
         self.templates = Jinja2Templates(Path(__file__).parent / 'templates')
         self.add_static_files('/static', Path(__file__).parent / 'static')
 
-    def render(self, html_output: str, request: Request, status_code: int = 200):
+    def render(self, html_output: str, request: Request, title: str, status_code: int = 200):
         return self.templates.TemplateResponse("default.html",
             {
                 'request': request,
                 'root_element': [html_output],
+                "title": title
             }, status_code, {'Cache-Control': 'no-store', 'X-uiwiz-Content': 'page'})
     
     def render_api(self, html_output: str, status_code: int = 200):
@@ -47,7 +48,7 @@ class UiwizApp(FastAPI):
         self.mount(url_path, StaticFiles(directory=str(local_directory)))
 
     def page(self, path: str, *args,
-                 title: Optional[str] = None,
+                 title: Optional[str] = "uiwiz",
                  favicon: Optional[str] = None) -> Callable:
         def decorator(func: Callable, *args, **kwargs) -> Callable:
             self.remove_route(path)
@@ -69,7 +70,7 @@ class UiwizApp(FastAPI):
 
                 frame.del_stack()
                 logger.debug(html_output)
-                return self.render(html_output, request)
+                return self.render(html_output, request, title)
 
             decorated.__signature__ = inspect.Signature(inspect.signature(func).parameters.values())
 
