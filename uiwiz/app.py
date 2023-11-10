@@ -66,15 +66,12 @@ class UiwizApp(FastAPI):
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
                     return result
                 html_output = frame.root_element.render()
+
                 frame.del_stack()
                 logger.debug(html_output)
                 return self.render(html_output, request)
 
-            parameters = [p for p in inspect.signature(func).parameters.values() if p.name != 'client']
-            # NOTE adding request as a parameter so we can pass it to the client in the decorated function
-            if 'request' not in {p.name for p in parameters}:
-                parameters.append(inspect.Parameter('request', inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=Request))
-            decorated.__signature__ = inspect.Signature(parameters)
+            decorated.__signature__ = inspect.Signature(inspect.signature(func).parameters.values())
 
             self.page_routes[decorated] = path
 
@@ -98,14 +95,12 @@ class UiwizApp(FastAPI):
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
                     return result
                 html_output = frame.root_element.render()
+
                 frame.del_stack()
                 logger.debug(html_output)
                 return self.render_api(html_output)
 
-            parameters = [p for p in inspect.signature(func).parameters.values() if p.name != 'client']
-            if 'request' not in {p.name for p in parameters}:
-                parameters.append(inspect.Parameter('request', inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=Request))
-            decorated.__signature__ = inspect.Signature(parameters)
+            decorated.__signature__ = inspect.Signature(inspect.signature(func).parameters.values())
 
             if not self.route_exists(path):
                 self.page_routes[decorated] = path

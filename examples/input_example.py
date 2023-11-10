@@ -31,7 +31,7 @@ async def test(request: Request):
         with ui.element().classes("w-full"):
             with ui.form().on_submit(handle_input):
                 ui.input("input name", "first_name")
-                la_name = ui.input("input last name")
+                la_name = ui.input("input last name", name="last_name")
                 ui.label().bind_text_from(la_name, "input")
 
                 r = ui.radio("test-radio", "htmx")
