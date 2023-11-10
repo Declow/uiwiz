@@ -17,12 +17,11 @@ class Label(Element):
         Remove attribute as it is not used but breaks bind for reasons
         """
         assert element.attributes.get("name") is not None
+
         async def bind_Value(request: Request):
             data = await request.json()
-            frame = Frame.get_stack()
-            frame.root_element = self
+            self.set_frame_and_root()
             
-            self.stack = frame
             self.content = data[element.attributes["name"]]
             
 

@@ -167,3 +167,7 @@ class Element:
         self.stack = frame
         for child in self.children:
             child.set_frame(frame)
+
+    def set_frame_and_root(self) -> None:
+        self.set_frame(Frame.get_stack())
+        self.stack.root_element = self
