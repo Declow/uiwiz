@@ -6,10 +6,21 @@ class Frame:
     api = None
 
     def __init__(self) -> None:
-        self.root_element: Element = None
-        self.current_element: Element = None
+        self.root_element: Optional[Element] = None
+        self.current_element: Optional[Element] = None
         self.id = 0
         self.scripts: list[str] = []
+
+    def remove_frame(self, element: "Element") -> None:
+        if element is None:
+            if self.root_element:
+                self.root_element.stack = None
+                self.remove_frame(self.root_element)
+        else:
+            element.stack = None
+            for child in element.children:
+                self.remove_frame(child)
+
 
     @classmethod
     def get_stack(cls) -> "Frame":
@@ -20,6 +31,7 @@ class Frame:
     
     @classmethod
     def del_stack(cls):
+        cls.get_stack().remove_frame(None)
         del cls.stacks[get_task_id()]
     
 
