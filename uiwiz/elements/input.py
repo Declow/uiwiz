@@ -1,10 +1,18 @@
 from typing import Callable
 from uiwiz.element import Element
 
+
 class Input(Element):
     _classes: str = "input input-bordered w-full max-w-xs"
 
-    def __init__(self, placeholder: str = None, name = None, on_change: Callable = None, target: Callable = None, trigger = "input") -> None:
+    def __init__(
+        self,
+        placeholder: str = None,
+        name=None,
+        on_change: Callable = None,
+        target: Callable = None,
+        trigger: str ="input",
+    ) -> None:
         """Input
 
         This element is used for input data
@@ -21,13 +29,13 @@ class Input(Element):
         self.attributes["placeholder"] = placeholder
         self.auto_complete = False
         if on_change is not None:
-            self.events.append({
-                "func": on_change,
-                "inputs": None,
-                "trigger": trigger,
-                "endpoint": None,
-                "target": target,
-                "swap": "swap"
-            })
-            
-        
+            self.events.append(
+                {
+                    "func": on_change,
+                    "inputs": None,
+                    "trigger": trigger,
+                    "endpoint": None,
+                    "target": target,
+                    "swap": "swap",
+                }
+            )
