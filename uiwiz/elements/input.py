@@ -4,7 +4,7 @@ from uiwiz.element import Element
 class Input(Element):
     _classes: str = "input input-bordered w-full max-w-xs"
 
-    def __init__(self, placeholder: str = None, name="input", on_change: Callable = None, target: Callable = None, trigger = "input") -> None:
+    def __init__(self, placeholder: str = None, name = None, on_change: Callable = None, target: Callable = None, trigger = "input") -> None:
         """Input
 
         This element is used for input data
