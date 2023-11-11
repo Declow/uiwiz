@@ -1,10 +1,16 @@
 import pandas as pd
 import json
 from uiwiz.element import Element
+from enum import Enum
 
 class Aggrid(Element):
+    class OPTIONS(str, Enum):
+        autoSizeColumn = 'autoSizeAll'
+        fitColumnContent = 'sizeToFit'
+
     _classes: str = "ag-theme-alpine"
-    def __init__(self, df: pd.DataFrame) -> None:
+
+    def __init__(self, df: pd.DataFrame, asd: str = None, column_option: OPTIONS = OPTIONS.autoSizeColumn) -> None:
         super().__init__("div", libraries=["/static/libs/aggrid.js"])
         self.classes(Aggrid._classes)
 
@@ -21,14 +27,27 @@ class Aggrid(Element):
         const rowData = {rows};
 
         const gridOptions = {{
+            defaultColDef: {{
+                resizable: true,
+            }},
             columnDefs: columnDefs,
             rowData: rowData,
-            domLayout: 'autoHeight'
+            domLayout: 'autoHeight',
+            onFirstDataRendered: {column_option},
         }};
+
+        function autoSizeAll(skipHeader) {{}}
+
+        function sizeToFit() {{
+            gridOptions.api.sizeColumnsToFit({{
+                defaultMinWidth: 100
+            }});
+        }}
 
         document.addEventListener('DOMContentLoaded', () => {{
             const gridDiv = document.querySelector('#{self.id}');
             new agGrid.Grid(gridDiv, gridOptions);
         }});
 
+        window.addEventListener('resize', () => {column_option}());
         """
