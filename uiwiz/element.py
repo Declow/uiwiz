@@ -10,6 +10,7 @@ class Frame:
         self.current_element: Optional[Element] = None
         self.id = 0
         self.scripts: list[str] = []
+        self.libraries: list[str] = []
 
     def remove_frame(self, element: "Element") -> None:
         if element is None:
@@ -53,8 +54,9 @@ class Event(TypedDict):
 
 
 class Element:
-    def __init__(self, tag="div", indent_level=2, content="", render_html=True) -> None:
+    def __init__(self, tag="div", indent_level=2, content="", render_html=True, libraries: Optional[str] = []) -> None:
         self.stack = Frame.get_stack()
+        self.stack.libraries.extend(libraries)
         self.attributes: dict[str, str] = {}
         self.attributes["id"] = f"a-{self.stack.id}"
         self.stack.id += 1
@@ -170,6 +172,12 @@ class Element:
             else:
                 output += "hx-ext='json-enc' "
 
+        return output
+    
+    def render_libs(self) -> str:
+        output = ""
+        for lib in self.stack.libraries:
+            output += f'<script src="{lib}"></script>\n'
         return output
     
     def __str__(self) -> str:
