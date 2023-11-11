@@ -34,6 +34,8 @@ async def test(request: Request):
                 la_name = ui.input("input last name", name="last_name")
                 ui.label().bind_text_from(la_name, "input")
 
+                ui.textarea("input", name="asd")
+
                 r = ui.radio("test-radio", "htmx")
                 ui.label("Test for asd radio", r)
                 ui.radio("test-radio", "javascript")
@@ -47,8 +49,8 @@ async def test(request: Request):
                             {"asd": 3, "kek": "val"}
                         ]
                     ))
-            range = ui.range(0, 100, 0, "value")
-            ui.label(range.value).bind_text_from(range)
+                range = ui.range(0, 100, 0, "value2")
+                ui.label(range.value).bind_text_from(range)
     with ui.footer():
         ui.label("some footer text")
     

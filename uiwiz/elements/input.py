@@ -28,7 +28,7 @@ class Input(Element):
         self.attributes["name"] = name
         self.attributes["placeholder"] = placeholder
         self.auto_complete = False
-        if on_change is not None:
+        if on_change:
             self.events.append(
                 {
                     "func": on_change,
