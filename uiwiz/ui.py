@@ -8,6 +8,7 @@ from uiwiz.elements.input import Input as input
 from uiwiz.elements.textarea import TextArea as textarea
 from uiwiz.elements.table import Table as table
 from uiwiz.elements.toast_ui_grid import ToastUIGrid as toastuigrid
+from uiwiz.elements.aggrid import Aggrid as aggrid
 from uiwiz.elements.drawer import Drawer as drawer
 from uiwiz.elements.link import Link as link
 from uiwiz.elements.upload import Upload as upload

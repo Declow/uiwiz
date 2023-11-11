@@ -41,7 +41,12 @@ async def test(request: Request):
                 ui.label(range.value).bind_text_from(range)
                 ui.button("submit").attributes["type"] = "submit"
 
-
+            ui.aggrid(pd.DataFrame(
+                    [
+                        {"asd": 2, "kek": "val"},
+                        {"asd": 3, "kek": "val"}
+                    ]
+                ))
             ui.toastuigrid(pd.DataFrame(
                     [
                         {"asd": 2},

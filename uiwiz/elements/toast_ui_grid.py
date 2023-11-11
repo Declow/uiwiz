@@ -4,7 +4,7 @@ import json
 
 class ToastUIGrid(Element):
     def __init__(self, df: pd.DataFrame, id: str = None) -> None:
-        super().__init__("div")
+        super().__init__("div", libraries=["/static/libs/toastuigrid.js"])
         self.classes("toastgrid")
         cols = []
         rows = []
@@ -24,5 +24,4 @@ class ToastUIGrid(Element):
         }});
 
         Grid.applyTheme('striped');
-
         """

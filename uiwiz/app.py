@@ -26,12 +26,13 @@ class UiwizApp(FastAPI):
         self.templates = Jinja2Templates(Path(__file__).parent / 'templates')
         self.add_static_files('/static', Path(__file__).parent / 'static')
 
-    def render(self, html_output: str, request: Request, title: str, status_code: int = 200):
+    def render(self, html_output: str, request: Request, title: str, libs: str, status_code: int = 200):
         return self.templates.TemplateResponse("default.html",
             {
                 'request': request,
                 'root_element': [html_output],
-                "title": title
+                "title": title,
+                "libs": libs
             }, status_code, {'Cache-Control': 'no-store', 'X-uiwiz-Content': 'page'})
     
     def render_api(self, html_output: str, status_code: int = 200):
@@ -67,10 +68,11 @@ class UiwizApp(FastAPI):
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
                     return result
                 html_output = frame.root_element.render()
+                libs = frame.root_element.render_libs()
 
                 frame.del_stack()
                 logger.debug(html_output)
-                return self.render(html_output, request, title)
+                return self.render(html_output, request, title, libs)
 
             decorated.__signature__ = inspect.Signature(inspect.signature(func).parameters.values())
 
