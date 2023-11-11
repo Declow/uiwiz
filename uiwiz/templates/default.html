@@ -7,7 +7,7 @@
     {{libs | safe}}
     <meta charset="utf-8">
     <title>{{title}}</title>
-    
+
     <link href="/static/app.css" rel="stylesheet" type="text/css" />
     <link href="/static/codehighlight.css" rel="stylesheet" type="text/css" />
 </head>
@@ -24,15 +24,29 @@
     <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
     <script>
         container = document.getElementById("toast");
-        container.addEventListener("DOMNodeInserted", removeAfterDelay, false);
+
+        const observer = new MutationObserver(mutationList =>  
+            mutationList.filter(m => m.type === 'childList').forEach(m => {  
+                m.addedNodes.forEach(removeAfterDelay);
+        }));
+
+        // Configuration of the observer:
+        var config = {
+            attributes: true,
+            childList: true,
+            characterData: true
+        };
+
+        // Pass in the target node, as well as the observer options
+        observer.observe(container, config);
 
         function removeAfterDelay(event) {
-            $(event.target).delay(1500).queue(() => {
-                $(event.target).remove();
-                $(event.target).dequeue();
+            $(event).delay(1500).queue(() => {
+                $(event).remove();
+                $(event).dequeue();
             });
         }
-    </script>    
+    </script>
 </body>
 
 </html>
