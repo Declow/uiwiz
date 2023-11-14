@@ -25,10 +25,10 @@
     <script>
         container = document.getElementById("toast");
 
-        const observer = new MutationObserver(mutationList =>  
-            mutationList.filter(m => m.type === 'childList').forEach(m => {  
+        const observer = new MutationObserver(mutationList =>
+            mutationList.filter(m => m.type === 'childList').forEach(m => {
                 m.addedNodes.forEach(removeAfterDelay);
-        }));
+            }));
 
         // Configuration of the observer:
         var config = {
@@ -41,11 +41,19 @@
         observer.observe(container, config);
 
         function removeAfterDelay(event) {
-            $(event).delay(1500).queue(() => {
+            $(event).delay(2500).queue(() => {
                 $(event).remove();
                 $(event).dequeue();
             });
         }
+
+        document.body.addEventListener('htmx:responseError', function (evt) {
+            console.log(evt);
+            (function () {
+                container = document.getElementById("toast");
+                $(container).prepend(`<div id="a-0" class="alert bg-[#FF8080]"><span id="a-1">${evt.detail.error}</span></div>`)
+            }());
+        });
     </script>
 </body>
 
