@@ -13,7 +13,6 @@ def create_nav():
 async def handle_upload_2(file: UploadFile, table_id: str):
     file_output = await file.read()
     df = pd.read_excel(file_output, engine="openpyxl")
-    ui.toastuigrid(df, id=table_id)
 
 @app.page("/second")
 async def test_2(request: Request):

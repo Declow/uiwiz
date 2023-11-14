@@ -30,7 +30,7 @@ async def test(request: Request):
             two = ui.tab("Tab 2")
         with ui.tab_panels(tabs, one):
             with ui.tab_panel(one):
-                ui.toastuigrid(None)
+                ui.aggrid(None)
             with ui.tab_panel(two):
                 ui.label("2")
         
