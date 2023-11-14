@@ -1,7 +1,7 @@
 from uiwiz.element import Element
 
 class Toast(Element):
-    _classes: str = "alert alert-info"
+    _classes: str = "alert bg-[#D2E0FB]"
 
     def __init__(self, message: str) -> None:
         # This toast thing is kind of a hack
