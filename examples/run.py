@@ -91,7 +91,7 @@ class DataInput(BaseModel):
 @app.page("/")
 async def test(request: Request):
     create_nav()
-    with ui.element().classes("col"):
+    with ui.element().classes("col mx-auto"):
         with ui.row():
             ui.button("test").on_click(lambda: create_from_htmx(b), endpoint="/endpoint")
             b = ui.button("asd").on_click(e)
@@ -116,8 +116,8 @@ if True:
         res2 = ui.label(message)
 
         ui.table(df)
+        ui.aggrid(df)
 
-    ui.toastuigrid(df)
 
 
     with ui.footer():
