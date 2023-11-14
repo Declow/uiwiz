@@ -112,7 +112,7 @@ if True:
         with Element() as res3:
             create_label(message)
 
-        ui.textarea("Placeholder", name="input", on_change=replace, target=lambda: res2.id)
+        ui.textarea("Placeholder", name="input", on_change=replace, target=lambda: res2.id, trigger="input, keyup[(ctrlKey||metaKey)&&keyCode==13]")
         res2 = ui.label(message)
 
         ui.table(df)
