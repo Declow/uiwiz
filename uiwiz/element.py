@@ -1,5 +1,6 @@
 import asyncio
 from typing import Any, Callable, Optional, TypedDict
+import random
 
 class Frame:
     stacks: dict[int, "Frame"] = {}
@@ -68,7 +69,7 @@ class Element:
         self.children: list[Element] = []
         self.script: str = None
         self.render_html: bool = render_html
-        self.target: str = "dummyframe" # See default template for hack
+        self.target: str = None
 
         self.content = content
         self.indent = indent_level
@@ -142,7 +143,8 @@ class Element:
         for event in self.events:
             endpoint = event.get("endpoint")
             if endpoint is None:
-                endpoint = "/" + str(hash(frozenset(event.items())))
+                generator = random.Random(self.id)
+                endpoint = "/" + "".join([str(generator.randrange(10)) for _ in range(20)])
             
             Frame.api(endpoint)(event["func"])
             target = event.get("target") if event.get("target") is not None else "this"
