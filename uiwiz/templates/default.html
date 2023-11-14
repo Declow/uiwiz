@@ -41,7 +41,7 @@
         observer.observe(container, config);
 
         function removeAfterDelay(event) {
-            $(event).delay(2500).queue(() => {
+            $(event).delay({{toast_delay}}).queue(() => {
                 $(event).remove();
                 $(event).dequeue();
             });
@@ -51,7 +51,7 @@
             console.log(evt);
             (function () {
                 container = document.getElementById("toast");
-                $(container).prepend(`<div id="a-0" class="alert bg-[#FF8080]"><span id="a-1">${evt.detail.error}</span></div>`)
+                $(container).prepend(`<div id="a-0" class="{{error_classes}}"><span id="a-1">${evt.detail.error}</span></div>`)
             }());
         });
     </script>
