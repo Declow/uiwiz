@@ -6,15 +6,29 @@ class Spinner(Element):
     _type: Literal["spinner", "dots", "ring", "ball", "bars", "infinity"] = "ring"
     _classes: str = "loading loading-{0} loading-{1}"
 
-    def __init__(self) -> None:
+    def __init__(self, spinner_for: Element = None) -> None:
         super().__init__("span")
         self.size = Spinner._size
         self.type = Spinner._type
+        self.spinner_for = spinner_for
         self.__self__format()
-        
+    
+    @property
+    def spinner_for(self):
+        return self._spinner_for
+
+    @spinner_for.setter
+    def spinner_for(self, element: Element) -> "Spinner":
+        self._spinner_for = element
+        if element:
+            element.attributes["hx-indicator"] = f"#{self.id}"
+            self.__self__format()
 
     def __self__format(self) -> None:
-        self.classes(Spinner._classes.format(self.type, self.size))
+        clazz = Spinner._classes.format(self.type, self.size)
+        if self.spinner_for:
+            clazz += " htmx-indicator"
+        self.classes(clazz)
     
     def extra_small(self) -> "Spinner":
         self.size = "xs"
