@@ -51,12 +51,10 @@ async def test():
                 with ui.row():
                     with ui.button("submit") as b:
                         ui.spinner(b).ring().large()
-                        ui.button("second")
-
                 
+
                 ui.spinner().ring().extra_small()
                 ui.spinner().ball().large()
-                ui.spinner().bars().large()
 
                 ui.aggrid(pd.DataFrame(
                         [
@@ -66,6 +64,7 @@ async def test():
                     ))
                 range = ui.range(0, 100, 0, "value2")
                 ui.label(range.value).bind_text_from(range)
+
     with ui.footer():
         ui.label("some footer text")
     
