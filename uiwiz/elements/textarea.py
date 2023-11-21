@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 from uiwiz.element import Element
 
 
@@ -29,3 +29,7 @@ class TextArea(Element):
                     "swap": "swap",
                 }
             )
+
+    @property
+    def placeholder(self) -> Optional[str]:
+        return self.attributes["placeholder"]
