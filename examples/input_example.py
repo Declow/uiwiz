@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import Request
 from pydantic import BaseModel
 from uiwiz.app import UiwizApp
@@ -5,6 +6,7 @@ import uiwiz.ui as ui
 import uvicorn
 import pandas as pd
 import logging
+import asyncio
 
 logging.basicConfig(level=logging.INFO)
 
@@ -18,30 +20,43 @@ def create_nav():
 class FormInput(BaseModel):
     first_name: str
     last_name: str
+    asd: Optional[str]
+    value: Optional[str]
 
 
 async def handle_input(data: FormInput):
     ui.toast("data saved")
+    await asyncio.sleep(2)
+    print(data)
 
 
 @app.page("/")
-async def test(request: Request):
+async def test():
     create_nav()
     with ui.element().classes("col lg:px-80"):
         with ui.element().classes("w-full"):
             with ui.form().on_submit(handle_input):
                 ui.input("input name", "first_name")
                 la_name = ui.input("input last name", name="last_name")
-                ui.label().bind_text_from(la_name, "input")
+                ui.label().bind_text_from(la_name)
 
-                ui.textarea("input", name="asd")
+                text = ui.textarea(name="asd")
+                ui.label().bind_text_from(text)
 
                 r = ui.radio("test-radio", "htmx")
                 ui.label("Test for asd radio", r)
                 ui.radio("test-radio", "javascript")
-                range = ui.range(0, 100, 0, "value")
-                ui.label(range.value).bind_text_from(range)
-                ui.button("submit").attributes["type"] = "submit"
+                range2 = ui.range(0, 100, 0, "value")
+                ui.label(range2.value).bind_text_from(range2)
+                with ui.row():
+                    with ui.button("submit") as b:
+                        ui.spinner(b).ring().large()
+                        ui.button("second")
+
+                
+                ui.spinner().ring().extra_small()
+                ui.spinner().ball().large()
+                ui.spinner().bars().large()
 
                 ui.aggrid(pd.DataFrame(
                         [
