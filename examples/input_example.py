@@ -48,9 +48,8 @@ async def test():
                 ui.radio("test-radio", "javascript")
                 range2 = ui.range(0, 100, 0, "value")
                 ui.label(range2.value).bind_text_from(range2)
-                with ui.row():
-                    with ui.button("submit") as b:
-                        ui.spinner(b).ring().large()
+                with ui.button("submit") as b:
+                    ui.spinner(b).ring().large()
                 
 
                 ui.spinner().ring().extra_small()
