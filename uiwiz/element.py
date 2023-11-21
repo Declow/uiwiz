@@ -113,14 +113,11 @@ class Element:
         self.before_render()
         if self.render_html:
             output = self.render_attributes(indent_level)
-            if self.children:
-                output += "\n"
-                for child in self.children:
-                    output += child.render_self(indent_level + self.indent)
-                output += " " * indent_level + f"</{self.tag}>\n"
-            else:
-                output += self.content
-                output += f"</{self.tag}>\n"
+            output += "\n"
+            output += self.content
+            for child in self.children:
+                output += child.render_self(indent_level + self.indent)
+            output += " " * indent_level + f"</{self.tag}>\n"
         if self.script:
             self.stack.scripts.append(self.script)
         return output
