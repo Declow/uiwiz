@@ -99,7 +99,7 @@ class Element:
 
     def render(self, render_script: bool = True) -> str:
         output = self.render_self()
-        if render_script:
+        if render_script and self.stack.scripts:
             output += "<script>"
             output += "(function () {"
             for script in self.stack.scripts:
