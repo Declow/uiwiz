@@ -26,4 +26,5 @@ from uiwiz.elements.radio import Radio as radio
 from uiwiz.elements.range import Range as range
 from uiwiz.elements.row import Row as row
 from uiwiz.elements.spinner import Spinner as spinner
+from uiwiz.elements.html import Html as html
 from uiwiz.element import Element as element
