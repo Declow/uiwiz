@@ -9,11 +9,11 @@ class Form(Element):
         self.classes(Form._classes)
     
     def on_submit(self, func: Callable, endpoint: str = None):
-        self.events.append({
+        self.event = {
             "func": func,
             "endpoint": endpoint,
             "trigger": "submit",
             "target": "this",
             "swap": "beforeend",
-        })
+        }
         return self

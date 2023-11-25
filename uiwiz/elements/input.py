@@ -27,10 +27,10 @@ class Input(Element):
         self.classes(Input._classes)
         self.attributes["name"] = name
         self.attributes["placeholder"] = placeholder
-        self.auto_complete = False
+        self.attributes["auto_complete"] = "off"
+        self.inline = True
         if on_change:
-            self.events.append(
-                {
+            self.event = {
                     "func": on_change,
                     "inputs": None,
                     "trigger": trigger,
@@ -38,4 +38,3 @@ class Input(Element):
                     "target": target,
                     "swap": "swap",
                 }
-            )

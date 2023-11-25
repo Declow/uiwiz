@@ -16,11 +16,11 @@ class TextArea(Element):
         super().__init__("textarea")
         self.attributes["name"] = name
         self.attributes["placeholder"] = placeholder
+        self.inline = True
         self.classes(TextArea._classes)
 
         if on_change:
-            self.events.append(
-                {
+            self.event = {
                     "func": on_change,
                     "inputs": None,
                     "trigger": trigger,
@@ -28,7 +28,7 @@ class TextArea(Element):
                     "target": target,
                     "swap": "swap",
                 }
-            )
+            
 
     @property
     def placeholder(self) -> Optional[str]:

@@ -26,7 +26,7 @@ class Tab(Element):
             data = await request.json()
             Tab.change_tab(container, data["active_tab"])
 
-        self.events.append({
+        self.event = {
             "func": handle_tab,
             "inputs": None,
             "trigger": "click",
@@ -34,7 +34,7 @@ class Tab(Element):
             "target": f"#{container.id}",
             "swap": None,
             "vals": f'{{"active_tab": "{title}"}}',
-        })
+        }
 
     
     def change_tab(container: Element, active_tab: str):
