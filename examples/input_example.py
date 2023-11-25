@@ -1,5 +1,4 @@
 from typing import Optional
-from fastapi import Request
 from pydantic import BaseModel
 from uiwiz.app import UiwizApp
 import uiwiz.ui as ui
@@ -20,8 +19,9 @@ def create_nav():
 class FormInput(BaseModel):
     first_name: str
     last_name: str
-    asd: Optional[str]
-    value: Optional[str]
+    asd: Optional[str] = None
+    value: Optional[str] = None
+    test_radio: Optional[str] = None
 
 
 async def handle_input(data: FormInput):
@@ -43,9 +43,12 @@ async def test():
                 text = ui.textarea(name="asd")
                 ui.label().bind_text_from(text)
 
-                r = ui.radio("test-radio", "htmx")
-                ui.label("Test for asd radio", r)
-                ui.radio("test-radio", "javascript")
+                with ui.row():
+                    r = ui.radio("test_radio", "htmx")
+                    ui.label("htmx", r)
+                with ui.row():
+                    r1 = ui.radio("test_radio", "javascript")
+                    ui.label("javascript", r1)
                 range2 = ui.range(0, 100, 0, "value")
                 ui.label(range2.value).bind_text_from(range2)
                 with ui.button("submit") as b:

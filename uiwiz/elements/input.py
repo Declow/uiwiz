@@ -29,6 +29,7 @@ class Input(Element):
         self.attributes["placeholder"] = placeholder
         self.attributes["auto_complete"] = "off"
         self.inline = True
+        
         if on_change:
             self.event = {
                     "func": on_change,
