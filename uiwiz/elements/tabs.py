@@ -52,8 +52,6 @@ class Tab(Element):
             else:
                 tab.tab.classes(Tab._classes)
 
-        pass
-
     def get_tab_panel(container: Element):
         child: Element
         for child in container.children:
