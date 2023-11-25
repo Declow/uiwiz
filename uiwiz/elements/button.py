@@ -11,12 +11,12 @@ class Button(Element):
         self.classes(Button._classes)
 
     def on_click(self, func: Callable, inputs = None, endpoint=None, target: str = None, swap: str = None) -> "Button":
-        self.events.append({
+        self.event = {
             "func": func,
             "inputs": inputs,
             "trigger": "click",
             "endpoint": endpoint,
             "target": target,
             "swap": swap
-        })
+        }
         return self

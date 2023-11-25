@@ -10,7 +10,7 @@ class Upload(Element):
         self.attributes["name"] = "file"
         self.classes(Upload._classes)
 
-        self.events.append({
+        self.event = {
             "func": on_upload,
             "inputs": None,
             "trigger": trigger,
@@ -18,4 +18,4 @@ class Upload(Element):
             "target": target,
             "swap": "swap",
             "hx-encoding":'multipart/form-data'
-        })
+        }

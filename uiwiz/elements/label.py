@@ -1,5 +1,6 @@
 from fastapi import Request
 from uiwiz.element import Element, Frame
+import html
 
 class Label(Element):
     def __init__(self, text: str = "", for_: Element = None) -> None:
@@ -22,13 +23,11 @@ class Label(Element):
             data = await request.json()
             self.set_frame_and_root()
             
-            self.content = data[element.attributes["name"]]
+            self.content = html.escape(data[element.attributes["name"]])
             
 
-        element.events.append(
-            {
+        element.event = {
                 "target": f"#{self.id}",
                 "func": bind_Value,
                 "trigger": trigger,
             }
-        )

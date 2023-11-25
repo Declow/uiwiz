@@ -63,13 +63,13 @@ class Element:
         self.stack.id += 1
         self.tag: str = tag
 
-        self.auto_complete: bool = True
-        self.events: list[Event] = []
+        self.event: Event = {}
         self.parent_element: Element = None
         self.children: list[Element] = []
         self.script: str = None
         self.render_html: bool = render_html
         self.target: str = None
+        self.inline: bool = False
 
         self.content = content
         self.indent = indent_level
@@ -113,11 +113,14 @@ class Element:
         self.before_render()
         if self.render_html:
             output = self.render_attributes(indent_level)
-            output += "\n"
+            if self.inline is False:
+                output += "\n"
             output += self.content
             for child in self.children:
                 output += child.render_self(indent_level + self.indent)
-            output += " " * indent_level + f"</{self.tag}>\n"
+            if self.inline is False:
+                output += " " * indent_level
+            output += f"</{self.tag}>\n"
         if self.script:
             self.stack.scripts.append(self.script)
         return output
@@ -127,49 +130,49 @@ class Element:
         output += f'<{self.tag} '
         for key, value in self.attributes.items():
             output += f'{key}="{value}" '
-        if not self.auto_complete:
-            output += f'autocomplete="off"'
-        output = self.render_events(output)
+        output = self.render_event(output)
         output += f'>'
         return output
         
     def before_render(self):
         pass
 
-    def render_events(self, output) -> str:
-        for event in self.events:
-            endpoint = event.get("endpoint")
-            if endpoint is None:
-                generator = random.Random(self.id)
-                endpoint = "/" + "".join([str(generator.randrange(10)) for _ in range(20)])
-            
-            Frame.api(endpoint)(event["func"])
-            target = event.get("target") if event.get("target") is not None else "this"
-            swap = event.get("swap") if event.get("swap") is not None else "outerHTML"
-            vals = event.get("vals")
-            include = event.get("include")
-            hx_encoding = event.get("hx-encoding")
+    def render_event(self, output) -> str:
+        if self.event == {}:
+            return output
+        
+        endpoint = self.event.get("endpoint")
+        if endpoint is None:
+            generator = random.Random(self.id)
+            endpoint = "/" + "".join([str(generator.randrange(10)) for _ in range(20)])
+        
+        Frame.api(endpoint)(self.event["func"])
+        target = self.event.get("target") if self.event.get("target") is not None else "this"
+        swap = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
+        vals = self.event.get("vals")
+        include = self.event.get("include")
+        hx_encoding = self.event.get("hx-encoding")
 
-            output += f'hx-post="{endpoint}" '
-            if event.get("trigger"):
-                output += f'hx-trigger="{event["trigger"]}" '
+        output += f'hx-post="{endpoint}" '
+        if self.event.get("trigger"):
+            output += f'hx-trigger="{self.event["trigger"]}" '
 
-            if isinstance(target, Callable):
-                _target = "next #" + str(target())
-            else:
-                _target = target
+        if isinstance(target, Callable):
+            _target = "next #" + str(target())
+        else:
+            _target = target
 
-            output += f'hx-target="{_target}" '
-            output += f'hx-swap="{swap}" '
+        output += f'hx-target="{_target}" '
+        output += f'hx-swap="{swap}" '
 
-            if vals:
-                output += f"hx-vals='{vals}' "
-            if include:
-                output += f'hx-include="{include}" '
-            if hx_encoding:
-                output += f'hx-encoding="{hx_encoding}" '
-            else:
-                output += "hx-ext='json-enc' "
+        if vals:
+            output += f"hx-vals='{vals}' "
+        if include:
+            output += f'hx-include="{include}" '
+        if hx_encoding:
+            output += f'hx-encoding="{hx_encoding}" '
+        else:
+            output += "hx-ext='json-enc' "
 
         return output
     
