@@ -2,6 +2,8 @@ import asyncio
 from typing import Any, Callable, Optional, TypedDict
 import random
 
+from uiwiz.event import Event
+
 class Frame:
     stacks: dict[int, "Frame"] = {}
     api = None
@@ -42,16 +44,6 @@ def get_task_id() -> int:
         return id(asyncio.current_task())
     except RuntimeError:
         return 0
-
-class Event(TypedDict):
-    func: Callable
-    inputs: list[Any]
-    trigger: str
-    endpoint: Optional[str]
-    target: Optional[str]
-    swap: Optional[str]
-    include: Optional[str]
-    vals: Optional[str]
 
 
 class Element:
@@ -149,9 +141,6 @@ class Element:
         Frame.api(endpoint)(self.event["func"])
         target = self.event.get("target") if self.event.get("target") is not None else "this"
         swap = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
-        vals = self.event.get("vals")
-        include = self.event.get("include")
-        hx_encoding = self.event.get("hx-encoding")
 
         output += f'hx-post="{endpoint}" '
         if self.event.get("trigger"):
@@ -165,11 +154,11 @@ class Element:
         output += f'hx-target="{_target}" '
         output += f'hx-swap="{swap}" '
 
-        if vals:
+        if vals:= self.event.get("vals"):
             output += f"hx-vals='{vals}' "
-        if include:
+        if include:= self.event.get("include"):
             output += f'hx-include="{include}" '
-        if hx_encoding:
+        if hx_encoding:= self.event.get("hx-encoding"):
             output += f'hx-encoding="{hx_encoding}" '
         else:
             output += "hx-ext='json-enc' "

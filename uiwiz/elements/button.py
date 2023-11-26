@@ -1,5 +1,5 @@
 from typing import Callable
-from uiwiz.element import Element, Event
+from uiwiz.element import Element
 
 
 class Button(Element):
