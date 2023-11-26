@@ -17,10 +17,11 @@ logger.addHandler(logging.NullHandler())
 class UiwizApp(FastAPI):
     page_routes = {}
 
-    def __init__(self, toast_delay:int = 2500, error_classes: str = "alert bg-[#FF8080]", *args, **kwargs,) -> None:
+    def __init__(self, toast_delay:int = 2500, error_classes: str = "alert bg-[#FF8080]", theme: str = "light", *args, **kwargs,) -> None:
         super().__init__(*args, **kwargs)
         self.toast_delay = toast_delay
         self.error_classes = error_classes
+        self.theme = theme
         self.templates = Jinja2Templates(Path(__file__).parent / 'templates')
         self.add_static_files('/static', Path(__file__).parent / 'static')
         Frame.api = self.api
@@ -31,6 +32,7 @@ class UiwizApp(FastAPI):
                 'request': request,
                 'root_element': [html_output],
                 "title": title,
+                "theme": self.theme,
                 "libs": libs,
                 "toast_delay": self.toast_delay,
                 "error_classes": self.error_classes
