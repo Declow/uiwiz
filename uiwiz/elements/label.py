@@ -1,11 +1,13 @@
+from typing import Optional
 from fastapi import Request
 from uiwiz.element import Element, Frame
 import html
 
 class Label(Element):
-    def __init__(self, text: str = "", for_: Element = None) -> None:
+    def __init__(self, text: Optional[str] = None, for_: Element = None) -> None:
         super().__init__(tag="label")
-        self.content = str(text)
+        if text:
+            self.content = text
         if for_:
             self.attributes["for"] = for_.id
 
