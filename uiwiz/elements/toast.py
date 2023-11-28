@@ -13,14 +13,22 @@ class Toast(Element):
         # remove it from the DOM
         super().__init__(tag="div")
         self.classes(Toast._classes)
+        self.message = message
+        self._svg = svg
+
+    def svg(self, svg: _type) -> "Toast":
+        self._svg = svg
+        return self
+
+    def render(self, render_script: bool = True) -> str:
         with self:
-            if svg:
-                ui.html(get_svg(svg))
-            Element("span", content=message)
+            if self._svg:
+                ui.html(get_svg(self._svg))
+            Element("span", content=self.message)  
 
-        output = self.render(render_script=False)
-
-        self.script = f"""
+        output = super().render(render_script=False)
+        script = f"""
 container = document.getElementById("toast");
 $(container).prepend('{output}')""".replace("\n", " ")
-        self.render_html = False
+
+        return f"<script>(function () {{ {script} }}());</script>"
