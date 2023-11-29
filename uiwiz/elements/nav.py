@@ -2,7 +2,7 @@ from uiwiz.element import Element
 
 
 class Nav(Element):
-    _classes: str = "navbar bg-[#6499E9]"
+    _classes: str = "w-full navbar"
 
     def __init__(self) -> None:
         super().__init__()
