@@ -11,6 +11,8 @@ class Frame:
     def __init__(self) -> None:
         self.root_element: Optional[Element] = None
         self.current_element: Optional[Element] = None
+        self.current_oob_element: Optional[Element] = None
+        self.oob_elements: list[Element] = []
         self.id = 0
         self.scripts: list[str] = []
         self.libraries: list[str] = []
@@ -24,6 +26,17 @@ class Frame:
             element.stack = None
             for child in element.children:
                 self.remove_frame(child)
+
+    def render(self) -> str:
+        if self.root_element:
+            return self.root_element.render()
+        if self.oob_elements:
+            output = ""
+            el: Element
+            for el in self.oob_elements:
+                output += el.render_top_level()
+            return output
+        return ""
 
 
     @classmethod
@@ -47,7 +60,7 @@ def get_task_id() -> int:
 
 
 class Element:
-    def __init__(self, tag="div", indent_level=2, content="", render_html=True, libraries: Optional[str] = []) -> None:
+    def __init__(self, tag="div", indent_level=2, content="", render_html=True, libraries: list[str] = [], oob: bool = False) -> None:
         self.stack = Frame.get_stack()
         self.stack.libraries.extend(libraries)
         self.attributes: dict[str, str] = {}
@@ -66,13 +79,21 @@ class Element:
         self.content = content
         self.indent = indent_level
 
-        
-        if self.stack.root_element is None:
-            self.stack.root_element = self
-            self.stack.current_element = self
+        self.oob = oob
+        if self.oob:
+            self.attributes["hx-swap-oob"] = "true"
+            self.stack.oob_elements.append(self)
         else:
-            self.stack.current_element.children.append(self)
-            self.parent_element = self.stack.current_element
+            if self.stack.current_element and self.stack.current_element.oob:
+                self.oob = True
+                self.stack.current_element.children.append(self)
+            elif self.stack.root_element is None:
+                self.stack.root_element = self
+                self.stack.current_element = self
+            else:
+                self.stack.current_element.children.append(self)
+                self.parent_element = self.stack.current_element
+        
 
     def __enter__(self):
         self.stack.current_element = self
@@ -88,8 +109,13 @@ class Element:
     def classes(self, input: str):
         self.attributes["class"] = input
         return self
-
+    
     def render(self, render_script: bool = True) -> str:
+        output = self.render_top_level(render_script)
+        output += self.render_oob()
+        return output
+
+    def render_top_level(self, render_script: bool = True) -> str:
         output = self.render_self()
         if render_script and self.stack.scripts:
             output += "<script>"
@@ -169,6 +195,13 @@ class Element:
         output = ""
         for lib in self.stack.libraries:
             output += f'<script src="{lib}"></script>\n'
+        return output
+    
+    def render_oob(self) -> str:
+        output = "\n"
+        el: Element
+        for el in self.stack.oob_elements:
+            output += el.render_top_level()
         return output
     
     def __str__(self) -> str:

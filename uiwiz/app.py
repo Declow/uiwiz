@@ -104,7 +104,8 @@ class UiwizApp(FastAPI):
                     result = await result
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
                     return result
-                html_output = frame.root_element.render()
+                
+                html_output = frame.render()
 
                 frame.del_stack()
                 logger.debug(html_output)
