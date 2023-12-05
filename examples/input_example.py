@@ -25,11 +25,7 @@ class FormInput(BaseModel):
 
 
 async def handle_input(data: FormInput):
-    ui.toast("data saved").success()
-    ui.toast("test").error()
-    ui.toast("test").warning()
     ui.toast("test").info()
-    ui.toast("test")
     await asyncio.sleep(2)
     print(data)
 

@@ -100,6 +100,9 @@ class Element:
         return self
     
     def __exit__(self, *_):
+        if self.oob and self.parent_element is None:
+            self.stack.current_element = Frame.get_stack().root_element
+            return
         self.stack.current_element = self.parent_element
     
     @property
