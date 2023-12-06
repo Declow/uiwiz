@@ -11,7 +11,6 @@ class Frame:
     def __init__(self) -> None:
         self.root_element: Optional[Element] = None
         self.current_element: Optional[Element] = None
-        self.current_oob_element: Optional[Element] = None
         self.oob_elements: list[Element] = []
         self.id = 0
         self.scripts: list[str] = []
@@ -76,23 +75,20 @@ class Element:
         self.target: str = None
         self.inline: bool = False
 
-        self.content = content
-        self.indent = indent_level
+        self.content: str = content
+        self.indent: int = indent_level
+        self.oob: bool = oob
 
-        self.oob = oob
         if self.oob:
             self.attributes["hx-swap-oob"] = "true"
             self.stack.oob_elements.append(self)
+
+        if self.stack.root_element is None:
+            self.stack.root_element = self
+            self.stack.current_element = self
         else:
-            if self.stack.current_element and self.stack.current_element.oob:
-                self.oob = True
-                self.stack.current_element.children.append(self)
-            elif self.stack.root_element is None:
-                self.stack.root_element = self
-                self.stack.current_element = self
-            else:
-                self.stack.current_element.children.append(self)
-                self.parent_element = self.stack.current_element
+            self.stack.current_element.children.append(self)
+            self.parent_element = self.stack.current_element
         
 
     def __enter__(self):
@@ -100,9 +96,6 @@ class Element:
         return self
     
     def __exit__(self, *_):
-        if self.oob and self.parent_element is None:
-            self.stack.current_element = Frame.get_stack().root_element
-            return
         self.stack.current_element = self.parent_element
     
     @property
@@ -118,8 +111,8 @@ class Element:
         output += self.render_oob()
         return output
 
-    def render_top_level(self, render_script: bool = True) -> str:
-        output = self.render_self()
+    def render_top_level(self, render_script: bool = True, render_oob: bool = False) -> str:
+        output = self.render_self(render_oob=render_oob)
         if render_script and self.stack.scripts:
             output += "<script>"
             output += "(function () {"
@@ -129,7 +122,9 @@ class Element:
             output += "</script>"
         return output
     
-    def render_self(self, indent_level = 0) -> str:
+    def render_self(self, indent_level = 0, render_oob: bool = False) -> str:
+        if self.oob and render_oob is False:
+            return ""
         output = ""
         self.before_render()
         if self.render_html:
@@ -138,7 +133,8 @@ class Element:
                 output += "\n"
             output += self.content
             for child in self.children:
-                output += child.render_self(indent_level + self.indent)
+                if child.oob is False:
+                    output += child.render_self(indent_level + self.indent)
             if self.inline is False:
                 output += " " * indent_level
             output += f"</{self.tag}>\n"
@@ -204,7 +200,7 @@ class Element:
         output = "\n"
         el: Element
         for el in self.stack.oob_elements:
-            output += el.render_top_level()
+            output += el.render_top_level(render_oob=True)
         return output
     
     def __str__(self) -> str:
