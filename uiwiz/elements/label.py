@@ -6,6 +6,7 @@ import html
 class Label(Element):
     def __init__(self, text: Optional[str] = None, for_: Element = None) -> None:
         super().__init__(tag="label")
+        self.inline = True
         if text:
             self.content = text
         if for_:
