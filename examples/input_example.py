@@ -25,8 +25,18 @@ class FormInput(BaseModel):
 
 
 async def handle_input(data: FormInput):
-    ui.toast("test").info()
-    await asyncio.sleep(2)
+    with ui.element():
+        ui.label("outside of oob")
+        with ui.element():
+            ui.label("test")
+            with ui.element():
+                ui.label("test")
+        with ui.toast().info():
+            with ui.element().classes("col"):
+                ui.label("test in")
+                ui.label("test insob")
+        ui.label("outside of oob below")
+    await asyncio.sleep(1)
     print(data)
 
 
