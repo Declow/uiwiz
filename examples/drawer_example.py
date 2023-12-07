@@ -30,7 +30,7 @@ async def test():
         with drawer.drawer_side():
             with ui.element("li"):
                 ui.link("Drawer-1", "/")
-            ui.link("Some link", "https://ditlevstjerne.dk")
+            ui.link("Some link", "https://google.com")
 
 
 @app.page("/")
@@ -49,7 +49,7 @@ async def test():
         with drawer.drawer_side():
             with ui.element("li"):
                 ui.link("drawer-2", "/drawer-2")
-            ui.link("Some link", "https://ditlevstjerne.dk")
+            ui.link("Some link", "https://google.com")
 
 
     
