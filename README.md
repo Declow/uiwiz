@@ -1,3 +1,42 @@
 
 
 # UiWizard
+
+UiWizard is a python-based ui-framework for the web. It was inspired by the great framework [NiceGui](https://github.com/zauberzeug/nicegui). Why create this project that is very similar to NiceGui?
+- The first reason was that NiceGui requires websockets to work and when experimenting with the framework it caused some issues on my hosting platform.
+- Learning. I wanted to figure out how to do something simillar but without using websockets
+  - I wanted to try out HTMX
+- Limited control over the underlaying tech stack but mainly just learning
+
+## Features
+
+- Tailwind and DaisyUI for the graphics and responsive layout
+- Webbased
+- Quite a lot of standard elements, input fields, dropdown, foot, header, tabs...
+- HTMX for interactivity
+
+## Usage
+
+Create a main.py file
+
+```python
+from uiwiz.app import UiwizApp
+import uiwiz.ui as ui
+import uvicorn
+
+app = UiwizApp()
+
+@app.page("/")
+async def home_page(request: Request):
+    ui.label("Hello world")
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", reload=True)
+```
+
+Run it
+
+```bash
+python main.py
+```
