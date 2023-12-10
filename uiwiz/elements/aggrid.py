@@ -10,7 +10,7 @@ class Aggrid(Element):
 
     _classes: str = "ag-theme-alpine"
 
-    def __init__(self, df: pd.DataFrame, asd: str = None, column_option: OPTIONS = OPTIONS.autoSizeColumn) -> None:
+    def __init__(self, df: pd.DataFrame, column_option: OPTIONS = OPTIONS.autoSizeColumn) -> None:
         super().__init__("div", libraries=["/static/libs/aggrid.js"])
         self.classes(Aggrid._classes)
 
