@@ -24,7 +24,7 @@ class UiwizApp(FastAPI):
         self.theme = theme
         self.templates = Jinja2Templates(Path(__file__).parent / 'templates')
         self.add_static_files('/static', Path(__file__).parent / 'static')
-        Frame.api = self.api
+        Frame.api = self.ui
 
     def render(self, html_output: str, request: Request, title: str, libs: str, status_code: int = 200):
         return self.templates.TemplateResponse("default.html",
@@ -89,7 +89,7 @@ class UiwizApp(FastAPI):
         return decorator
 
 
-    def api(self, path: str) -> Callable:
+    def ui(self, path: str) -> Callable:
         def decorator(func: Callable) -> Callable:
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
 
