@@ -40,3 +40,7 @@ Run it
 ```bash
 python main.py
 ```
+
+## General info
+
+HTMX works with input fields in HTML and forms. To make it a bit easier to work with the form submit event does not send the data in the normal form format but uses the HTMX extension to convert it to json. This means that endpoints using UiWizard can use pydantic models as the input and have the benefit of validation.
