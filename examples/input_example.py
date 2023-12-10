@@ -9,10 +9,10 @@ import asyncio
 
 logging.basicConfig(level=logging.INFO)
 
-app = UiwizApp()
+app = UiwizApp(theme="nord")
 
 def create_nav():
-    with ui.nav():
+    with ui.nav().classes("navbar w-full bg-base-300"):
         ui.button("this is from a method")
 
 

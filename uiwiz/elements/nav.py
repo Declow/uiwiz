@@ -2,7 +2,7 @@ from uiwiz.element import Element
 
 
 class Nav(Element):
-    _classes: str = "w-full navbar"
+    _classes: str = "navbar w-full"
 
     def __init__(self) -> None:
         super().__init__()
