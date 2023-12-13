@@ -102,6 +102,10 @@ class Element:
     def id(self):
         return self.attributes["id"]
 
+    @property
+    def name(self):
+        return self.attributes["name"]
+
     def classes(self, input: str):
         self.attributes["class"] = input
         return self
@@ -162,8 +166,7 @@ class Element:
         if endpoint is None:
             generator = random.Random(self.id)
             endpoint = "/" + "".join([str(generator.randrange(10)) for _ in range(20)])
-        
-        Frame.api(endpoint)(self.event["func"])
+            Frame.api(endpoint)(self.event["func"])
         target = self.event.get("target") if self.event.get("target") is not None else "this"
         swap = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
@@ -172,7 +175,7 @@ class Element:
             output += f'hx-trigger="{self.event["trigger"]}" '
 
         if isinstance(target, Callable):
-            _target = "next #" + str(target())
+            _target = "#" + str(target())
         else:
             _target = target
 
@@ -186,7 +189,7 @@ class Element:
         if hx_encoding:= self.event.get("hx-encoding"):
             output += f'hx-encoding="{hx_encoding}" '
         else:
-            output += "hx-ext='json-enc' "
+            output += "hx-ext='json-enc'"
 
         return output
     

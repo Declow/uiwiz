@@ -1,9 +1,8 @@
 from typing import Optional
-from fastapi import Request
-from uiwiz.element import Element, Frame
-import html
+from uiwiz.element import Element
+from uiwiz.elements.extensions.bindable import Bindable
 
-class Label(Element):
+class Label(Bindable):
     def __init__(self, text: Optional[str] = None, for_: Element = None) -> None:
         super().__init__(tag="label")
         self.inline = True
@@ -15,22 +14,3 @@ class Label(Element):
     def set_text(self, text: str) -> "Label":
         self.content = text
         return self
-    
-    def bind_text_from(self, element: Element, trigger: str = "input delay:20ms"):
-        """
-        Remove attribute as it is not used but breaks bind for reasons
-        """
-        assert element.attributes.get("name") is not None
-
-        async def bind_Value(request: Request):
-            data = await request.json()
-            self.set_frame_and_root()
-            
-            self.content = html.escape(data[element.attributes["name"]])
-            
-
-        element.event = {
-                "target": f"#{self.id}",
-                "func": bind_Value,
-                "trigger": trigger,
-            }

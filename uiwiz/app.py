@@ -111,7 +111,15 @@ class UiwizApp(FastAPI):
                 logger.debug(html_output)
                 return self.render_api(html_output)
 
-            decorated.__signature__ = inspect.Signature(inspect.signature(func).parameters.values())
+            
+            request = inspect.Parameter('request', inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=Request)
+            params = [p for p in inspect.signature(func).parameters.values()]
+            for p in params:
+                if p.annotation == inspect.Signature.empty:
+                    p._annotation = Request
+            if "request" not in {p.name for p in params}:
+                params.insert(0, request)
+            decorated.__signature__ = inspect.Signature(params)
 
             if not self.route_exists(path):
                 self.page_routes[decorated] = path
