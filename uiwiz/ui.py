@@ -18,13 +18,12 @@ from uiwiz.elements.code import Code as code
 from uiwiz.elements.avatar import Avatar as avatar
 from uiwiz.elements.tabs import Tabs as tabs
 from uiwiz.elements.tabs import Tab as tab
-from uiwiz.elements.tabs import TabPanel as tab_panel
-from uiwiz.elements.tabs import TabPanels as tab_panels
 from uiwiz.elements.divider import Divider as divider
 from uiwiz.elements.form import Form as form
 from uiwiz.elements.radio import Radio as radio
 from uiwiz.elements.range import Range as range
 from uiwiz.elements.row import Row as row
+from uiwiz.elements.col import Col as col
 from uiwiz.elements.spinner import Spinner as spinner
 from uiwiz.elements.html import Html as html
 from uiwiz.element import Element as element

@@ -16,27 +16,26 @@ async def test(request: Request):
     create_nav()
     with ui.element().classes("col lg:px-80"):
         with ui.element().classes("w-full"):
-            with ui.tabs().classes("tabs justify-center") as tabs:
-                one = ui.tab("Tab 1")
-                two = ui.tab("Tab 2")
-            with ui.tab_panels(tabs, two):
-                with ui.tab_panel(one):
-                    ui.label("1")
-                with ui.tab_panel(two):
-                    ui.label("2")
-            
+            with ui.tabs() as tu:
+                with ui.tab("Content 1"):
+                    ui.label("asd")
+                with ui.tab("Content 2"):
+                    with ui.col():
+                        ui.label("asd2")
+                        ui.label("asd2")
+                        ui.label("asd2")
+                        ui.label("asd2")
+                        ui.label("asd2")
+                with ui.tab("This is 3").active():
+                    ui.label("cccxxx3")
+                    ui.spinner().infinity()
+
             ui.divider()
             ui.label("This is outside of tabs")
             ui.divider()
 
-            with ui.tabs() as tabs:
-                one = ui.tab("Tab 1")
-                two = ui.tab("Tab 2")
-            with ui.tab_panels(tabs, one):
-                with ui.tab_panel(one):
-                    ui.aggrid(pd.DataFrame([{"asd": 1}]))
-                with ui.tab_panel(two):
-                    ui.label("2")
+
+            print(tu)
             
 
     with ui.footer():
