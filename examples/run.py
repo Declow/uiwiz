@@ -108,7 +108,7 @@ if True:
         def replace(request: Request, input: DataInput):
             create_label(f'{message} {input.input}')
             
-        ui.input("This is a placeholder", name="input", on_change=replace, target=lambda: res3.id)
+        ui.input("This is a placeholder", name="input", on_change=replace, target=lambda: res3.id, )
         with Element() as res3:
             create_label(message)
 

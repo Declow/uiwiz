@@ -3,7 +3,8 @@ from uiwiz.element import Element
 
 
 class Button(Element):
-    _classes: str = "btn btn-neutral place-content-center"
+    root_class: str = "btn "
+    _classes: str = "btn-neutral place-content-center"
 
     def __init__(self, title: str) -> None:
         super().__init__(tag="button")

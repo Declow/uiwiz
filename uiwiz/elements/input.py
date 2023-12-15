@@ -3,7 +3,8 @@ from uiwiz.element import Element
 
 
 class Input(Element):
-    _classes: str = "input input-bordered w-full max-w-xs"
+    root_class: str = "input "
+    _classes: str = "input-bordered w-full max-w-xs"
 
     def __init__(
         self,
@@ -27,7 +28,7 @@ class Input(Element):
         self.classes(Input._classes)
         self.attributes["name"] = name
         self.attributes["placeholder"] = placeholder
-        self.attributes["auto_complete"] = "off"
+        self.attributes["autocomplete"] = "off"
         self.inline = True
         
         if on_change:

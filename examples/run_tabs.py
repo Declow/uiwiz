@@ -7,12 +7,12 @@ import pandas as pd
 app = UiwizApp()
 
 def create_nav():
-    with ui.nav():
+    with ui.nav().classes("bg-base-200"):
         ui.button("this is from a method")
 
 
 @app.page("/")
-async def test(request: Request):
+async def test():
     create_nav()
     with ui.element().classes("col lg:px-80"):
         with ui.element().classes("w-full"):
@@ -30,12 +30,9 @@ async def test(request: Request):
                     ui.label("cccxxx3")
                     ui.spinner().infinity()
 
-            ui.divider()
+            ui.divider("xx")
             ui.label("This is outside of tabs")
             ui.divider()
-
-
-            print(tu)
             
 
     with ui.footer():

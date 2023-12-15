@@ -2,7 +2,8 @@ from uiwiz.element import Element
 
 
 class Nav(Element):
-    _classes: str = "navbar w-full"
+    root_class: str = "navbar w-full "
+    _classes: str = "bg-base-200"
 
     def __init__(self) -> None:
         super().__init__()

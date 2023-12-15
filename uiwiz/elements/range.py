@@ -1,7 +1,7 @@
 from uiwiz.element import Element
 
 class Range(Element):
-    _classes: str = "range"
+    root_class: str = "range "
 
     def __init__(self, min: int, max: int, value: int, name: str, step: int = None) -> None:
         super().__init__("input")
@@ -13,7 +13,7 @@ class Range(Element):
         if step:
             self.attributes["step"] = step
 
-        self.classes(Range._classes)
+        self.classes()
 
     
     @property

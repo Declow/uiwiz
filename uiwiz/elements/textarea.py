@@ -3,7 +3,8 @@ from uiwiz.element import Element
 
 
 class TextArea(Element):
-    _classes: str = "textarea textarea-bordered"
+    root_class: str = "textarea "
+    _classes: str = "textarea-bordered"
 
     def __init__(
         self,

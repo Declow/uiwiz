@@ -4,7 +4,8 @@ from uiwiz.element import Element
 class Spinner(Element):
     _size: Literal["xs", "sm", "md", "lg"] = "sm"
     _type: Literal["spinner", "dots", "ring", "ball", "bars", "infinity"] = "ring"
-    _classes: str = "loading loading-{0} loading-{1}"
+    root_class: str = "loading "
+    _classes: str = "loading-{0} loading-{1}"
 
     def __init__(self, spinner_for: Element = None) -> None:
         super().__init__("span")

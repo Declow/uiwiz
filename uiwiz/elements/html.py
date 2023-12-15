@@ -1,4 +1,3 @@
-from typing import Optional
 from uiwiz.element import Element
 
 class Html(Element):

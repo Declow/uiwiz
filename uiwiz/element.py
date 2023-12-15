@@ -109,8 +109,7 @@ class Element:
     def get_classes(self) -> str:
         return self.attributes["class"]
 
-    def classes(self, input: str):
-        
+    def classes(self, input: str = ""):
         self.attributes["class"] =  getattr(self.__class__, "root_class", "") + input
         return self
     

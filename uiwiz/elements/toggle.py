@@ -1,7 +1,7 @@
 from uiwiz.element import Element
 
 class Toggle(Element):
-    _classes: str = "toggle"
+    root_class: str = "toggle "
 
     def __init__(self, name: str, checked: bool = False) -> None:
         _type = "input"
@@ -10,4 +10,4 @@ class Toggle(Element):
         super().__init__(_type)
         self.attributes["type"] = "checkbox"
         self.attributes["name"] = name
-        self.classes(Toggle._classes)
+        self.classes()

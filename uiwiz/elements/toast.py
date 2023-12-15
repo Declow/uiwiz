@@ -3,7 +3,8 @@ from uiwiz import ui
 from uiwiz.svg.svg_handler import get_svg, _type
 
 class Toast(Element):
-    _classes: str = "alert w-full"
+    root_class: str = "alert w-full "
+    _classes: str = "bg-base-300"
 
     def __init__(self, message: str = "", svg: _type = None) -> None:
         super().__init__(tag="div", oob=True)
@@ -13,7 +14,7 @@ class Toast(Element):
         self.message = message
         self.context_manager_used = False
         self.inner_element = None
-        self.inner_class = Toast._classes
+        self.inner_class = Toast.root_class + Toast._classes
 
     def before_render(self):
         with self:
@@ -40,22 +41,22 @@ class Toast(Element):
         return self
     
     def info(self) -> "Toast":
-        self.classes(Toast._classes)
+        self.classes()
         self.svg("info")
         return self
     
     def warning(self) -> "Toast":
-        self.classes(Toast._classes + " alert-warning")
+        self.classes("alert-warning")
         self.svg("warning")
         return self
     
     def success(self) -> "Toast":
-        self.classes(Toast._classes + " alert-success")
+        self.classes("alert-success")
         self.svg("success")
         return self
     
     def error(self) -> "Toast":
-        self.classes(Toast._classes + " alert-error")
+        self.classes("alert-error")
         self.svg("error")
         return self
     
