@@ -1,5 +1,6 @@
 from uiwiz.element import Element
 
+
 class Toggle(Element):
     root_class: str = "toggle "
 

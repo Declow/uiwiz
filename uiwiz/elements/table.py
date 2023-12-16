@@ -1,6 +1,7 @@
 from uiwiz.element import Element
 import pandas as pd
 
+
 class Table(Element):
     root_class: str = "table "
     _classes_container: str = "overflow-x-auto"

@@ -22,14 +22,13 @@ class TextArea(Element):
 
         if on_change:
             self.event = {
-                    "func": on_change,
-                    "inputs": None,
-                    "trigger": trigger,
-                    "endpoint": None,
-                    "target": target,
-                    "swap": "swap",
-                }
-            
+                "func": on_change,
+                "inputs": None,
+                "trigger": trigger,
+                "endpoint": None,
+                "target": target,
+                "swap": "swap",
+            }
 
     @property
     def placeholder(self) -> Optional[str]:

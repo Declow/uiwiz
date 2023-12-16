@@ -3,10 +3,11 @@ import json
 from uiwiz.element import Element
 from enum import Enum
 
+
 class Aggrid(Element):
     class OPTIONS(str, Enum):
-        autoSizeColumn = 'autoSizeAll'
-        fitColumnContent = 'sizeToFit'
+        autoSizeColumn = "autoSizeAll"
+        fitColumnContent = "sizeToFit"
 
     _classes: str = "ag-theme-alpine"
 

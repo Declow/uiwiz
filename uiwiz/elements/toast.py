@@ -2,13 +2,14 @@ from uiwiz.element import Element
 from uiwiz import ui
 from uiwiz.svg.svg_handler import get_svg, _type
 
+
 class Toast(Element):
     root_class: str = "alert w-full "
     _classes: str = "bg-base-300"
 
     def __init__(self, message: str = "", svg: _type = None) -> None:
         super().__init__(tag="div", oob=True)
-        self.attributes["id"] = f"toast"
+        self.attributes["id"] = "toast"
         self.attributes["hx-swap-oob"] = "afterbegin"
         self._svg = svg
         self.message = message
@@ -39,24 +40,23 @@ class Toast(Element):
     def classes(self, input: str) -> "Toast":
         self.inner_class = input
         return self
-    
+
     def info(self) -> "Toast":
         self.classes()
         self.svg("info")
         return self
-    
+
     def warning(self) -> "Toast":
         self.classes("alert-warning")
         self.svg("warning")
         return self
-    
+
     def success(self) -> "Toast":
         self.classes("alert-success")
         self.svg("success")
         return self
-    
+
     def error(self) -> "Toast":
         self.classes("alert-error")
         self.svg("error")
         return self
-    

@@ -1,6 +1,7 @@
 from typing import Optional
 from uiwiz.element import Element
 
+
 class Tabs(Element):
     root_class: str = "tabs "
     _classes: str = "tabs-bordered"
@@ -10,7 +11,6 @@ class Tabs(Element):
         self.classes(Tabs.root_class + Tabs._classes)
         self.attributes["role"] = "tablist"
 
-    
     def __exit__(self, *_):
         super().__exit__(*_)
         has_active = False
@@ -26,7 +26,6 @@ class Tabs(Element):
                 has_active = True
         if not has_active:
             first_child_tab.active()
-
 
 
 class Tab(Element):

@@ -1,5 +1,6 @@
 from uiwiz.element import Element
 
+
 class Row(Element):
     root_class: str = "row "
 

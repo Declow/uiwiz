@@ -1,8 +1,8 @@
 from uiwiz.element import Element
 import markdown2
 
-class Code(Element):
 
+class Code(Element):
     def __init__(self, code: str) -> None:
         super().__init__("div")
         color = "bg-neutral-content"

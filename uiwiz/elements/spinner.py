@@ -1,5 +1,6 @@
-from typing import Literal, Optional
+from typing import Literal
 from uiwiz.element import Element
+
 
 class Spinner(Element):
     _size: Literal["xs", "sm", "md", "lg"] = "sm"
@@ -13,7 +14,7 @@ class Spinner(Element):
         self.type = Spinner._type
         self.spinner_for = spinner_for
         self.__self__format()
-    
+
     @property
     def spinner_for(self):
         return self._spinner_for
@@ -30,12 +31,12 @@ class Spinner(Element):
         if self.spinner_for:
             clazz += " htmx-indicator"
         self.classes(clazz)
-    
+
     def extra_small(self) -> "Spinner":
         self.size = "xs"
         self.__self__format()
         return self
-    
+
     def small(self) -> "Spinner":
         self.size = "sm"
         self.__self__format()
@@ -55,22 +56,22 @@ class Spinner(Element):
         self.type = "ring"
         self.__self__format()
         return self
-    
+
     def spinner(self) -> "Spinner":
         self.type = "spinner"
         self.__self__format()
         return self
-    
+
     def dots(self) -> "Spinner":
         self.type = "dots"
         self.__self__format()
         return self
-    
+
     def ball(self) -> "Spinner":
         self.type = "ball"
         self.__self__format()
         return self
-    
+
     def bars(self) -> "Spinner":
         self.type = "bars"
         self.__self__format()

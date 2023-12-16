@@ -1,5 +1,6 @@
 from uiwiz.element import Element
 
+
 class Link(Element):
     root_class: str = "link "
     _classes: str = "link-hover"

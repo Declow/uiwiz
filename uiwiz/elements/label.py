@@ -2,6 +2,7 @@ from typing import Optional
 from uiwiz.element import Element
 from uiwiz.elements.extensions.bindable import Bindable
 
+
 class Label(Bindable):
     def __init__(self, text: Optional[str] = None, for_: Element = None) -> None:
         super().__init__(tag="label")

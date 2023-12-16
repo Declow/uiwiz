@@ -1,9 +1,10 @@
 from uiwiz.element import Element
 
+
 class Checkbox(Element):
     root_class: str = "checkbox "
 
-    def __init__(self, name: str, checked = False) -> None:
+    def __init__(self, name: str, checked: bool = False) -> None:
         _type = "input"
         if checked:
             _type += " checked"

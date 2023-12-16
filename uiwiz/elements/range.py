@@ -1,5 +1,6 @@
 from uiwiz.element import Element
 
+
 class Range(Element):
     root_class: str = "range "
 
@@ -15,7 +16,6 @@ class Range(Element):
 
         self.classes()
 
-    
     @property
     def min(self) -> int:
         return self.attributes["min"]

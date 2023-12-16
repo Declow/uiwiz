@@ -12,7 +12,7 @@ class Input(Element):
         name=None,
         on_change: Callable = None,
         target: Callable = None,
-        trigger: str ="input",
+        trigger: str = "input",
     ) -> None:
         """Input
 
@@ -30,13 +30,13 @@ class Input(Element):
         self.attributes["placeholder"] = placeholder
         self.attributes["autocomplete"] = "off"
         self.inline = True
-        
+
         if on_change:
             self.event = {
-                    "func": on_change,
-                    "inputs": None,
-                    "trigger": trigger,
-                    "endpoint": None,
-                    "target": target,
-                    "swap": "swap",
-                }
+                "func": on_change,
+                "inputs": None,
+                "trigger": trigger,
+                "endpoint": None,
+                "target": target,
+                "swap": "swap",
+            }

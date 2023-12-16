@@ -1,5 +1,6 @@
 from uiwiz.element import Element
 
+
 class Dropdown(Element):
     root_class: str = "select "
     _classes: str = "select-bordered w-full max-w-xs"
@@ -12,4 +13,3 @@ class Dropdown(Element):
                 Element("option disabled selected", content=placeholder)
             for item in items:
                 Element("option", content=item)
-        

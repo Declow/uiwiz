@@ -8,15 +8,17 @@ logging.basicConfig(level=logging.INFO)
 
 app = UiwizApp(theme="nord")
 
+
 @app.page("/drawer-2")
 async def test():
     with ui.drawer() as drawer:
         with drawer.drawer_content():
-            with ui.element().classes("sticky top-0 flex h-16 justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm"):
+            with ui.element().classes(
+                "sticky top-0 flex h-16 justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm"
+            ):
                 with ui.nav().classes("w-full navbar"):
-                    with ui.label(for_ = drawer.drawer_toggle).classes("btn drawer-button"):
+                    with ui.label(for_=drawer.drawer_toggle).classes("btn drawer-button"):
                         ui.html(get_svg("menu"))
-                    
 
             with ui.element().classes("col"):
                 ui.label("test1")
@@ -37,11 +39,13 @@ async def test():
 async def test():
     with ui.drawer(always_open=True, right=False) as drawer:
         with drawer.drawer_content():
-            with ui.element().classes("sticky top-0 flex h-16 justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm"):
+            with ui.element().classes(
+                "sticky top-0 flex h-16 justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm"
+            ):
                 with ui.nav().classes("w-full navbar"):
-                    with ui.label(for_ = drawer.drawer_toggle).classes("btn drawer-button lg:hidden"):
+                    with ui.label(for_=drawer.drawer_toggle).classes("btn drawer-button lg:hidden"):
                         ui.html(get_svg("menu"))
-                    
+
             ui.label("test1")
             with ui.footer():
                 ui.label("some footer text")
@@ -50,9 +54,6 @@ async def test():
             with ui.element("li"):
                 ui.link("drawer-2", "/drawer-2")
             ui.link("Some link", "https://google.com")
-
-
-    
 
 
 if __name__ == "__main__":

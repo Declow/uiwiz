@@ -1,10 +1,9 @@
-from fastapi import Request
 from uiwiz.app import UiwizApp
 import uiwiz.ui as ui
 import uvicorn
-import pandas as pd
 
 app = UiwizApp()
+
 
 def create_nav():
     with ui.nav().classes("bg-base-200"):
@@ -33,11 +32,9 @@ async def test():
             ui.divider("xx")
             ui.label("This is outside of tabs")
             ui.divider()
-            
 
     with ui.footer():
         ui.label("some footer text")
-    
 
 
 if __name__ == "__main__":

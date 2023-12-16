@@ -1,5 +1,6 @@
 from uiwiz.element import Element
 
+
 class Radio(Element):
     root_class: str = "radio"
 

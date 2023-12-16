@@ -1,5 +1,5 @@
-from typing import Optional
 from uiwiz.element import Element
+
 
 class Divider(Element):
     root_class = "divider "
@@ -9,7 +9,7 @@ class Divider(Element):
         super().__init__("div")
         self.content = text
         self.classes()
-    
+
     def horizontal(self) -> "Divider":
         self.classes(Divider._classes_hor)
         return self

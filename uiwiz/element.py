@@ -1,8 +1,9 @@
 import asyncio
-from typing import Any, Callable, Optional, TypedDict
+from typing import Callable, Optional
 import random
 
 from uiwiz.event import Event
+
 
 class Frame:
     stacks: dict[int, "Frame"] = {}
@@ -37,19 +38,18 @@ class Frame:
             return output
         return ""
 
-
     @classmethod
     def get_stack(cls) -> "Frame":
         _id = get_task_id()
         if _id not in cls.stacks:
             cls.stacks[_id] = Frame()
         return cls.stacks[_id]
-    
+
     @classmethod
     def del_stack(cls):
         cls.get_stack().remove_frame(None)
         del cls.stacks[get_task_id()]
-    
+
 
 def get_task_id() -> int:
     try:
@@ -59,7 +59,15 @@ def get_task_id() -> int:
 
 
 class Element:
-    def __init__(self, tag="div", indent_level=2, content="", render_html=True, libraries: list[str] = [], oob: bool = False) -> None:
+    def __init__(
+        self,
+        tag="div",
+        indent_level=2,
+        content="",
+        render_html=True,
+        libraries: list[str] = [],
+        oob: bool = False,
+    ) -> None:
         self.stack = Frame.get_stack()
         self.stack.libraries.extend(libraries)
         self.attributes: dict[str, str] = {}
@@ -89,15 +97,14 @@ class Element:
         else:
             self.stack.current_element.children.append(self)
             self.parent_element = self.stack.current_element
-        
 
     def __enter__(self):
         self.stack.current_element = self
         return self
-    
+
     def __exit__(self, *_):
         self.stack.current_element = self.parent_element
-    
+
     @property
     def id(self):
         return self.attributes["id"]
@@ -110,9 +117,9 @@ class Element:
         return self.attributes["class"]
 
     def classes(self, input: str = ""):
-        self.attributes["class"] =  getattr(self.__class__, "root_class", "") + input
+        self.attributes["class"] = getattr(self.__class__, "root_class", "") + input
         return self
-    
+
     def render(self, render_script: bool = True) -> str:
         output = self.render_top_level(render_script)
         output += self.render_oob()
@@ -128,8 +135,8 @@ class Element:
             output += "}());"
             output += "</script>"
         return output
-    
-    def render_self(self, indent_level = 0, render_oob: bool = False) -> str:
+
+    def render_self(self, indent_level: int = 0, render_oob: bool = False) -> str:
         if self.oob and render_oob is False:
             return ""
         output = ""
@@ -149,22 +156,22 @@ class Element:
             self.stack.scripts.append(self.script)
         return output
 
-    def render_attributes(self, indent_level) -> str:
+    def render_attributes(self, indent_level: int) -> str:
         output = " " * indent_level
-        output += f'<{self.tag} '
+        output += f"<{self.tag} "
         for key, value in self.attributes.items():
             output += f'{key}="{value}" '
         output = self.render_event(output)
-        output += f'>'
+        output += ">"
         return output
-        
+
     def before_render(self):
         pass
 
-    def render_event(self, output) -> str:
+    def render_event(self, output: str) -> str:
         if self.event == {}:
             return output
-        
+
         endpoint = self.event.get("endpoint")
         if endpoint is None:
             generator = random.Random(self.id)
@@ -185,33 +192,33 @@ class Element:
         output += f'hx-target="{_target}" '
         output += f'hx-swap="{swap}" '
 
-        if vals:= self.event.get("vals"):
+        if vals := self.event.get("vals"):
             output += f"hx-vals='{vals}' "
-        if include:= self.event.get("include"):
+        if include := self.event.get("include"):
             output += f'hx-include="{include}" '
-        if hx_encoding:= self.event.get("hx-encoding"):
+        if hx_encoding := self.event.get("hx-encoding"):
             output += f'hx-encoding="{hx_encoding}" '
         else:
             output += "hx-ext='json-enc'"
 
         return output
-    
+
     def render_libs(self) -> str:
         output = ""
         for lib in self.stack.libraries:
             output += f'<script src="{lib}"></script>\n'
         return output
-    
+
     def render_oob(self) -> str:
         output = "\n"
         el: Element
         for el in self.stack.oob_elements:
             output += el.render_top_level(render_oob=True)
         return output
-    
+
     def __str__(self) -> str:
         return self.render()
-    
+
     def set_frame(self, frame: Frame):
         self.stack = frame
         for child in self.children:
