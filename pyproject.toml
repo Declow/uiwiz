@@ -6,7 +6,7 @@ authors = ["Declow <Ditlev.stjerne@gmai.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.9,<4"
 uvicorn = "^0.23.2"
 fastapi = "^0.104.0"
 jinja2 = "^3.1.2"
@@ -15,6 +15,13 @@ markdown2 = {extras = ["all"], version = "^2.4.10"}
 python-multipart = "^0.0.6"
 openpyxl = "^3.1.2"
 
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.8"
+
+[tool.ruff]
+# Allow lines to be as long as 120.
+line-length = 120
 
 
 [tool.poetry-dynamic-versioning]
