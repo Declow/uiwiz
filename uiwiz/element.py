@@ -13,7 +13,7 @@ class Frame:
         self.root_element: Optional[Element] = None
         self.current_element: Optional[Element] = None
         self.oob_elements: list[Element] = []
-        self.id = 0
+        self.id: int = 0  # Element id
         self.scripts: list[str] = []
         self.libraries: list[str] = []
 
