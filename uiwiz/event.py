@@ -1,9 +1,8 @@
-from typing import Any, Callable, Optional, TypedDict
+from typing import Callable, Optional, TypedDict
 
 
 class Event(TypedDict):
     func: Callable
-    inputs: list[Any]
     trigger: str
     endpoint: Optional[str]
     target: Optional[str]
