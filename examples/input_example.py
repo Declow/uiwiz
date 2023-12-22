@@ -41,6 +41,11 @@ async def handle_input(data: FormInput):
     print(data)
 
 
+@app.ui("/some/log")
+def get_log():
+    ui.label("WARNING: this is a log")
+
+
 @app.page("/")
 async def test():
     create_nav()
@@ -93,7 +98,10 @@ async def test():
                     )
                 )
                 range = ui.range(0, 100, 0, "value2")
-                ui.label(range.value).bind_text_from(range)
+                ui.label(range.value).bind_text_from(range, swap="innerHTML")
+
+            ui.button("get log").on_click(endpoint="/some/log", target=lambda: log.id, swap="beforeend")
+            log = ui.element().classes("col")
 
     with ui.footer():
         ui.label("some footer text")

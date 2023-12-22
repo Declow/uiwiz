@@ -45,9 +45,9 @@ async def test(request: Request):
         async def handle_upload(file: UploadFile):
             await handle_upload_2(file, table.id)
 
-        ui.upload(on_upload=handle_upload, target=lambda: table.id)
+        ui.upload(name="file", on_upload=handle_upload, target=lambda: table.id)
         ui.checkbox("check")
-        table = ui.table(None)
+        table = ui.table(pd.DataFrame())
         ui.dropdown(["item 1", "item 2"], "Pick item")
         ui.toggle("val")
         ui.toggle("val2", True)
