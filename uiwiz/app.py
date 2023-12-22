@@ -1,51 +1,20 @@
-from contextvars import ContextVar
 import inspect
 from pathlib import Path
 from typing import Callable, Optional, Union
-from starlette.datastructures import Headers
+
 from fastapi import FastAPI, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
 from uiwiz.element import Element, Frame
+from fastapi.middleware.gzip import GZipMiddleware
+from uiwiz.header_middelware import CustomRequestMiddleware
 import functools
 import logging
 
 logger = logging.getLogger("uiwiz")
 logger.addHandler(logging.NullHandler())
-
-from starlette.types import ASGIApp, Receive, Scope, Send
-
-HX_TARGET_CTX_KEY = "hx-target"
-
-_hx_target_ctx_var: ContextVar[str] = ContextVar(HX_TARGET_CTX_KEY, default=None)
-
-
-def get_request_id() -> int:
-    return _hx_target_ctx_var.get()
-
-
-class CustomRequestMiddleware:
-    def __init__(
-        self,
-        app: ASGIApp,
-    ) -> None:
-        self.app = app
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] not in ["http", "websocket"]:
-            await self.app(scope, receive, send)
-            return
-        headers = Headers(scope=scope)
-        _id = headers.get("hx-trigger", 0)
-        if _id != 0:
-            _id = _id.replace("a-", "")
-        request_id = _hx_target_ctx_var.set(int(_id))
-
-        await self.app(scope, receive, send)
-
-        _hx_target_ctx_var.reset(request_id)
 
 
 class UiwizApp(FastAPI):
@@ -65,8 +34,9 @@ class UiwizApp(FastAPI):
         self.theme = theme
         self.templates = Jinja2Templates(Path(__file__).parent / "templates")
         self.add_static_files("/static", Path(__file__).parent / "static")
-        Frame.api = self.ui
+        Frame.api = self
         self.add_middleware(CustomRequestMiddleware)
+        self.add_middleware(GZipMiddleware)
 
     def render(
         self,
@@ -122,7 +92,6 @@ class UiwizApp(FastAPI):
             async def decorated(*dec_args, **dec_kwargs) -> Response:
                 frame: Frame = Frame.get_stack()
                 frame.app = self
-                frame.id = get_request_id()
                 Element().classes("flex flex-col h-screen")
                 request = dec_kwargs["request"]
                 # NOTE cleaning up the keyword args so the signature is consistent with "func" again
@@ -162,7 +131,6 @@ class UiwizApp(FastAPI):
             @functools.wraps(func)
             async def decorated(*dec_args, **dec_kwargs) -> Response:
                 frame = Frame.get_stack()
-                frame.id = get_request_id()
                 # NOTE cleaning up the keyword args so the signature is consistent with "func" again
                 dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
                 result = func(*dec_args, **dec_kwargs)
