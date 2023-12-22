@@ -14,7 +14,7 @@
     <link href="/static/codehighlight.css" rel="stylesheet" type="text/css" />
 </head>
 
-<body>
+<body hx-ext="swap-header">
     <div id="content">
         {% for element in root_element %}{{ element | safe}}{% endfor %}
     </div>
@@ -22,7 +22,7 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
     <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
     <script>
         container = document.getElementById("toast");
@@ -43,7 +43,7 @@
         observer.observe(container, config);
 
         function removeAfterDelay(event) {
-            $(event).delay({{toast_delay}}).queue(() => {
+            $(event).delay({{ toast_delay }}).queue(() => {
                 $(event).remove();
                 $(event).dequeue();
             });
@@ -55,6 +55,18 @@
                 container = document.getElementById("toast");
                 $(container).prepend(`<div id="a-0" class="{{error_classes}}"><span id="a-1">${evt.detail.error}</span></div>`)
             }());
+        });
+        
+        function getRawAttribute(elt, name) {
+            return elt.getAttribute && elt.getAttribute(name);
+        }
+    
+        htmx.defineExtension('swap-header', {
+            onEvent: function (name, evt) {
+                if (name === "htmx:configRequest") {
+                    evt.detail.headers['Hx-Swap'] = getRawAttribute(evt.detail.elt, 'hx-swap') || htmx.config.defaultSwapStyle;
+                }
+            }
         });
     </script>
 </body>

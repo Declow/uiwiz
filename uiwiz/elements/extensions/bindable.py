@@ -4,7 +4,7 @@ from uiwiz.element import Element
 
 
 class Bindable(Element):
-    def bind_text_from(self, element: Element, trigger: str = "input delay:20ms"):
+    def bind_text_from(self, element: Element, trigger: str = "input delay:20ms", swap: str = "outerHTML"):
         """
         Remove attribute as it is not used but breaks bind for reasons
         """
@@ -18,10 +18,6 @@ class Bindable(Element):
 
             self.content = html.escape(str(input_data))
 
-        element.event = {
-            "target": f"#{self.id}",
-            "func": bind_Value,
-            "trigger": trigger,
-        }
+        element.event = {"target": f"#{self.id}", "func": bind_Value, "trigger": trigger, "swap": swap}
 
         return self

@@ -1,6 +1,7 @@
 import asyncio
 from typing import Callable, Optional
 import random
+from uiwiz.header_middelware import get_headers
 
 from uiwiz.event import Event
 
@@ -13,9 +14,29 @@ class Frame:
         self.root_element: Optional[Element] = None
         self.current_element: Optional[Element] = None
         self.oob_elements: list[Element] = []
-        self.id: int = 0  # Element id
+        self.used_hx_headers: bool = False
+        self.id_count: int = 0  # used for element id
+        self.element_id: str = self.get_id()  # Element id
         self.scripts: list[str] = []
         self.libraries: list[str] = []
+
+    def get_id(self) -> str:
+        headers = get_headers()
+        out_id = ""
+        if swap := headers.get("hx-swap"):
+            target_id = headers.get("hx-target")
+            if self.used_hx_headers is False:
+                if swap == "outerHTML":
+                    out_id = target_id
+                else:
+                    generator = random.Random(target_id)
+                    out_id = f"a-{generator.randint(10000, 99999)}"
+                self.used_hx_headers = True
+                return out_id
+            generator = random.Random(target_id)
+            return f"a-{generator.randint(10000, 99999)}"
+
+        return f"a-{self.id_count}"
 
     def remove_frame(self, element: "Element") -> None:
         if element is None:
@@ -71,8 +92,8 @@ class Element:
         self.stack = Frame.get_stack()
         self.stack.libraries.extend(libraries)
         self.attributes: dict[str, str] = {}
-        self.attributes["id"] = f"a-{self.stack.id}"
-        self.stack.id += 1
+        self.attributes["id"] = self.stack.get_id()
+        self.stack.id_count += 1
         self.tag: str = tag
 
         self.event: Event = {}
@@ -176,7 +197,7 @@ class Element:
         if endpoint is None:
             generator = random.Random(self.id)
             endpoint = "/" + "".join([str(generator.randrange(10)) for _ in range(20)])
-            Frame.api(endpoint)(self.event["func"])
+            Frame.api.ui(endpoint)(self.event["func"])
         target = self.event.get("target") if self.event.get("target") is not None else "this"
         swap = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
