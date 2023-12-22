@@ -42,7 +42,7 @@ class Toast(Element):
         return self
 
     def info(self) -> "Toast":
-        self.classes()
+        self.classes("alert")
         self.svg("info")
         return self
 
