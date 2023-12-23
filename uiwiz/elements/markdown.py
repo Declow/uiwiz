@@ -10,6 +10,8 @@ class Markdown(Element):
         output = ""
         self.classes("markdown-body")
         self.content = markdown2.markdown(self.content, extras=["fenced-code-blocks"])
+        self.content = self.content.replace("<ul>", '<ul class="list-disc">')
+        self.content = self.content.replace("<ol>", '<ol class="list-decimal">')
         self.render_html = True
         output = super().render_self()
         return output
