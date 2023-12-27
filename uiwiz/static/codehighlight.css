@@ -3,7 +3,7 @@
 }
 
 .codehilite {
-    background: #f8f8f8;
+    background: oklch(var(--b3)/1);
 }
 
 .c {
@@ -17,7 +17,7 @@
 
 /* Error */
 .k {
-    color: #0000ff
+    color: var(--color-prettylights-syntax-markup-heading)
 }
 
 /* Keyword */
@@ -32,7 +32,7 @@
 
 /* Comment.Multiline */
 .cp {
-    color: #0000ff
+    color: var(--color-prettylights-syntax-markup-heading)
 }
 
 /* Comment.Preproc */
@@ -77,27 +77,27 @@
 
 /* Generic.Subheading */
 .kc {
-    color: #0000ff
+    color: var(--color-prettylights-syntax-markup-heading)
 }
 
 /* Keyword.Constant */
 .kd {
-    color: #0000ff
+    color: var(--color-prettylights-syntax-markup-heading)
 }
 
 /* Keyword.Declaration */
 .kn {
-    color: #0000ff
+    color: var(--color-prettylights-syntax-markup-heading)
 }
 
 /* Keyword.Namespace */
 .kp {
-    color: #0000ff
+    color: var(--color-prettylights-syntax-markup-heading)
 }
 
 /* Keyword.Pseudo */
 .kr {
-    color: #0000ff
+    color: var(--color-prettylights-syntax-markup-heading)
 }
 
 /* Keyword.Reserved */
@@ -107,7 +107,7 @@
 
 /* Keyword.Type */
 .s {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String */
@@ -117,72 +117,72 @@
 
 /* Name.Class */
 .ow {
-    color: #0000ff
+    color: var(--color-prettylights-syntax-markup-heading)
 }
 
 /* Operator.Word */
 .sa {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Affix */
 .sb {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Backtick */
 .sc {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Char */
 .dl {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Delimiter */
 .sd {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Doc */
 .s2 {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Double */
 .se {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Escape */
 .sh {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Heredoc */
 .si {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Interpol */
 .sx {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Other */
 .sr {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Regex */
 .s1 {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Single */
 .ss {
-    color: #a31515
+    color: var(--color-prettylights-syntax-keyword)
 }
 
 /* Literal.String.Symbol */
