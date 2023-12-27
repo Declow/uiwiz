@@ -13,6 +13,7 @@ from uiwiz.elements.link import Link as link
 from uiwiz.elements.upload import Upload as upload
 from uiwiz.elements.checkbox import Checkbox as checkbox
 from uiwiz.elements.dropdown import Dropdown as dropdown
+from uiwiz.elements.datepicker import Datepicker as datepicker
 from uiwiz.elements.toggle import Toggle as toggle
 from uiwiz.elements.code import Code as code
 from uiwiz.elements.avatar import Avatar as avatar
