@@ -5,7 +5,7 @@ from uiwiz.svg.svg_handler import get_svg, _type
 
 class Toast(Element):
     root_class: str = "alert w-full "
-    _classes: str = "bg-base-300"
+    _classes: str = "bg-base-300 "
 
     def __init__(self, message: str = "", svg: _type = None) -> None:
         super().__init__(tag="div", oob=True)
@@ -38,7 +38,7 @@ class Toast(Element):
         return self
 
     def classes(self, input: str) -> "Toast":
-        self.inner_class = input
+        self.inner_class = self.inner_class + input
         return self
 
     def info(self) -> "Toast":
