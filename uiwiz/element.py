@@ -1,9 +1,27 @@
 import asyncio
-from typing import Callable, Optional
+from typing import Callable, Literal, Optional
 import random
 from uiwiz.header_middelware import get_headers
 
 from uiwiz.event import Event
+
+# https://developer.mozilla.org/en-US/docs/Glossary/Void_element
+VOID_ELEMENTS = [
+    "area",
+    "base",
+    "br",
+    "col",
+    "embed",
+    "hr",
+    "img",
+    "input",
+    "link",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr",
+]
 
 
 class Frame:
@@ -134,6 +152,12 @@ class Element:
     def name(self):
         return self.attributes["name"]
 
+    @property
+    def is_void_element(self) -> bool:
+        if self.tag in VOID_ELEMENTS:
+            return True
+        return False
+
     def get_classes(self) -> str:
         return self.attributes["class"]
 
@@ -147,51 +171,53 @@ class Element:
         return output
 
     def render_top_level(self, render_script: bool = True, render_oob: bool = False) -> str:
-        output = self.render_self(render_oob=render_oob)
-        if render_script and self.stack.scripts:
-            output += "<script>"
-            output += "(function () {"
+        lst = []
+        lst.append(self.render_self(render_oob=render_oob))
+        if render_script:
             for script in self.stack.scripts:
-                output += script
-            output += "}());"
-            output += "</script>"
-        return output
+                lst.append(
+                    """
+                    <script>
+                    (function() {
+                    %s
+                    }());
+                    </script>
+                    """
+                    % script
+                )
+        return "".join(lst)
 
-    def render_self(self, indent_level: int = 0, render_oob: bool = False) -> str:
+    def render_self(self, render_oob: bool = False) -> str:
         if self.oob and render_oob is False:
             return ""
-        output = ""
-        self.before_render()
-        if self.render_html:
-            output = self.render_attributes(indent_level)
-            if self.inline is False:
-                output += "\n"
-            output += self.content
-            for child in self.children:
-                if child.oob is False:
-                    output += child.render_self(indent_level + self.indent)
-            if self.inline is False:
-                output += " " * indent_level
-            output += f"</{self.tag}>\n"
-        if self.script:
-            self.stack.scripts.append(self.script)
-        return output
 
-    def render_attributes(self, indent_level: int) -> str:
-        output = " " * indent_level
-        output += f"<{self.tag} "
-        for key, value in self.attributes.items():
-            output += f'{key}="{value}" '
-        output = self.render_event(output)
-        output += ">"
-        return output
+        self.before_render()
+        lst = []
+        if self.render_html:
+            self.add_event_to_attributes()
+
+            lst.append("<%s %s>" % (self.tag, self.dict_to_attrs()))
+            lst.append(self.content)
+            lst.extend([child.render_self() if child.oob is False else "" for child in self.children])
+
+            if not self.is_void_element:
+                lst.append("</%s>" % self.tag)
+
+        return "".join(lst)
+
+    def render_oob(self) -> str:
+        lst = []
+        el: Element
+        for el in self.stack.oob_elements:
+            lst.append(el.render_top_level(render_oob=True))
+        return "".join(lst)
 
     def before_render(self):
         pass
 
-    def render_event(self, output: str) -> str:
+    def add_event_to_attributes(self):
         if self.event == {}:
-            return output
+            return
 
         endpoint = self.event.get("endpoint")
         if endpoint is None:
@@ -201,41 +227,31 @@ class Element:
         target = self.event.get("target") if self.event.get("target") is not None else "this"
         swap = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
-        output += f'hx-post="{endpoint}" '
+        self.attributes["hx-post"] = endpoint
         if self.event.get("trigger"):
-            output += f'hx-trigger="{self.event["trigger"]}" '
+            self.attributes["hx-trigger"] = self.event["trigger"]
 
         if isinstance(target, Callable):
-            _target = "#" + str(target())
+            self.attributes["hx-target"] = "#%s" % str(target())
         else:
-            _target = target
+            self.attributes["hx-target"] = target
 
-        output += f'hx-target="{_target}" '
-        output += f'hx-swap="{swap}" '
+        self.attributes["hx-swap"] = swap
 
         if vals := self.event.get("vals"):
-            output += f"hx-vals='{vals}' "
+            self.attributes["hx-vals"] = vals
         if include := self.event.get("include"):
-            output += f'hx-include="{include}" '
+            self.attributes["hx-include"] = include
         if hx_encoding := self.event.get("hx-encoding"):
-            output += f'hx-encoding="{hx_encoding}" '
+            self.attributes["hx-encoding"] = hx_encoding
         else:
-            output += "hx-ext='json-enc'"
-
-        return output
+            self.attributes["hx-ext"] = "json-enc"
 
     def render_libs(self) -> str:
-        output = ""
+        lst = []
         for lib in self.stack.libraries:
-            output += f'<script src="{lib}"></script>\n'
-        return output
-
-    def render_oob(self) -> str:
-        output = "\n"
-        el: Element
-        for el in self.stack.oob_elements:
-            output += el.render_top_level(render_oob=True)
-        return output
+            lst.append('<script src="%s"></script>' % lib)
+        return "".join(lst)
 
     def __str__(self) -> str:
         return self.render()
@@ -248,3 +264,9 @@ class Element:
     def set_frame_and_root(self) -> None:
         self.set_frame(Frame.get_stack())
         self.stack.root_element = self
+
+    def dict_to_attrs(self):
+        ATTR_NO_VALUE = object()
+        return " ".join(
+            (key if value is ATTR_NO_VALUE else '%s="%s"' % (key, value)) for key, value in self.attributes.items()
+        )

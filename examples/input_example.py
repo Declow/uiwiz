@@ -32,10 +32,9 @@ async def handle_input(data: FormInput):
             ui.label("test")
             with ui.element():
                 ui.label("test")
-        with ui.toast().info():
+        with ui.toast().success():
             with ui.element().classes("col"):
                 ui.label("test in")
-                ui.label("test insob")
         ui.label("outside of oob below")
     await asyncio.sleep(1)
     print(data)
@@ -102,6 +101,15 @@ async def test():
 
             ui.button("get log").on_click(endpoint="/some/log", target=lambda: log.id, swap="beforeend")
             log = ui.element().classes("col")
+
+            d = {"asd": {"gg": 0}, "gg": True, "dd": "text"}
+            import json
+
+            print(json.dumps(d, indent=4))
+            v = v = json.dumps(d, indent=2)
+            out = "\n".join(["      " + e for e in v.split("\n")])
+            print(out)
+            ui.code(out)
 
     with ui.footer():
         ui.label("some footer text")

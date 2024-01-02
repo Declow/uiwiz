@@ -23,7 +23,8 @@ class Aggrid(Element):
             cols = [{"field": item} for item in df.columns.to_list()]
             rows = json.dumps(df.to_dict("records"), default=str)
 
-        self.script = f"""
+        self.stack.scripts.append(
+            f"""
         const columnDefs = {cols};
         const rowData = {rows};
 
@@ -52,3 +53,4 @@ class Aggrid(Element):
 
         window.addEventListener('resize', () => {column_option}());
         """
+        )
