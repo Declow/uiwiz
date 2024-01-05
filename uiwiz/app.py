@@ -164,7 +164,7 @@ class UiwizApp(FastAPI):
                     result = await result
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
                     return result
-                
+
                 return self.render_api(frame)
 
             request = inspect.Parameter("request", inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=Request)
