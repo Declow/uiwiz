@@ -45,6 +45,12 @@ def get_log():
     ui.label("WARNING: this is a log")
 
 
+@app.post("/data")
+def get_data():
+    df = pd.DataFrame([{"asd": "val"}, {"asd": "val2", "col2": 12}])
+    return ui.aggrid.response(df)
+
+
 @app.page("/")
 async def test():
     create_nav()
@@ -80,7 +86,7 @@ async def test():
                 ui.spinner().ring().extra_small()
                 ui.spinner().ball().large()
 
-                ui.aggrid(
+                g = ui.aggrid(
                     pd.DataFrame(
                         [
                             {
@@ -96,6 +102,9 @@ async def test():
                         ]
                     )
                 )
+                ui.button("update grid").on_click(endpoint="/data", target=g.id, swap="none")
+                gg = ui.aggrid(None)
+                ui.button("update grid 2").on_click(endpoint="/data", target=gg.id, swap="none")
                 range = ui.range(0, 100, 0, "value2")
                 ui.label(range.value).bind_text_from(range, swap="innerHTML")
 

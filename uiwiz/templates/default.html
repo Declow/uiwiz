@@ -6,7 +6,6 @@
 <head>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.24/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    {{ libs | safe }}
     <meta charset="utf-8">
     <title>{{title}}</title>
 
@@ -21,6 +20,7 @@
     </div>
     <div id="toast" class="toast toast-top toast-end"></div>
 
+    {{ libs | safe }}
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/htmx.org@1.9.9"></script>
@@ -57,19 +57,24 @@
                 $(container).prepend(`<div id="a-0" class="{{error_classes}}"><span id="a-1">${evt.detail.error}</span></div>`)
             }());
         });
+
+        function getAttributeFromElement(element, attrName) {
+            return (element.getAttribute(attrName) || element.getAttribute("data-" + attrName));
+        }
         
-        function getRawAttribute(elt, name) {
-            return elt.getAttribute && elt.getAttribute(name);
+        function hasAttribute(element, attrName) {
+            return (element.hasAttribute(attrName) || element.hasAttribute("data-" + attrName))
         }
     
         htmx.defineExtension('swap-header', {
             onEvent: function (name, evt) {
                 if (name === "htmx:configRequest") {
-                    evt.detail.headers['Hx-Swap'] = getRawAttribute(evt.detail.elt, 'hx-swap') || htmx.config.defaultSwapStyle;
+                    evt.detail.headers['Hx-Swap'] = getAttributeFromElement(evt.detail.elt, 'hx-swap') || htmx.config.defaultSwapStyle;
                 }
             }
         });
     </script>
+    {{ ext | safe }}
 </body>
 
 </html>

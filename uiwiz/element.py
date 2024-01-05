@@ -1,8 +1,9 @@
 import asyncio
-from typing import Callable, Literal, Optional
+import os
+from pathlib import Path
+from typing import Callable, Optional
 import random
 from uiwiz.header_middelware import get_headers
-
 from uiwiz.event import Event
 
 # https://developer.mozilla.org/en-US/docs/Glossary/Void_element
@@ -37,6 +38,7 @@ class Frame:
         self.element_id: str = self.get_id()  # Element id
         self.scripts: list[str] = []
         self.libraries: list[str] = []
+        self.extensions: set[str] = set()
 
     def get_id(self) -> str:
         headers = get_headers()
@@ -77,6 +79,19 @@ class Frame:
             return output
         return ""
 
+    def render_libs(self) -> str:
+        return self.root_element.render_js(self.libraries)
+
+    def render_ext(self) -> str:
+        return self.root_element.render_js(self.extensions)
+
+    def add_extension(self, path: Path):
+        _, filename = os.path.split(path)
+        prefix = "/_static/ext/"
+        endpoint = prefix + filename
+        self.extensions.add(endpoint)
+        Frame.api.register_extension(path, prefix)
+
     @classmethod
     def get_stack(cls) -> "Frame":
         _id = get_task_id()
@@ -105,10 +120,13 @@ class Element:
         content="",
         render_html=True,
         libraries: list[str] = [],
+        extension: Path = None,
         oob: bool = False,
     ) -> None:
         self.stack = Frame.get_stack()
         self.stack.libraries.extend(libraries)
+        if extension:
+            self.stack.add_extension(extension)
         self.attributes: dict[str, str] = {}
         self.attributes["id"] = self.stack.get_id()
         self.stack.id_count += 1
@@ -247,9 +265,9 @@ class Element:
         else:
             self.attributes["hx-ext"] = "json-enc"
 
-    def render_libs(self) -> str:
+    def render_js(self, lst_js: list[str]) -> str:
         lst = []
-        for lib in self.stack.libraries:
+        for lib in lst_js:
             lst.append('<script src="%s"></script>' % lib)
         return "".join(lst)
 

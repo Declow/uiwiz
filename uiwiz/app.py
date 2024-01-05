@@ -1,4 +1,6 @@
 import inspect
+from mimetypes import guess_type
+import os
 from pathlib import Path
 from typing import Callable, Optional, Union
 
@@ -40,23 +42,28 @@ class UiwizApp(FastAPI):
         Frame.api = self
         self.add_middleware(CustomRequestMiddleware)
         self.add_middleware(GZipMiddleware)
+        self.extensions: dict[str, Path] = {}
 
     def render(
         self,
-        html_output: str,
+        frame: Frame,
         request: Request,
         title: str,
-        libs: str,
         status_code: int = 200,
     ):
+        html = frame.render()
+        libs = frame.render_libs()
+        ext = frame.render_ext()
+        frame.del_stack()
         return self.templates.TemplateResponse(
             "default.html",
             {
                 "request": request,
-                "root_element": [html_output],
+                "root_element": [html],
                 "title": title,
                 "theme": self.theme,
                 "libs": libs,
+                "ext": ext,
                 "toast_delay": self.toast_delay,
                 "error_classes": self.error_classes,
             },
@@ -64,9 +71,11 @@ class UiwizApp(FastAPI):
             {"Cache-Control": "no-store", "X-uiwiz-Content": "page"},
         )
 
-    def render_api(self, html_output: str, status_code: int = 200):
+    def render_api(self, frame: Frame, status_code: int = 200):
+        html = frame.render()
+        frame.del_stack()
         return HTMLResponse(
-            html_output,
+            html,
             status_code,
             {"Cache-Control": "no-store", "X-uiwiz-Content": "page"},
         )
@@ -80,6 +89,24 @@ class UiwizApp(FastAPI):
 
     def add_static_files(self, url_path: str, local_directory: Union[str, Path]) -> None:
         self.mount(url_path, StaticFiles(directory=str(local_directory)))
+
+    def register_extension(self, path: Path, prefix: str):
+        _, filename = os.path.split(path)
+        if filename in self.extensions:
+            return
+        self.extensions[filename] = path
+
+        def get_extension(filename):
+            if filename not in self.extensions:
+                return Response(status_code=404)
+
+            with open(self.extensions[filename]) as f:
+                content = f.read()
+
+            content_type, _ = guess_type(filename)
+            return Response(content, media_type=content_type)
+
+        self.get(prefix + "{filename}")(get_extension)
 
     def page(
         self,
@@ -104,12 +131,8 @@ class UiwizApp(FastAPI):
                     result = await result
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
                     return result
-                html_output = frame.root_element.render()
-                libs = frame.root_element.render_libs()
 
-                frame.del_stack()
-                logger.debug(html_output)
-                return self.render(html_output, request, title, libs)
+                return self.render(frame, request, title)
 
             params = [p for p in inspect.signature(func).parameters.values()]
             if "request" not in {p.name for p in params}:
@@ -141,12 +164,8 @@ class UiwizApp(FastAPI):
                     result = await result
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
                     return result
-
-                html_output = frame.render()
-
-                frame.del_stack()
-                logger.debug(html_output)
-                return self.render_api(html_output)
+                
+                return self.render_api(frame)
 
             request = inspect.Parameter("request", inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=Request)
             params = [p for p in inspect.signature(func).parameters.values()]
