@@ -4,12 +4,11 @@ from uiwiz.element import Element
 
 class Button(Element):
     root_class: str = "btn "
-    _classes: str = "btn-neutral place-content-center"
 
     def __init__(self, title: str) -> None:
         super().__init__(tag="button")
         self.content = title
-        self.classes(Button._classes)
+        self.classes()
         self.inline = True
 
     def on_click(
