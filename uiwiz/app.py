@@ -152,6 +152,7 @@ class UiwizApp(FastAPI):
 
     def ui(self, path: str) -> Callable:
         def decorator(func: Callable) -> Callable:
+            self.remove_route(path)
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
 
             @functools.wraps(func)
