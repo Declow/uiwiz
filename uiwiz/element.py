@@ -266,9 +266,9 @@ class Element:
             self.attributes["hx-ext"] = "json-enc"
 
     def render_js(self, lst_js: list[str]) -> str:
-        lst = []
+        lst = set()
         for lib in lst_js:
-            lst.append('<script src="%s"></script>' % lib)
+            lst.add('<script src="%s"></script>' % lib)
         return "".join(lst)
 
     def __str__(self) -> str:
