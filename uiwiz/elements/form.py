@@ -9,7 +9,7 @@ class Form(Element):
         super().__init__("form")
         self.classes()
 
-    def on_submit(self, func: Callable, endpoint: str = None):
+    def on_submit(self, func: Callable = None, endpoint: str = None):
         self.event = {
             "func": func,
             "endpoint": endpoint,
