@@ -12,7 +12,7 @@ def create_nav():
         ui.button("this is from a method")
 
 
-async def handle_upload_2(file: UploadFile, table_id: str):
+async def handle_upload_2(file: UploadFile):
     file_output = await file.read()
     df = pd.read_excel(file_output, engine="openpyxl")
 

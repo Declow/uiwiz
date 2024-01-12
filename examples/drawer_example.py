@@ -53,7 +53,7 @@ async def test():
         with drawer.drawer_side():
             with ui.element("li"):
                 ui.link("drawer-2", "/drawer-2")
-            ui.link("Some link", "https://google.com")
+                ui.link("Some link", "https://google.com")
 
 
 if __name__ == "__main__":

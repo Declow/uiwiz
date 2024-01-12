@@ -25,17 +25,10 @@ class FormInput(BaseModel):
     test_radio: Optional[str] = None
 
 
+@app.ui("/form/handle_input")
 async def handle_input(data: FormInput):
-    with ui.element():
-        ui.label("outside of oob")
-        with ui.element():
-            ui.label("test")
-            with ui.element():
-                ui.label("test")
-        with ui.toast().success():
-            with ui.element().classes("col"):
-                ui.label("test in")
-        ui.label("outside of oob below")
+    with ui.toast().success():
+        ui.label("test in")
     await asyncio.sleep(1)
     print(data)
 
@@ -56,13 +49,21 @@ async def test():
     create_nav()
     with ui.element().classes("col lg:px-80"):
         with ui.element().classes("w-full"):
-            with ui.form().on_submit(handle_input):
+            with ui.form().on_submit(endpoint="/form/handle_input"):
                 ui.input("input name", "first_name")
                 la_name = ui.input("input last name", name="last_name")
                 ui.label().bind_text_from(la_name)
 
                 text = ui.textarea(name="asd")
                 ui.label().bind_text_from(text)
+
+                with ui.row():
+                    c = ui.checkbox("box_to_checl")
+                    ui.label("message", c)
+                    # with ui.label():
+                    #     ui.checkbox("box_to_check")
+                    #     e = ui.element("span", content="message").classes("label-text")
+                    #     e.attributes["style"] = "margin-left: 1em;"
 
                 with ui.row():
                     r = ui.radio("test_radio", "htmx")
@@ -72,10 +73,13 @@ async def test():
                     ui.label("javascript", r1)
                 range2 = ui.range(0, 100, 0, "value")
                 ui.label(range2.value).bind_text_from(range2)
+
+                ui.toggle("toggle_name")
                 with ui.row():
                     b = ui.button("submit")
                     ui.spinner(b).ring().large()
-            with ui.form().on_submit(handle_input):
+
+            with ui.form().on_submit(func=handle_input):
                 with ui.button("submit2") as b2:
                     ui.spinner(b2).ring().large()
 
