@@ -160,11 +160,12 @@ async def handle_input(data: FormInput):
 ```
 
 The error or success function adds an svg indication
-![](./uiwiz/svg/error.svg)
-![](./uiwiz/svg/success.svg)
-![](./uiwiz/svg/warning.svg)
-![](./uiwiz/svg/info.svg)
-![](./uiwiz/svg/menu.svg)
+possible methods
+- success
+- error
+- warning
+- info
+- menu
 
 ```python
 
