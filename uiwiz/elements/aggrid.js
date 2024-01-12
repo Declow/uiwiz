@@ -23,7 +23,7 @@ function gridHandler(element, cols, rows) {
     createOrGetCurrentGrid(element, cols, rows)
 }
 
-var grids = {}
+var _uiWizardGrids = {}
 
 function getGridOptions(cols, rows) {
     const gridOptions = {
@@ -40,8 +40,8 @@ function getGridOptions(cols, rows) {
 
 function createOrGetCurrentGrid(element, cols, rows) {
     gridApi = null;
-    if (element.id in grids) {
-        gridApi = grids[element.id]
+    if (element.id in _uiWizardGrids) {
+        gridApi = _uiWizardGrids[element.id]
         gridApi.setGridOption('columnDefs', cols);
         gridApi.setGridOption('rowData', rows);
     } else {
