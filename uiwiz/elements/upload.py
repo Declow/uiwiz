@@ -1,12 +1,20 @@
-from typing import Callable
+from typing import Callable, Union
 from uiwiz.element import Element
 
 
 class Upload(Element):
     root_class: str = "file-input "
-    _classes: str = "file-input-bordered w-full max-w-xs"
+    _classes: str = "file-input-bordered file-input-sm"
 
-    def __init__(self, name: str, on_upload: Callable, target: Callable, trigger: str = "change") -> None:
+    def __init__(
+        self,
+        name: str,
+        on_upload: Callable,
+        endpoint: str = None,
+        target: Union[Callable, str, Element] = None,
+        trigger: str = "change",
+        swap: str = None,
+    ) -> "Upload":
         super().__init__("input")
         self.attributes["type"] = "file"
         self.attributes["name"] = name
@@ -14,10 +22,9 @@ class Upload(Element):
 
         self.event = {
             "func": on_upload,
-            "inputs": None,
             "trigger": trigger,
-            "endpoint": None,
+            "endpoint": endpoint,
             "target": target,
-            "swap": "swap",
+            "swap": swap,
             "hx-encoding": "multipart/form-data",
         }
