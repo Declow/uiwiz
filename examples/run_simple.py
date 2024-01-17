@@ -3,6 +3,7 @@ from uiwiz.app import UiwizApp
 import uiwiz.ui as ui
 import uvicorn
 import pandas as pd
+from io import BytesIO
 
 app = UiwizApp()
 
@@ -12,9 +13,11 @@ def create_nav():
         ui.button("this is from a method")
 
 
-async def handle_upload_2(file: UploadFile):
+@app.ui("/some/comnponent")
+async def handle_upload(file: UploadFile):
     file_output = await file.read()
-    df = pd.read_excel(file_output, engine="openpyxl")
+    df = pd.read_excel(BytesIO(file_output), engine="openpyxl")
+    ui.table(df)
 
 
 @app.page("/second")
@@ -42,13 +45,10 @@ async def test(request: Request):
         ui.markdown(code)
         ui.link("some text", "/second").classes("btn")
 
-        async def handle_upload(file: UploadFile):
-            await handle_upload_2(file, table.id)
-
         ui.upload(name="file", on_upload=handle_upload, target=lambda: table.id)
         ui.checkbox("check")
         table = ui.table(pd.DataFrame())
-        ui.dropdown(["item 1", "item 2"], "Pick item")
+        ui.dropdown("select", ["item 1", "item 2"], "Pick item")
         ui.toggle("val")
         ui.toggle("val2", True)
 

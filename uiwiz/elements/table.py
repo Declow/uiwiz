@@ -1,3 +1,4 @@
+import numpy as np
 from uiwiz.element import Element
 import pandas as pd
 
@@ -10,6 +11,8 @@ class Table(Element):
     def __init__(self, df: pd.DataFrame) -> None:
         super().__init__()
         self.classes(Table._classes_container)
+        df = df.replace({np.nan: "None"})
+
         with self:
             with Element("table").classes(Table._classes_table):
                 # columns
