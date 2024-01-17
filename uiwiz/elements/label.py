@@ -4,7 +4,7 @@ from uiwiz.elements.extensions.bindable import Bindable
 
 
 class Label(Bindable):
-    _classes: str = "label "
+    root_class: str = "label "
 
     def __init__(self, text: Optional[str] = None, for_: Element = None) -> None:
         super().__init__(tag="label")
@@ -13,7 +13,7 @@ class Label(Bindable):
             self.content = text
         if for_:
             self.attributes["for"] = for_.id
-        self.classes(Label._classes)
+        self.classes()
 
     def set_text(self, text: str) -> "Label":
         self.content = text
