@@ -1,7 +1,7 @@
 import asyncio
 import os
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 import random
 from uiwiz.header_middelware import get_headers
 from uiwiz.event import Event
@@ -251,19 +251,13 @@ class Element:
                 generator = random.Random(self.id)
                 endpoint = "/" + "".join([str(generator.randrange(10)) for _ in range(20)])
                 Frame.api.ui(endpoint)(func)
-        target = self.event.get("target") if self.event.get("target") is not None else "this"
-        swap = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
+
+        self.attributes["hx-target"] = self.get_target(self.event.get("target"))
+        self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
         self.attributes["hx-post"] = endpoint
         if self.event.get("trigger"):
             self.attributes["hx-trigger"] = self.event["trigger"]
-
-        if isinstance(target, Callable):
-            self.attributes["hx-target"] = "#%s" % str(target())
-        else:
-            self.attributes["hx-target"] = target
-
-        self.attributes["hx-swap"] = swap
 
         if vals := self.event.get("vals"):
             self.attributes["hx-vals"] = vals
@@ -273,6 +267,19 @@ class Element:
             self.attributes["hx-encoding"] = hx_encoding
         else:
             self.attributes["hx-ext"] = "json-enc"
+
+    def get_target(self, target: Union[Callable, str, "Element", None]) -> str:
+        _target = "this"
+        if target is None:
+            return _target
+
+        if isinstance(target, Callable):
+            return "#%s" % str(target())
+
+        if target != "this" and "#" not in target:
+            return "#" + target
+        else:
+            return target
 
     def render_js(self, lst_js: list[str]) -> str:
         lst = set()

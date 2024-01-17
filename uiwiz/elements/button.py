@@ -1,4 +1,4 @@
-from typing import Callable, Union
+from typing import Callable, Optional, Union
 from uiwiz.element import Element
 
 
@@ -12,20 +12,17 @@ class Button(Element):
         self.inline = True
 
     def on_click(
-        self, func: Callable = None, endpoint=None, target: Union[Callable, str, Element] = None, swap: str = None
+        self,
+        func: Optional[Callable] = None,
+        endpoint: Optional[str] = None,
+        target: Union[Callable, str, Element] = None,
+        swap: str = None,
     ) -> "Button":
-        _target = ""
-        if isinstance(target, str):
-            _target = "#" + target
-        if isinstance(target, Element):
-            _target = "#" + target.id
-        if isinstance(target, Callable):
-            _target = target
         self.event = {
             "func": func,
             "trigger": "click",
             "endpoint": endpoint,
-            "target": _target,
+            "target": target,
             "swap": swap,
         }
         return self
