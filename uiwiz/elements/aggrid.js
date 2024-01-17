@@ -49,7 +49,7 @@ function createOrGetCurrentGrid(element, cols, rows) {
         const rows = JSON.parse(getAttributeFromElement(element, "hx-aggrid-rows"));
 
         gridApi = agGrid.createGrid(element, getGridOptions(cols, rows));
-        grids[element.id] = gridApi;
+        _uiWizardGrids[element.id] = gridApi;
     }
     return gridApi;
 }
