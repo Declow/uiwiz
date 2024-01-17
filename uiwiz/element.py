@@ -24,6 +24,8 @@ VOID_ELEMENTS = [
     "wbr",
 ]
 
+MAX_RAND_ID = 999999999
+
 
 class Frame:
     stacks: dict[int, "Frame"] = {}
@@ -35,26 +37,29 @@ class Frame:
         self.oob_elements: list[Element] = []
         self.used_hx_headers: bool = False
         self.id_count: int = 0  # used for element id
-        self.element_id: str = self.get_id()  # Element id
         self.scripts: list[str] = []
         self.libraries: list[str] = []
         self.extensions: set[str] = set()
+        # TODO: Implement
+        self.last_id = None
 
     def get_id(self) -> str:
         headers = get_headers()
-        out_id = ""
         if swap := headers.get("hx-swap"):
-            target_id = headers.get("hx-target")
+            target_id = self.last_id if self.last_id else headers.get("hx-target")
+
             if self.used_hx_headers is False:
                 if swap == "outerHTML":
-                    out_id = target_id
+                    self.last_id = target_id
                 else:
                     generator = random.Random(target_id)
-                    out_id = f"a-{generator.randint(10000, 99999)}"
+                    self.last_id = f"a-{generator.randint(10000, MAX_RAND_ID)}"
                 self.used_hx_headers = True
-                return out_id
+                return self.last_id
+
             generator = random.Random(target_id)
-            return f"a-{generator.randint(10000, 99999)}"
+            self.last_id = f"a-{generator.randint(10000, MAX_RAND_ID)}"
+            return self.last_id
 
         return f"a-{self.id_count}"
 
@@ -135,9 +140,9 @@ class Element:
         self.event: Event = {}
         self.parent_element: Element = None
         self.children: list[Element] = []
-        self.script: str = None
+        self.script: Optional[str] = None
         self.render_html: bool = render_html
-        self.target: str = None
+        self.target: Optional[str] = None
         self.inline: bool = False
 
         self.content: str = content
@@ -215,7 +220,7 @@ class Element:
             self.add_event_to_attributes()
 
             lst.append("<%s %s>" % (self.tag, self.dict_to_attrs()))
-            lst.append(self.content)
+            lst.append(str(self.content))
             lst.extend([child.render_self() if child.oob is False else "" for child in self.children])
 
             if not self.is_void_element:
@@ -239,9 +244,13 @@ class Element:
 
         endpoint = self.event.get("endpoint")
         if endpoint is None:
-            generator = random.Random(self.id)
-            endpoint = "/" + "".join([str(generator.randrange(10)) for _ in range(20)])
-            Frame.api.ui(endpoint)(self.event["func"])
+            func = self.event["func"]
+            if endpoint := Frame.api.ui_routes.get(func):
+                pass
+            else:
+                generator = random.Random(self.id)
+                endpoint = "/" + "".join([str(generator.randrange(10)) for _ in range(20)])
+                Frame.api.ui(endpoint)(func)
         target = self.event.get("target") if self.event.get("target") is not None else "this"
         swap = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 

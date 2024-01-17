@@ -20,7 +20,7 @@ logger.addHandler(logging.NullHandler())
 
 
 class UiwizApp(FastAPI):
-    page_routes = {}
+    ui_routes = {}
 
     def __init__(
         self,
@@ -144,7 +144,7 @@ class UiwizApp(FastAPI):
                 params.insert(0, request)
             decorated.__signature__ = inspect.Signature(params)
 
-            self.page_routes[decorated] = path
+            self.ui_routes[decorated] = path
 
             return self.get(path)(decorated)
 
@@ -178,7 +178,7 @@ class UiwizApp(FastAPI):
             decorated.__signature__ = inspect.Signature(params)
 
             if not self.route_exists(path):
-                self.page_routes[decorated] = path
+                self.ui_routes[decorated] = path
             return self.post(path)(decorated)
 
         return decorator
