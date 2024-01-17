@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional, Union
 from uiwiz.element import Element
 
 
@@ -9,12 +9,18 @@ class Form(Element):
         super().__init__("form")
         self.classes()
 
-    def on_submit(self, func: Callable = None, endpoint: str = None):
+    def on_submit(
+        self,
+        func: Optional[Callable] = None,
+        endpoint: Optional[str] = None,
+        target: Union[Callable, str, Element] = None,
+        swap: Optional[str] = "beforeend",
+    ):
         self.event = {
             "func": func,
             "endpoint": endpoint,
             "trigger": "submit",
-            "target": "this",
-            "swap": "beforeend",
+            "target": target,
+            "swap": swap,
         }
         return self
