@@ -177,6 +177,7 @@ def action_on_server():
 ui.upload(name="file", on_upload=handle_upload, target=lambda: table.id)
 ```
 
+
 ## Data elements
 
 TODO
@@ -213,6 +214,22 @@ async def home_page(request: Request):
 
 Currently missing a good way to display to the user, which form input is missing or
 the validation failed.
+
+## Create your own components
+
+It is possible to combine elements to create components.
+Just define a method with all of the ui elements you want
+and call the method!
+
+```python
+def nav_bar():
+    with ui.nav().classes("navbar w-full bg-base-300"):
+        ui.button("this is from a method")
+
+@app.page("/index")
+def index():
+    nav_bar()
+```
 
 ## Usage
 
