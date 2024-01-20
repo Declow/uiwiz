@@ -5,7 +5,7 @@ import uvicorn
 import pandas as pd
 from io import BytesIO
 
-app = UiwizApp()
+app = UiwizApp(theme="aqua")
 
 
 def create_nav():

@@ -14,7 +14,7 @@ app = UiwizApp(theme="nord")
 
 
 def create_nav():
-    with ui.nav().classes("navbar w-full bg-base-300"):
+    with ui.nav():
         ui.button("this is from a method")
 
 
