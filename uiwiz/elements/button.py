@@ -14,14 +14,12 @@ class Button(Element):
     def on_click(
         self,
         func: Optional[Callable] = None,
-        endpoint: Optional[str] = None,
         target: Union[Callable, str, Element] = None,
-        swap: str = None,
+        swap: Optional[str] = None,
     ) -> "Button":
         self.event = {
             "func": func,
             "trigger": "click",
-            "endpoint": endpoint,
             "target": target,
             "swap": swap,
         }

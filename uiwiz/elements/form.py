@@ -12,13 +12,11 @@ class Form(Element):
     def on_submit(
         self,
         func: Optional[Callable] = None,
-        endpoint: Optional[str] = None,
         target: Union[Callable, str, Element] = None,
         swap: Optional[str] = "beforeend",
     ):
         self.event = {
             "func": func,
-            "endpoint": endpoint,
             "trigger": "submit",
             "target": target,
             "swap": swap,

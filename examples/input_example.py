@@ -6,6 +6,7 @@ import uvicorn
 import pandas as pd
 import logging
 import asyncio
+import json
 
 logging.basicConfig(level=logging.INFO)
 
@@ -49,7 +50,7 @@ async def test():
     create_nav()
     with ui.element().classes("col lg:px-80"):
         with ui.element().classes("w-full"):
-            with ui.form().on_submit(endpoint="/form/handle_input"):
+            with ui.form().on_submit(handle_input):
                 ui.input("input name", "first_name")
                 la_name = ui.input("input last name", name="last_name")
                 ui.label().bind_text_from(la_name)
@@ -106,17 +107,17 @@ async def test():
                         ]
                     )
                 )
-                ui.button("update grid").on_click(endpoint="/data", target=g.id, swap="none")
+                ui.button("update grid").on_click(get_data, target=g.id, swap="none")
                 gg = ui.aggrid(None)
-                ui.button("update grid 2").on_click(endpoint="/data", target=gg.id, swap="none")
+
+                ui.button("update grid 2").on_click(get_data, target=gg.id, swap="none")
                 range = ui.range(0, 100, 0, "value2")
                 ui.label(range.value).bind_text_from(range, swap="innerHTML")
 
-            ui.button("get log").on_click(endpoint="/some/log", target=lambda: log.id, swap="beforeend")
+            ui.button("get log").on_click(get_log, target=lambda: log.id, swap="beforeend")
             log = ui.element().classes("col")
 
             d = {"asd": {"gg": 0}, "gg": True, "dd": "text"}
-            import json
 
             print(json.dumps(d, indent=4))
             v = v = json.dumps(d, indent=2)

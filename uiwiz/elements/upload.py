@@ -23,7 +23,6 @@ class Upload(Element):
         self.event = {
             "func": on_upload,
             "trigger": trigger,
-            "endpoint": endpoint,
             "target": target,
             "swap": swap,
             "hx-encoding": "multipart/form-data",

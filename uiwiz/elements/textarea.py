@@ -13,6 +13,7 @@ class TextArea(Element):
         on_change: Callable = None,
         target: Callable = None,
         trigger: str = "input",
+        swap: str = "swap",
     ) -> None:
         super().__init__("textarea")
         self.attributes["name"] = name
@@ -23,11 +24,9 @@ class TextArea(Element):
         if on_change:
             self.event = {
                 "func": on_change,
-                "inputs": None,
                 "trigger": trigger,
-                "endpoint": None,
                 "target": target,
-                "swap": "swap",
+                "swap": swap,
             }
 
     @property

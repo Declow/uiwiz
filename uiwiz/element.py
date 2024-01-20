@@ -242,18 +242,14 @@ class Element:
         if self.event == {}:
             return
 
-        endpoint = self.event.get("endpoint")
-        if endpoint is None:
-            func = self.event["func"]
-            if endpoint := Frame.api.ui_routes.get(func):
-                pass
-            else:
-                generator = random.Random(self.id)
-                endpoint = "/" + "".join([str(generator.randrange(10)) for _ in range(20)])
-                Frame.api.ui(endpoint)(func)
-
         self.attributes["hx-target"] = self.get_target(self.event.get("target"))
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
+
+        func = self.event["func"]
+        endpoint = Frame.api.app_paths.get(func)
+        if endpoint is None:
+            endpoint = f"/_uiwiz/hash/{func.__hash__()}"
+            Frame.api.ui(endpoint)(func)
 
         self.attributes["hx-post"] = endpoint
         if self.event.get("trigger"):

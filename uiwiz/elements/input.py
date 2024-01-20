@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 from uiwiz.element import Element
 
 
@@ -10,9 +10,10 @@ class Input(Element):
         self,
         placeholder: str = None,
         name=None,
-        on_change: Callable = None,
-        target: Callable = None,
+        on_change: Optional[Callable] = None,
+        target: Optional[Callable] = None,
         trigger: str = "input",
+        swap: Optional[str] = "swap",
     ) -> None:
         """Input
 
@@ -34,9 +35,7 @@ class Input(Element):
         if on_change:
             self.event = {
                 "func": on_change,
-                "inputs": None,
                 "trigger": trigger,
-                "endpoint": None,
                 "target": target,
-                "swap": "swap",
+                "swap": swap,
             }
