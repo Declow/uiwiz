@@ -107,10 +107,10 @@ async def test():
                         ]
                     )
                 )
-                ui.button("update grid").on_click(get_data, target=g.id, swap="none")
+                ui.button("update grid").on_click(get_data, target=g, swap="none")
                 gg = ui.aggrid(None)
 
-                ui.button("update grid 2").on_click(get_data, target=gg.id, swap="none")
+                ui.button("update grid 2").on_click(get_data, target=gg, swap="none")
                 range = ui.range(0, 100, 0, "value2")
                 ui.label(range.value).bind_text_from(range, swap="innerHTML")
 

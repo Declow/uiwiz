@@ -272,6 +272,9 @@ class Element:
         if isinstance(target, Callable):
             return "#%s" % str(target())
 
+        if isinstance(target, Element):
+            return "#%s" % target.id
+
         if target != "this" and "#" not in target:
             return "#" + target
         else:
