@@ -23,3 +23,12 @@
 .htmx-request .htmx-indicator {
     opacity: 1
 }
+
+.invalid {
+    outline: 1px solid red;
+    border-radius: 5px;
+}
+
+.uiwiz-td-padding td {
+    padding: 0.5rem;
+}
