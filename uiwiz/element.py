@@ -49,7 +49,7 @@ class Frame:
             target_id = self.last_id if self.last_id else headers.get("hx-target")
 
             if self.used_hx_headers is False:
-                if swap == "outerHTML":
+                if swap in ["outerHTML", "this"]:
                     self.last_id = target_id
                 else:
                     generator = random.Random(target_id)
@@ -174,6 +174,14 @@ class Element:
     @property
     def name(self):
         return self.attributes["name"]
+
+    @property
+    def value(self):
+        return self.attributes["value"]
+
+    @value.setter
+    def value(self, value):
+        self.attributes["value"] = value
 
     @property
     def is_void_element(self) -> bool:
