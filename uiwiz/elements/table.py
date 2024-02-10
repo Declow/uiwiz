@@ -4,7 +4,6 @@ import pandas as pd
 
 
 class Table(Element):
-    root_class: str = "table "
     _classes_container: str = "w-full overflow-x-auto"
     _classes_table: str = "table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
 
