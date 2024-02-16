@@ -3,7 +3,6 @@ from mimetypes import guess_type
 import os
 from pathlib import Path
 from typing import Callable, Optional, Union
-
 from fastapi import FastAPI, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -14,6 +13,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from uiwiz.header_middelware import CustomRequestMiddleware
 import functools
 import logging
+from uiwiz.page_route import PageRouter
 
 logger = logging.getLogger("uiwiz")
 logger.addHandler(logging.NullHandler())
@@ -191,3 +191,11 @@ class UiwizApp(FastAPI):
             return self.post(path)(decorated)
 
         return decorator
+
+    def include_page_router(self, page_router: PageRouter):
+        for key, value in page_router.paths.items():
+            type = value.get("type")
+            if type == "page":
+                self.page(key)(value.get("func"))
+            if type == "ui":
+                self.ui(key)(value.get("func"))
