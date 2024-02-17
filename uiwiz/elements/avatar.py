@@ -14,6 +14,6 @@ class Avatar(Element):
                 img = Element("img")
                 img.attributes["src"] = path
 
-    def classes(self, input: str):
+    def classes(self, input: str = ""):
         self.container.classes(input)
         return self
