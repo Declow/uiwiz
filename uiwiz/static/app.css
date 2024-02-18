@@ -32,3 +32,6 @@
 .uiwiz-td-padding td {
     padding: 0.5rem;
 }
+.uiwiz-td-padding th {
+    padding-right: 1rem;
+}
