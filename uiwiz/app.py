@@ -14,6 +14,7 @@ from uiwiz.header_middelware import CustomRequestMiddleware
 import functools
 import logging
 from uiwiz.page_route import PageRouter
+from uiwiz.static_middelware import TtlMiddelware
 
 logger = logging.getLogger("uiwiz")
 logger.addHandler(logging.NullHandler())
@@ -26,6 +27,7 @@ class UiwizApp(FastAPI):
         self,
         toast_delay: int = 2500,
         error_classes: str = "alert bg-[#FF8080]",
+        cache_age: int = 14400,
         theme: Optional[str] = None,
         *args,
         **kwargs,
@@ -42,6 +44,7 @@ class UiwizApp(FastAPI):
         Frame.api = self
         self.add_middleware(CustomRequestMiddleware)
         self.add_middleware(GZipMiddleware)
+        self.add_middleware(TtlMiddelware, cache_age=cache_age)
         self.extensions: dict[str, Path] = {}
 
     def render(
