@@ -8,9 +8,9 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
+from uiwiz.request_middelware import RequestMiddleware
 from uiwiz.element import Element, Frame
 from fastapi.middleware.gzip import GZipMiddleware
-from uiwiz.header_middelware import CustomRequestMiddleware
 import functools
 import logging
 from uiwiz.page_route import PageRouter
@@ -29,6 +29,7 @@ class UiwizApp(FastAPI):
         error_classes: str = "alert bg-[#FF8080]",
         cache_age: int = 14400,
         theme: Optional[str] = None,
+        auth_header: Optional[str] = None,
         *args,
         **kwargs,
     ) -> None:
@@ -39,10 +40,11 @@ class UiwizApp(FastAPI):
             self.theme = f"data-theme={theme}"
         else:
             self.theme = theme
+        self.auth_header = auth_header
         self.templates = Jinja2Templates(Path(__file__).parent / "templates")
         self.add_static_files("/static", Path(__file__).parent / "static")
         Frame.api = self
-        self.add_middleware(CustomRequestMiddleware)
+        self.add_middleware(RequestMiddleware)
         self.add_middleware(GZipMiddleware)
         self.add_middleware(TtlMiddelware, cache_age=cache_age)
         self.extensions: dict[str, Path] = {}
@@ -69,6 +71,7 @@ class UiwizApp(FastAPI):
                 "ext": ext,
                 "toast_delay": self.toast_delay,
                 "error_classes": self.error_classes,
+                "auth_header_name": self.auth_header,
             },
             status_code,
             {"Cache-Control": "no-store", "X-uiwiz-Content": "page"},
@@ -131,6 +134,7 @@ class UiwizApp(FastAPI):
             self.remove_route(path)
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
 
+            @functools.wraps(func)
             async def decorated(*dec_args, **dec_kwargs) -> Response:
                 frame: Frame = Frame.get_stack()
                 frame.app = self

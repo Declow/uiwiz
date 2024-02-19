@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from typing import Callable, Optional, Union
 import random
-from uiwiz.header_middelware import get_headers
+from uiwiz.request_middelware import get_request
 from uiwiz.event import Event
 
 # https://developer.mozilla.org/en-US/docs/Glossary/Void_element
@@ -44,7 +44,7 @@ class Frame:
         self.last_id = None
 
     def get_id(self) -> str:
-        headers = get_headers()
+        headers = get_request().headers
         if swap := headers.get("hx-swap"):
             target_id = self.last_id if self.last_id else headers.get("hx-target")
 
