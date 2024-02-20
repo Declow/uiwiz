@@ -1,4 +1,3 @@
-import html
 from fastapi import Request
 from uiwiz.element import Element
 
@@ -16,7 +15,7 @@ class Bindable(Element):
 
             input_data = data[element.name]
 
-            self.content = html.escape(str(input_data))
+            self.content = str(input_data)
 
         element.event = {"target": f"#{self.id}", "func": bind_Value, "trigger": trigger, "swap": swap}
 
