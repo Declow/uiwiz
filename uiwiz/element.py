@@ -1,4 +1,5 @@
 import asyncio
+import html
 import os
 from pathlib import Path
 from typing import Callable, Optional, Union
@@ -29,7 +30,6 @@ MAX_RAND_ID = 999999999
 
 class Frame:
     stacks: dict[int, "Frame"] = {}
-    api = None
 
     def __init__(self) -> None:
         self.root_element: Optional[Element] = None
@@ -40,6 +40,7 @@ class Frame:
         self.scripts: list[str] = []
         self.libraries: list[str] = []
         self.extensions: set[str] = set()
+        self.app = get_request().app
         # TODO: Implement
         self.last_id = None
 
@@ -95,7 +96,7 @@ class Frame:
         prefix = "/_static/ext/"
         endpoint = prefix + filename
         self.extensions.add(endpoint)
-        Frame.api.register_extension(path, prefix)
+        self.app.register_extension(path, prefix)
 
     @classmethod
     def get_stack(cls) -> "Frame":
@@ -143,8 +144,8 @@ class Element:
         self.script: Optional[str] = None
         self.render_html: bool = render_html
         self.target: Optional[str] = None
-        self.inline: bool = False
 
+        self.__content__: str = ""
         self.content: str = content
         self.indent: int = indent_level
         self.oob: bool = oob
@@ -182,6 +183,14 @@ class Element:
     @value.setter
     def value(self, value):
         self.attributes["value"] = value
+
+    @property
+    def content(self) -> str:
+        return self.__content__
+
+    @content.setter
+    def content(self, content):
+        self.__content__ = html.escape(str(content))
 
     @property
     def is_void_element(self) -> bool:
@@ -228,7 +237,7 @@ class Element:
             self.add_event_to_attributes()
 
             lst.append("<%s %s>" % (self.tag, self.dict_to_attrs()))
-            lst.append(str(self.content))
+            lst.append(self.content)
             lst.extend([child.render_self() if child.oob is False else "" for child in self.children])
 
             if not self.is_void_element:
@@ -254,10 +263,10 @@ class Element:
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
         func = self.event["func"]
-        endpoint = Frame.api.app_paths.get(func)
+        endpoint = self.stack.app.app_paths.get(func)
         if endpoint is None:
             endpoint = f"/_uiwiz/hash/{func.__hash__()}"
-            Frame.api.ui(endpoint)(func)
+            self.stack.app.ui(endpoint)(func)
 
         self.attributes["hx-post"] = endpoint
         if self.event.get("trigger"):

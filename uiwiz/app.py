@@ -43,7 +43,7 @@ class UiwizApp(FastAPI):
         self.auth_header = auth_header
         self.templates = Jinja2Templates(Path(__file__).parent / "templates")
         self.add_static_files("/static", Path(__file__).parent / "static")
-        Frame.api = self
+
         self.add_middleware(RequestMiddleware)
         self.add_middleware(GZipMiddleware)
         self.add_middleware(TtlMiddelware, cache_age=cache_age)
@@ -51,11 +51,11 @@ class UiwizApp(FastAPI):
 
     def render(
         self,
-        frame: Frame,
         request: Request,
         title: str,
         status_code: int = 200,
     ):
+        frame = Frame.get_stack()
         html = frame.render()
         libs = frame.render_libs()
         ext = frame.render_ext()
@@ -77,13 +77,14 @@ class UiwizApp(FastAPI):
             {"Cache-Control": "no-store", "X-uiwiz-Content": "page"},
         )
 
-    def render_api(self, frame: Frame, status_code: int = 200):
+    def render_api(self, status_code: int = 200):
+        frame = Frame.get_stack()
         html = frame.render()
         frame.del_stack()
         return HTMLResponse(
             html,
             status_code,
-            {"Cache-Control": "no-store", "X-uiwiz-Content": "page"},
+            {"Cache-Control": "no-store", "X-uiwiz-Content": "partial-ui"},
         )
 
     def route_exists(self, path: str) -> None:
@@ -136,8 +137,8 @@ class UiwizApp(FastAPI):
 
             @functools.wraps(func)
             async def decorated(*dec_args, **dec_kwargs) -> Response:
-                frame: Frame = Frame.get_stack()
-                frame.app = self
+                # Create frame before function is called
+                Frame.get_stack()
                 Element().classes("flex flex-col h-screen")
                 request = dec_kwargs["request"]
                 # NOTE cleaning up the keyword args so the signature is consistent with "func" again
@@ -148,7 +149,7 @@ class UiwizApp(FastAPI):
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
                     return result
 
-                return self.render(frame, request, title)
+                return self.render(request, title)
 
             params = [p for p in inspect.signature(func).parameters.values()]
             if "request" not in {p.name for p in params}:
@@ -173,7 +174,8 @@ class UiwizApp(FastAPI):
 
             @functools.wraps(func)
             async def decorated(*dec_args, **dec_kwargs) -> Response:
-                frame = Frame.get_stack()
+                # Create frame before function is called
+                Frame.get_stack()
                 # NOTE cleaning up the keyword args so the signature is consistent with "func" again
                 dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
                 result = func(*dec_args, **dec_kwargs)
@@ -182,7 +184,7 @@ class UiwizApp(FastAPI):
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
                     return result
 
-                return self.render_api(frame)
+                return self.render_api()
 
             request = inspect.Parameter("request", inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=Request)
             params = [p for p in inspect.signature(func).parameters.values()]
