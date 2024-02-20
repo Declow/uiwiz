@@ -1,5 +1,4 @@
 from fastapi import Request
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from uiwiz.app import UiwizApp
 from uiwiz.login_response import LoginResponse
@@ -29,7 +28,7 @@ class BasicAuth(AuthenticationBackend):
 
         auth = conn.cookies[_COOKIE_ID]
         # TODO: You'd want to verify the token/session id before returning
-        # The AuthCredentials with the list of scopes on the user is used for
+        # The AuthCredentials with the list of scopes on the user is used in
         # the @requires("authenticated") decorator.
         return AuthCredentials(["authenticated", "admin"]), SimpleUser("user")
 
@@ -72,7 +71,7 @@ def api_login(model: LoginModel):
 
         return response
 
-    ui.toast("Bad pass or username").error()
+    ui.toast("Bad username or password").error()
 
 
 @app.ui("/logout/post")
@@ -107,10 +106,10 @@ def secret_page(request: Request):
 
 
 @app.page("/")
-async def test(request: Request):
+async def homepage(request: Request):
     create_nav()
     with ui.element().classes("col"):
-        ui.label(f"{request.user.is_authenticated}")
+        ui.label(f"User is logged in: {request.user.is_authenticated}")
         i = ui.input("test", "name")
         ui.label().bind_text_from(i)
 
