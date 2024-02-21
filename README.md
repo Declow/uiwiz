@@ -14,6 +14,7 @@ UiWizard is a python-based ui-framework for the web. It was inspired by the grea
 - Webbased
 - Quite a lot of standard elements, input fields, dropdown, foot, header, tabs...
 - HTMX for interactivity
+- Hopefully great defaults!
 
 ## Usage
 
@@ -21,7 +22,7 @@ Create a main.py file
 
 ```python
 from uiwiz.app import UiwizApp
-import uiwiz.ui as ui
+from uiwiz import ui
 import uvicorn
 
 app = UiwizApp()

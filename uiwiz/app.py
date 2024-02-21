@@ -27,7 +27,7 @@ class UiwizApp(FastAPI):
     def __init__(
         self,
         toast_delay: int = 2500,
-        error_classes: str = "alert bg-[#FF8080]",
+        error_classes: str = "alert alert-error",
         cache_age: int = 14400,
         theme: Optional[str] = None,
         auth_header: Optional[str] = None,

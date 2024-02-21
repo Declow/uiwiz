@@ -1,8 +1,7 @@
 from fastapi import Request
 from pydantic import BaseModel
-from uiwiz.app import UiwizApp
 from uiwiz.login_response import LoginResponse
-import uiwiz.ui as ui
+from uiwiz import ui, UiwizApp
 from uiwiz.request_middelware import get_request
 import uvicorn
 from datetime import datetime, timezone, timedelta
