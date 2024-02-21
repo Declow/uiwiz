@@ -27,4 +27,5 @@ from uiwiz.elements.row import Row as row
 from uiwiz.elements.col import Col as col
 from uiwiz.elements.spinner import Spinner as spinner
 from uiwiz.elements.html import Html as html
+from uiwiz.elements.theme_selector import ThemeSelector as themeSelector
 from uiwiz.element import Element as element

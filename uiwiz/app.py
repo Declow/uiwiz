@@ -15,6 +15,7 @@ import functools
 import logging
 from uiwiz.page_route import PageRouter
 from uiwiz.static_middelware import TtlMiddelware
+from html import escape
 
 logger = logging.getLogger("uiwiz")
 logger.addHandler(logging.NullHandler())
@@ -60,13 +61,16 @@ class UiwizApp(FastAPI):
         libs = frame.render_libs()
         ext = frame.render_ext()
         frame.del_stack()
+        theme = self.theme
+        if cookie_theme := request.cookies.get("data-theme"):
+            theme = f"data-theme={escape(cookie_theme)}"
         return self.templates.TemplateResponse(
             "default.html",
             {
                 "request": request,
                 "root_element": [html],
                 "title": title,
-                "theme": self.theme,
+                "theme": theme,
                 "libs": libs,
                 "ext": ext,
                 "toast_delay": self.toast_delay,

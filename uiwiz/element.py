@@ -232,6 +232,8 @@ class Element:
             return ""
 
         self.before_render()
+        if self.script:
+            self.stack.scripts.append(self.script)
         lst = []
         if self.render_html:
             self.add_event_to_attributes()

@@ -1,4 +1,5 @@
 from uiwiz.element import Element
+from uiwiz.request_middelware import get_request
 
 
 class Dropdown(Element):
@@ -9,8 +10,13 @@ class Dropdown(Element):
         super().__init__("select")
         self.attributes["name"] = name
         self.classes()
+        if theme := get_request().cookies.get("data-theme"):
+            placeholder = theme
         with self:
-            if placeholder:
+            if placeholder and placeholder not in items:
                 Element("option disabled selected", content=placeholder)
             for item in items:
-                Element("option", content=item)
+                e = Element("option", content=item)
+                e.value = item
+                if placeholder == item:
+                    e.attributes["selected"] = "selected"

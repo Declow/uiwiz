@@ -51,6 +51,8 @@ def create_nav():
                 ui.link("Home", "/")
             with ui.element("li"):
                 ui.link("Login", "/login")
+            with ui.element("li"):
+                ui.themeSelector()
             extend_menu(get_request())
 
 
