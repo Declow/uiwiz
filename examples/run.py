@@ -106,7 +106,7 @@ async def test(request: Request):
     create_nav()
     with ui.element().classes("col mx-auto"):
         with ui.row():
-            ui.button("test").on_click(lambda: create_from_htmx(b), endpoint="/endpoint")
+            ui.button("test").on_click(lambda: create_from_htmx(b))
             b = ui.button("asd").on_click(e)
 
             ui.button("Add toast").on_click(
