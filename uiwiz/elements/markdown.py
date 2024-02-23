@@ -1,10 +1,11 @@
-from uiwiz.element import Element
+from uiwiz.elements.html import Html
 import markdown2
 
 
-class Markdown(Element):
+class Markdown(Html):
     def __init__(self, content="") -> None:
-        super().__init__(content=content, render_html=False)
+        super().__init__(content=content)
+        self.render_html = False
 
     def render_self(self, *_) -> str:
         output = ""
