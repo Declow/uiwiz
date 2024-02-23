@@ -1,6 +1,7 @@
 from typing import Optional
 from uiwiz import ui
 from uiwiz.element import Element
+from uiwiz.request_middelware import get_request
 
 
 class ThemeSelector(Element):
@@ -44,7 +45,11 @@ class ThemeSelector(Element):
         if themes:
             self.themes = themes
 
-        self.theme_selector = ui.dropdown("theme-selector", self.themes, "Theme")
+        placeholder = "Theme"
+        if theme := get_request().cookies.get("data-theme"):
+            placeholder = theme
+
+        self.theme_selector = ui.dropdown("theme-selector", self.themes, placeholder)
         self.theme_selector.classes("min-w-32")
         self.setup_listener()
 

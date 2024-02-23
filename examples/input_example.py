@@ -24,6 +24,7 @@ class FormInput(BaseModel):
     asd: Optional[str] = None
     value: Optional[str] = None
     test_radio: Optional[str] = None
+    asdddd: Optional[str] = None
 
 
 @app.ui("/form/handle_input")
@@ -57,6 +58,7 @@ async def test():
 
                 text = ui.textarea(name="asd")
                 ui.label().bind_text_from(text)
+                ui.dropdown("asdddd", {"kay": "val", "key": "someval"})
 
                 with ui.row():
                     c = ui.checkbox("box_to_checl")

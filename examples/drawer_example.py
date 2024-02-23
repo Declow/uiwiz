@@ -22,7 +22,6 @@ async def test():
 
             with ui.element().classes("col"):
                 ui.label("test1")
-
                 ui.button("Click me")
                 ui.label("test1")
 
