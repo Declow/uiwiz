@@ -6,10 +6,11 @@ from fastapi import Response
 class LoginResponse(Response):
     def __init__(
         self,
+        url: str = "/",
         headers: typing.Optional[typing.Mapping[str, str]] = None,
     ) -> None:
         super().__init__("", 200, headers)
-        self.headers["Hx-Redirect"] = "/"
+        self.headers["Hx-Redirect"] = url
         self.body = b""
 
     def set_token(

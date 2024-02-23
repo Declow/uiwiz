@@ -61,13 +61,14 @@ class LoginModel(BaseModel):
 
 
 @app.ui("/login/post")
-def api_login(model: LoginModel):
+def api_login(model: LoginModel, request: Request):
     # Replace this with your backend calls to verify the user
     # and create somekind of token or session id
     if model.username == "admin" and model.password == "pass":
         # Set expire time on the cookie
         expire = datetime.now(timezone.utc) + timedelta(days=30)
-        response = LoginResponse()
+        next_url = request.query_params.get("next", "/")
+        response = LoginResponse(next_url)
         response.set_token(_COOKIE_ID, "sometokenthatissecure", expire)
 
         return response
