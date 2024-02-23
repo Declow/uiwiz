@@ -88,6 +88,14 @@
             evt.detail.headers["{{ auth_header_name }}"] = localStorage.getItem("{{ auth_header_name }}");
         });
         {% endif %}
+
+        htmx.on("htmx:configRequest", (evt)=> {
+            const urlParams = new URLSearchParams(window.location.search);
+            const next = urlParams.get('next');
+            if (next) {
+                evt.detail.path = evt.detail.path + "?next=" + next
+            }
+        });
     </script>
     {{ ext | safe }}
 </body>
