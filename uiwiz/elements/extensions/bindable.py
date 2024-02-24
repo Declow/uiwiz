@@ -9,7 +9,7 @@ class Bindable(Element):
         """
         assert element.attributes.get("name") is not None
 
-        async def bind_Value(request: Request):
+        async def bind_value(request: Request):
             data = await request.json()
             self.set_frame_and_root()
 
@@ -17,6 +17,8 @@ class Bindable(Element):
 
             self.content = str(input_data)
 
-        element.event = {"target": f"#{self.id}", "func": bind_Value, "trigger": trigger, "swap": swap}
+        bind_value.__hash__ = lambda: hash(element.id)
+
+        element.event = {"target": f"#{self.id}", "func": bind_value, "trigger": trigger, "swap": swap}
 
         return self

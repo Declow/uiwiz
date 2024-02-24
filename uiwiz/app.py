@@ -124,7 +124,7 @@ class UiwizApp(FastAPI):
 
         def decorator(func: Callable, *args, **kwargs) -> Callable:
             if not self.route_exists(path):
-                self.app_paths[func] = path
+                self.app_paths[func.__hash__()] = path
             return s.post(path, *args, **kwargs)(func)
 
         return decorator
@@ -167,7 +167,7 @@ class UiwizApp(FastAPI):
             decorated.__signature__ = inspect.Signature(params)
 
             if not self.route_exists(path):
-                self.app_paths[func] = path
+                self.app_paths[func.__hash__()] = path
 
             return self.get(path)(decorated)
 
@@ -202,7 +202,7 @@ class UiwizApp(FastAPI):
             decorated.__signature__ = inspect.Signature(params)
 
             if not self.route_exists(path):
-                self.app_paths[func] = path
+                self.app_paths[func.__hash__()] = path
 
             return self.post(path)(decorated)
 

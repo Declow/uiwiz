@@ -265,7 +265,7 @@ class Element:
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
         func = self.event["func"]
-        endpoint = self.stack.app.app_paths.get(func)
+        endpoint = self.stack.app.app_paths.get(func.__hash__())
         if endpoint is None:
             endpoint = f"/_uiwiz/hash/{func.__hash__()}"
             self.stack.app.ui(endpoint)(func)
