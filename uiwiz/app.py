@@ -60,35 +60,35 @@ class UiwizApp(FastAPI):
         html = frame.render()
         libs = frame.render_libs()
         ext = frame.render_ext()
-        frame.del_stack()
         theme = self.theme
         if cookie_theme := request.cookies.get("data-theme"):
             theme = f"data-theme={escape(cookie_theme)}"
-        return self.templates.TemplateResponse(
-            "default.html",
-            {
-                "request": request,
-                "root_element": [html],
-                "title": title,
-                "theme": theme,
-                "libs": libs,
-                "ext": ext,
-                "toast_delay": self.toast_delay,
-                "error_classes": self.error_classes,
-                "auth_header_name": self.auth_header,
-            },
-            status_code,
-            {"Cache-Control": "no-store", "X-uiwiz-Content": "page"},
+        return self.return_funtion_response(
+            self.templates.TemplateResponse(
+                "default.html",
+                {
+                    "request": request,
+                    "root_element": [html],
+                    "title": title,
+                    "theme": theme,
+                    "libs": libs,
+                    "ext": ext,
+                    "toast_delay": self.toast_delay,
+                    "error_classes": self.error_classes,
+                    "auth_header_name": self.auth_header,
+                },
+                status_code,
+                {"Cache-Control": "no-store", "X-uiwiz-Content": "page"},
+            )
         )
 
     def render_api(self, status_code: int = 200):
-        frame = Frame.get_stack()
-        html = frame.render()
-        frame.del_stack()
-        return HTMLResponse(
-            html,
-            status_code,
-            {"Cache-Control": "no-store", "X-uiwiz-Content": "partial-ui"},
+        return self.return_funtion_response(
+            HTMLResponse(
+                Frame.get_stack().render(),
+                status_code,
+                {"Cache-Control": "no-store", "X-uiwiz-Content": "partial-ui"},
+            )
         )
 
     def route_exists(self, path: str) -> None:
@@ -150,8 +150,8 @@ class UiwizApp(FastAPI):
                 result = func(*dec_args, **dec_kwargs)
                 if inspect.isawaitable(result):
                     result = await result
-                if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
-                    return result
+                if isinstance(result, Response):
+                    return self.return_funtion_response(result)
 
                 return self.render(request, title)
 
@@ -186,7 +186,7 @@ class UiwizApp(FastAPI):
                 if inspect.isawaitable(result):
                     result = await result
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
-                    return result
+                    return self.return_funtion_response(result)
 
                 return self.render_api()
 
@@ -212,3 +212,7 @@ class UiwizApp(FastAPI):
                 self.page(key)(value.get("func"))
             if type == "ui":
                 self.ui(key)(value.get("func"))
+
+    def return_funtion_response(self, response: Response) -> Response:
+        Frame.get_stack().del_stack()
+        return response
