@@ -35,3 +35,9 @@
 .uiwiz-td-padding th {
     padding-right: 1rem;
 }
+
+.remove {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s var(--delay), opacity 0.5s ease-out;
+}

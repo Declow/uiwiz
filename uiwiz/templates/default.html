@@ -21,8 +21,6 @@
     <div id="toast" class="toast toast-top toast-end"></div>
 
     {{ libs | safe }}
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="/static/libs/htmx1.9.9.min.js"></script>
     <script src="/static/libs/htmx-json-enc.js"></script>
     <script>
@@ -30,7 +28,7 @@
 
         const observer = new MutationObserver(mutationList =>
             mutationList.filter(m => m.type === 'childList').forEach(m => {
-                m.addedNodes.forEach(removeAfterDelay);
+                m.addedNodes.forEach(remove);
             }));
 
         // Configuration of the observer:
@@ -43,11 +41,14 @@
         // Pass in the target node, as well as the observer options
         observer.observe(container, config);
 
-        function removeAfterDelay(event) {
-            $(event).delay({{ toast_delay }}).queue(() => {
-                $(event).remove();
-                $(event).dequeue();
-            });
+        function remove(event) {
+            window.setTimeout(() => {
+                event.classList.add('remove');
+                event.style = "--delay: {{ toast_delay - 500 }}ms;";
+            }, {{ toast_delay - 500 }});
+            window.setTimeout(() => {
+                event.remove();
+            }, {{ toast_delay }});
         }
 
         document.body.addEventListener('htmx:responseError', function (evt) {
