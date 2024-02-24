@@ -92,7 +92,7 @@ class UiwizApp(FastAPI):
         )
 
     def route_exists(self, path: str) -> None:
-        return path in self.routes
+        return path in list(self.app_paths.values())
 
     def remove_route(self, path: str) -> None:
         """Remove routes with the given path."""
@@ -123,7 +123,8 @@ class UiwizApp(FastAPI):
         s = super()
 
         def decorator(func: Callable, *args, **kwargs) -> Callable:
-            self.app_paths[func] = path
+            if not self.route_exists(path):
+                self.app_paths[func] = path
             return s.post(path, *args, **kwargs)(func)
 
         return decorator
@@ -165,7 +166,8 @@ class UiwizApp(FastAPI):
                 params.insert(0, request)
             decorated.__signature__ = inspect.Signature(params)
 
-            self.app_paths[decorated] = path
+            if not self.route_exists(path):
+                self.app_paths[func] = path
 
             return self.get(path)(decorated)
 
@@ -200,7 +202,8 @@ class UiwizApp(FastAPI):
             decorated.__signature__ = inspect.Signature(params)
 
             if not self.route_exists(path):
-                self.app_paths[decorated] = path
+                self.app_paths[func] = path
+
             return self.post(path)(decorated)
 
         return decorator
