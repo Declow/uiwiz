@@ -207,6 +207,8 @@ class UiwizApp(FastAPI):
 
     def include_page_router(self, page_router: PageRouter):
         for key, value in page_router.paths.items():
+            if not self.route_exists(key):
+                self.app_paths[value.get("func")] = key
             type = value.get("type")
             if type == "page":
                 self.page(key)(value.get("func"))
