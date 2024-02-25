@@ -265,10 +265,11 @@ class Element:
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
         func = self.event["func"]
-        endpoint = self.stack.app.app_paths.get(func.__hash__())
+        endpoint = self.stack.app.app_paths.get(func)
         if endpoint is None:
             endpoint = f"/_uiwiz/hash/{func.__hash__()}"
-            self.stack.app.ui(endpoint)(func)
+            if not self.stack.app.route_exists(endpoint):
+                self.stack.app.ui(endpoint)(func)
 
         self.attributes["hx-post"] = endpoint
         if self.event.get("trigger"):

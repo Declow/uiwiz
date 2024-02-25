@@ -22,8 +22,6 @@ logger.addHandler(logging.NullHandler())
 
 
 class UiwizApp(FastAPI):
-    app_paths = {}
-
     def __init__(
         self,
         toast_delay: int = 2500,
@@ -49,6 +47,7 @@ class UiwizApp(FastAPI):
         self.add_middleware(GZipMiddleware)
         self.add_middleware(TtlMiddelware, cache_age=cache_age)
         self.extensions: dict[str, Path] = {}
+        self.app_paths: dict[str, Path] = {}
 
     def render(
         self,
@@ -65,8 +64,8 @@ class UiwizApp(FastAPI):
             theme = f"data-theme={escape(cookie_theme)}"
         return self.return_funtion_response(
             self.templates.TemplateResponse(
-                "default.html",
-                {
+                name="default.html",
+                context={
                     "request": request,
                     "root_element": [html],
                     "title": title,
@@ -77,8 +76,8 @@ class UiwizApp(FastAPI):
                     "error_classes": self.error_classes,
                     "auth_header_name": self.auth_header,
                 },
-                status_code,
-                {"Cache-Control": "no-store", "X-uiwiz-Content": "page"},
+                status_code=status_code,
+                headers={"Cache-Control": "no-store", "X-uiwiz-Content": "page"},
             )
         )
 
@@ -123,8 +122,6 @@ class UiwizApp(FastAPI):
         s = super()
 
         def decorator(func: Callable, *args, **kwargs) -> Callable:
-            if not self.route_exists(path):
-                self.app_paths[func.__hash__()] = path
             return s.post(path, *args, **kwargs)(func)
 
         return decorator
@@ -167,7 +164,7 @@ class UiwizApp(FastAPI):
             decorated.__signature__ = inspect.Signature(params)
 
             if not self.route_exists(path):
-                self.app_paths[func.__hash__()] = path
+                self.app_paths[decorated] = path
 
             return self.get(path)(decorated)
 
@@ -202,7 +199,7 @@ class UiwizApp(FastAPI):
             decorated.__signature__ = inspect.Signature(params)
 
             if not self.route_exists(path):
-                self.app_paths[func.__hash__()] = path
+                self.app_paths[decorated] = path
 
             return self.post(path)(decorated)
 
