@@ -4,6 +4,7 @@
 
 .codehilite {
     background: oklch(var(--b3)/1);
+    border-radius: 0.6rem;
 }
 
 .c {
