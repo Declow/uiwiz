@@ -10,7 +10,6 @@ class Upload(Element):
         self,
         name: str,
         on_upload: Callable,
-        endpoint: str = None,
         target: Union[Callable, str, Element] = None,
         trigger: str = "change",
         swap: str = None,
