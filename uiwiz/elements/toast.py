@@ -4,7 +4,7 @@ from uiwiz.svg.svg_handler import get_svg, _type
 
 
 class Toast(Element):
-    root_class: str = "alert w-full "
+    root_class: str = "alert w-full z-50 "
 
     def __init__(self, message: str = "", svg: _type = None) -> None:
         super().__init__(tag="div", oob=True)

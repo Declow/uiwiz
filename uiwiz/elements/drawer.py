@@ -12,7 +12,7 @@ class DrawerSetup(Element):
 
 
 class DrawerSide(Element):
-    _classes: str = "drawer-side"
+    _classes: str = "drawer-side z-50"
 
     def __init__(self, drawer_toggle: Checkbox) -> None:
         super().__init__()
@@ -54,8 +54,8 @@ class Drawer(Element):
             self.drawer_toggle = Checkbox("").classes("drawer-toggle")
 
     def drawer_content(self) -> Element:
-        self.d_content = DrawerContent()
-        return self.d_content
+        self.drawer_content = DrawerContent()
+        return self.drawer_content
 
     def drawer_side(self) -> Element:
         self.side = DrawerSide(self.drawer_toggle)
