@@ -35,6 +35,9 @@
 .uiwiz-td-padding th {
     padding-right: 1rem;
 }
+.uiwiz-container-border-radius {
+    border-radius: 0.6rem;
+}
 
 .remove {
     visibility: hidden;
