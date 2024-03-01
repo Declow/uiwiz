@@ -14,6 +14,8 @@ class Label(Bindable):
         if for_:
             self.attributes["for"] = for_.id
         self.classes()
+        # Allign the label next to the element
+        self.attributes["style"] = "padding-top: unset;"
 
     def set_text(self, text: str) -> "Label":
         self.content = text
