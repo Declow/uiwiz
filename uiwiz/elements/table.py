@@ -4,7 +4,7 @@ import pandas as pd
 
 
 class Table(Element):
-    _classes_container: str = "w-full overflow-x-auto"
+    _classes_container: str = "w-full overflow-x-auto uiwiz-container-border-radius"
     _classes_table: str = "table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
 
     def __init__(self, df: pd.DataFrame) -> None:
