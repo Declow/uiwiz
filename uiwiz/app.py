@@ -141,7 +141,7 @@ class UiwizApp(FastAPI):
             async def decorated(*dec_args, **dec_kwargs) -> Response:
                 # Create frame before function is called
                 Frame.get_stack()
-                Element().classes("flex flex-col h-full")
+                Element().classes("flex flex-col min-h-screen h-full")
                 request = dec_kwargs["request"]
                 # NOTE cleaning up the keyword args so the signature is consistent with "func" again
                 dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
