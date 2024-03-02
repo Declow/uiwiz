@@ -40,7 +40,7 @@ class DrawerContent(Element):
 
 
 class Drawer(Element):
-    _classes: str = "drawer bg-base-100 h-full"
+    _classes: str = "drawer bg-base-100 min-h-screen h-full"
 
     def __init__(self, always_open: bool = False, right: bool = False) -> None:
         super().__init__()
