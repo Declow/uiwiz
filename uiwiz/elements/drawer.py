@@ -21,7 +21,8 @@ class DrawerSide(Element):
 
     def __enter__(self):
         super().__enter__()
-        close_label = Label("", self.drawer_toggle).classes("drawer-overlay")
+        close_label = Label("", self.drawer_toggle)
+        close_label.attributes["class"] = "drawer-overlay"
         close_label.attributes["aria-label"] = "close sidebar"
         self.setup = DrawerSetup()
         self.setup.__enter__()
