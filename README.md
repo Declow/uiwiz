@@ -8,6 +8,9 @@ UiWizard is a python-based ui-framework for the web. It was inspired by the grea
   - I wanted to try out HTMX
 - Limited control over the underlaying tech stack but mainly just learning
 
+Exmaple and docs
+[UI-Wizard](https://ui-wizard.com/)
+
 ## Features
 
 - Tailwind and DaisyUI for the graphics and responsive layout
