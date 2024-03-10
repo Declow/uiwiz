@@ -21,6 +21,12 @@ Exmaple and docs
 
 ## Usage
 
+Install the library
+
+```
+pip install uiwiz
+```
+
 Create a main.py file
 
 ```python
