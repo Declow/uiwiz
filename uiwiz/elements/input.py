@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 from uiwiz.element import Element
 
 
@@ -39,3 +39,18 @@ class Input(Element):
                 "target": target,
                 "swap": swap,
             }
+
+    def on(
+        self,
+        func: Callable,
+        target: Union[Callable, str, Element] = None,
+        trigger: str = "input",
+        swap: Optional[str] = None,
+    ) -> "Input":
+        self.event = {
+            "func": func,
+            "trigger": trigger,
+            "target": target,
+            "swap": swap,
+        }
+        return self

@@ -20,10 +20,16 @@ class Range(Element):
     def min(self) -> int:
         return self.attributes["min"]
 
+    @min.setter
+    def min(self, value: int):
+        self.attributes["min"] = value
+        return self
+
     @property
     def max(self) -> int:
         return self.attributes["max"]
 
-    @property
-    def value(self) -> int:
-        return self.attributes["value"]
+    @max.setter
+    def max(self, value: int):
+        self.attributes["max"] = value
+        return self
