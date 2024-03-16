@@ -1,9 +1,9 @@
 import pytest
-from uiwiz import UiwizApp
+from uiwiz import UiwizApp, element
 from unittest import mock
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="function")
 def setup_app():
     app = UiwizApp()
 
@@ -12,4 +12,6 @@ def setup_app():
         api_mock.return_value = mo
         mo.app = app
         mo.headers = {"hx-target": "a-1"}
+        element.Frame.del_stack()
         yield api_mock
+        element.Frame.del_stack()
