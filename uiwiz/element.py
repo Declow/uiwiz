@@ -264,14 +264,7 @@ class Element:
         self.attributes["hx-target"] = self.get_target(self.event.get("target"))
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
-        func = self.event["func"]
-        endpoint = self.stack.app.app_paths.get(func)
-        if endpoint is None:
-            endpoint = f"/_uiwiz/hash/{func.__hash__()}"
-            if not self.stack.app.route_exists(endpoint):
-                self.stack.app.ui(endpoint)(func)
-
-        self.attributes["hx-post"] = endpoint
+        self.attributes["hx-post"] = self.get_endpoint()
         if self.event.get("trigger"):
             self.attributes["hx-trigger"] = self.event["trigger"]
 
@@ -283,6 +276,18 @@ class Element:
             self.attributes["hx-encoding"] = hx_encoding
         else:
             self.attributes["hx-ext"] = "json-enc"
+
+    def get_endpoint(self) -> str:
+        func = self.event["func"]
+        endpoint: Optional[str] = self.stack.app.app_paths.get(func)
+        if endpoint:
+            if params := self.event.get("params"):
+                return endpoint.format(**params)
+
+        endpoint = f"/_uiwiz/hash/{func.__hash__()}"
+        if not self.stack.app.route_exists(endpoint):
+            self.stack.app.ui(endpoint)(func)
+        return endpoint
 
     def get_target(self, target: Union[Callable, str, "Element", None]) -> str:
         _target = "this"

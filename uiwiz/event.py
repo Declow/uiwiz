@@ -8,3 +8,4 @@ class Event(TypedDict):
     swap: Optional[str]
     include: Optional[str]
     vals: Optional[str]
+    params: Optional[dict]

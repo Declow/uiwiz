@@ -1,3 +1,4 @@
+from datetime import date, datetime, timezone
 from fastapi import Request
 from pydantic import BaseModel
 from uiwiz.app import UiwizApp
@@ -101,6 +102,12 @@ class DataInput(BaseModel):
     input: str
 
 
+@app.ui("/test/path/param/{date}")
+def run_with_path_param(date: date):
+    with ui.element():
+        ui.toast(date.isoformat())
+
+
 @app.page("/")
 async def test(request: Request):
     create_nav()
@@ -146,6 +153,10 @@ if True:
 
         ui.table(df)
         ui.aggrid(df)
+
+        ui.button("Date").on_click(
+            run_with_path_param, swap="none", params={"date": (datetime.now(tz=timezone.utc)).date().isoformat()}
+        )
 
     with ui.footer():
         ui.label("some footer text")

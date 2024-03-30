@@ -39,11 +39,7 @@ class TextArea(Element):
         target: Union[Callable, str, Element] = None,
         trigger: str = "input",
         swap: Optional[str] = None,
+        params: Optional[dict[str, str]] = None,
     ) -> "TextArea":
-        self.event = {
-            "func": func,
-            "trigger": trigger,
-            "target": target,
-            "swap": swap,
-        }
+        self.event = {"func": func, "trigger": trigger, "target": target, "swap": swap, "params": params}
         return self

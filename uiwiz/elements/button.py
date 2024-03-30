@@ -16,11 +16,7 @@ class Button(Element):
         func: Optional[Callable] = None,
         target: Union[Callable, str, Element] = None,
         swap: Optional[str] = None,
+        params: Optional[dict[str, str]] = None,
     ) -> "Button":
-        self.event = {
-            "func": func,
-            "trigger": "click",
-            "target": target,
-            "swap": swap,
-        }
+        self.event = {"func": func, "trigger": "click", "target": target, "swap": swap, "params": params}
         return self
