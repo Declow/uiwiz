@@ -283,6 +283,7 @@ class Element:
         if endpoint:
             if params := self.event.get("params"):
                 return endpoint.format(**params)
+            return endpoint
 
         endpoint = f"/_uiwiz/hash/{func.__hash__()}"
         if not self.stack.app.route_exists(endpoint):
