@@ -29,6 +29,7 @@ class UiwizApp(FastAPI):
         cache_age: int = 14400,
         theme: Optional[str] = None,
         auth_header: Optional[str] = None,
+        title: Optional[str] = "UiWiz",
         *args,
         **kwargs,
     ) -> None:
@@ -40,6 +41,7 @@ class UiwizApp(FastAPI):
         else:
             self.theme = theme
         self.auth_header = auth_header
+        self.title = title
         self.templates = Jinja2Templates(Path(__file__).parent / "templates")
         self.add_static_files("/static", Path(__file__).parent / "static")
 
@@ -52,13 +54,14 @@ class UiwizApp(FastAPI):
     def render(
         self,
         request: Request,
-        title: str,
+        title: Optional[str] = None,
         status_code: int = 200,
     ):
         frame = Frame.get_stack()
         html = frame.render()
         libs = frame.render_libs()
         ext = frame.render_ext()
+        page_title = title if title else self.title
         theme = self.theme
         if cookie_theme := request.cookies.get("data-theme"):
             theme = f"data-theme={escape(cookie_theme)}"
@@ -68,7 +71,7 @@ class UiwizApp(FastAPI):
                 context={
                     "request": request,
                     "root_element": [html],
-                    "title": title,
+                    "title": page_title,
                     "theme": theme,
                     "libs": libs,
                     "ext": ext,
@@ -130,7 +133,7 @@ class UiwizApp(FastAPI):
         self,
         path: str,
         *args,
-        title: Optional[str] = "uiwiz",
+        title: Optional[str] = None,
         favicon: Optional[str] = None,
     ) -> Callable:
         def decorator(func: Callable, *args, **kwargs) -> Callable:
