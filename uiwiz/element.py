@@ -85,10 +85,14 @@ class Frame:
         return ""
 
     def render_libs(self) -> str:
-        return self.root_element.render_js(self.libraries)
+        if self.root_element:
+            return self.root_element.render_js(self.libraries)
+        return ""
 
     def render_ext(self) -> str:
-        return self.root_element.render_js(self.extensions)
+        if self.root_element:
+            return self.root_element.render_js(self.extensions)
+        return ""
 
     def add_extension(self, path: Path):
         _, filename = os.path.split(path)

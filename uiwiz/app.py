@@ -51,11 +51,17 @@ class UiwizApp(FastAPI):
         self.extensions: dict[str, Path] = {}
         self.app_paths: dict[str, Path] = {}
 
+        @self.get("/_static/default.js")
+        def return_default_js(request: Request):
+            return self.render(request, template_name="default.js", media_type="application/javascript")
+
     def render(
         self,
         request: Request,
         title: Optional[str] = None,
         status_code: int = 200,
+        template_name: str = "default.html",
+        media_type: Optional[str] = None,
     ):
         frame = Frame.get_stack()
         html = frame.render()
@@ -67,7 +73,7 @@ class UiwizApp(FastAPI):
             theme = f"data-theme={escape(cookie_theme)}"
         return self.return_funtion_response(
             self.templates.TemplateResponse(
-                name="default.html",
+                name=template_name,
                 context={
                     "request": request,
                     "root_element": [html],
@@ -81,6 +87,7 @@ class UiwizApp(FastAPI):
                 },
                 status_code=status_code,
                 headers={"Cache-Control": "no-store", "X-uiwiz-Content": "page"},
+                media_type=media_type,
             )
         )
 
