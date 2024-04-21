@@ -41,7 +41,6 @@ class Frame:
         self.libraries: list[str] = []
         self.extensions: set[str] = set()
         self.app = get_request().app
-        # TODO: Implement
         self.last_id = None
 
     def get_id(self) -> str:
@@ -122,14 +121,15 @@ class Element:
     def __init__(
         self,
         tag="div",
-        indent_level=2,
         content="",
         render_html=True,
-        libraries: list[str] = [],
+        libraries: Optional[list[str]] = None,
         extension: Path = None,
         oob: bool = False,
     ) -> None:
         self.stack = Frame.get_stack()
+        if libraries is None:
+            libraries = []
         self.stack.libraries.extend(libraries)
         if extension:
             self.stack.add_extension(extension)
@@ -147,7 +147,6 @@ class Element:
 
         self.__content__: str = ""
         self.content: str = content
-        self.indent: int = indent_level
         self.oob: bool = oob
 
         if self.oob:
