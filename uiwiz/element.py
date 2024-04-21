@@ -264,8 +264,7 @@ class Element:
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
         self.attributes["hx-post"] = self.get_endpoint()
-        if self.event.get("trigger"):
-            self.attributes["hx-trigger"] = self.event["trigger"]
+        self.attributes["hx-trigger"] = self.event.get("trigger")
 
         if vals := self.event.get("vals"):
             self.attributes["hx-vals"] = vals
