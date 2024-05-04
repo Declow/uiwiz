@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import Callable, Optional, Union
 import random
-from uiwiz.request_middelware import get_request
+from uiwiz.asgi_request_middelware import get_request
 from uiwiz.event import Event
 
 # https://developer.mozilla.org/en-US/docs/Glossary/Void_element

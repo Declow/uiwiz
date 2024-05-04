@@ -1,7 +1,7 @@
 from typing import Optional
 from uiwiz import ui
 from uiwiz.element import Element
-from uiwiz.request_middelware import get_request
+from uiwiz.asgi_request_middelware import get_request
 
 
 class ThemeSelector(Element):

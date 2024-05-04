@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
-from uiwiz.request_middelware import RequestMiddleware
+from uiwiz.asgi_request_middelware import AsgiRequestMiddelware
 from uiwiz.element import Element, Frame
 from fastapi.middleware.gzip import GZipMiddleware
 import functools
@@ -45,7 +45,7 @@ class UiwizApp(FastAPI):
         self.templates = Jinja2Templates(Path(__file__).parent / "templates")
         self.add_static_files("/static", Path(__file__).parent / "static")
 
-        self.add_middleware(RequestMiddleware)
+        self.add_middleware(AsgiRequestMiddelware)
         self.add_middleware(GZipMiddleware)
         self.add_middleware(TtlMiddelware, cache_age=cache_age)
         self.extensions: dict[str, Path] = {}
