@@ -2,7 +2,7 @@ from fastapi import Request
 from pydantic import BaseModel
 from uiwiz.login_response import LoginResponse
 from uiwiz import ui, UiwizApp
-from uiwiz.request_middelware import get_request
+from uiwiz.asgi_request_middelware import get_request
 import uvicorn
 from datetime import datetime, timezone, timedelta
 from starlette.authentication import requires

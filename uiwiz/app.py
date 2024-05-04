@@ -14,7 +14,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 import functools
 import logging
 from uiwiz.page_route import PageRouter
-from uiwiz.static_middelware import TtlMiddelware
+from uiwiz.static_middelware import AsgiTtlMiddelware
 from html import escape
 
 logger = logging.getLogger("uiwiz")
@@ -47,7 +47,7 @@ class UiwizApp(FastAPI):
 
         self.add_middleware(AsgiRequestMiddelware)
         self.add_middleware(GZipMiddleware)
-        self.add_middleware(TtlMiddelware, cache_age=cache_age)
+        self.add_middleware(AsgiTtlMiddelware, cache_age=cache_age)
         self.extensions: dict[str, Path] = {}
         self.app_paths: dict[str, Path] = {}
 

@@ -1,13 +1,29 @@
+from typing import Any
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.types import Scope, Receive, Send
+from starlette.datastructures import MutableHeaders
+from starlette.requests import Request
 
 
-class TtlMiddelware(BaseHTTPMiddleware):
-    def __init__(self, app, cache_age: int):
-        super().__init__(app)
-        self.cahce_age = cache_age
+class AsgiTtlMiddelware:
+    def __init__(self, app, cache_age: int) -> None:
+        self.app = app
+        self.cache_age = cache_age
 
-    async def dispatch(self, request, call_next):
-        response = await call_next(request)
-        if "static/" in str(request.url):
-            response.headers["Cache-Control"] = f"max-age={self.cahce_age}"
-        return response
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> Any:
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+
+        async def send_with_extra_headers(message):
+            if message["type"] != "http.response.start":
+                await send(message)
+                return
+
+            request = Request(scope)
+            if "static/" in str(request.url):
+                headers = MutableHeaders(scope=message)
+                headers.append("Cache-Control", f"max-age={self.cache_age}")
+
+            await send(message)
+
+        await self.app(scope, receive, send_with_extra_headers)
