@@ -306,8 +306,8 @@ class Element:
 
         if target != "this" and "#" not in target:
             return "#" + target
-        else:
-            return target
+
+        return target
 
     def render_js(self, lst_js: list[str]) -> str:
         lst = set()
