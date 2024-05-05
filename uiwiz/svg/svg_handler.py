@@ -1,4 +1,5 @@
 from typing import Literal
+
 from anyio import Path
 
 _type = Literal[

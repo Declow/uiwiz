@@ -1,11 +1,13 @@
 from typing import Optional
+
+import pandas as pd
+import uvicorn
 from fastapi import Request
 from pydantic import BaseModel, ValidationError
+
+import uiwiz.ui as ui
 from uiwiz.app import UiwizApp
 from uiwiz.element import Element
-import uiwiz.ui as ui
-import uvicorn
-import pandas as pd
 
 app = UiwizApp()
 

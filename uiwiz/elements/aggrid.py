@@ -1,12 +1,14 @@
+import html
+import json
+from enum import Enum
 from pathlib import Path
 from typing import Any, Optional, Tuple
-from fastapi.responses import JSONResponse
+
 import numpy as np
 import pandas as pd
-import json
+from fastapi.responses import JSONResponse
+
 from uiwiz.element import Element
-from enum import Enum
-import html
 
 JS_PATH = Path(__file__).parent / "aggrid.js"
 

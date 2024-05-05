@@ -1,21 +1,23 @@
+import functools
 import inspect
-from mimetypes import guess_type
+import logging
 import os
+from html import escape
+from mimetypes import guess_type
 from pathlib import Path
 from typing import Callable, Optional, Union
+
 from fastapi import FastAPI, Response
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
+
 from uiwiz.asgi_request_middelware import AsgiRequestMiddelware
 from uiwiz.element import Element, Frame
-from fastapi.middleware.gzip import GZipMiddleware
-import functools
-import logging
 from uiwiz.page_route import PageRouter
 from uiwiz.static_middelware import AsgiTtlMiddelware
-from html import escape
 
 logger = logging.getLogger("uiwiz")
 logger.addHandler(logging.NullHandler())

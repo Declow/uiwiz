@@ -1,9 +1,10 @@
 import asyncio
 import html
 import os
+import random
 from pathlib import Path
 from typing import Callable, Optional, Union
-import random
+
 from uiwiz.asgi_request_middelware import get_request
 from uiwiz.event import Event
 

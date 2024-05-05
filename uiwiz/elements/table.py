@@ -1,6 +1,7 @@
 import numpy as np
-from uiwiz.element import Element
 import pandas as pd
+
+from uiwiz.element import Element
 
 
 class Table(Element):

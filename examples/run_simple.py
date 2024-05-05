@@ -1,9 +1,11 @@
-from fastapi import Request, UploadFile
-from uiwiz.app import UiwizApp
-import uiwiz.ui as ui
-import uvicorn
-import pandas as pd
 from io import BytesIO
+
+import pandas as pd
+import uvicorn
+from fastapi import Request, UploadFile
+
+import uiwiz.ui as ui
+from uiwiz.app import UiwizApp
 
 app = UiwizApp(theme="aqua")
 

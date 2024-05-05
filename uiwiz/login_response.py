@@ -1,5 +1,6 @@
-from datetime import datetime
 import typing
+from datetime import datetime
+
 from fastapi import Response
 
 

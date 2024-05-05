@@ -1,6 +1,8 @@
-import pytest
-from uiwiz import UiwizApp, element
 from unittest import mock
+
+import pytest
+
+from uiwiz import UiwizApp, element
 
 
 @pytest.fixture(autouse=True, scope="function")

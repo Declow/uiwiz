@@ -1,6 +1,7 @@
 from contextvars import ContextVar
-from starlette.requests import Request
 from typing import Any
+
+from starlette.requests import Request
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 REQUEST_CTX_KEY = "_request"

@@ -1,6 +1,6 @@
-from uiwiz.element import Element
 from uiwiz import ui
-from uiwiz.svg.svg_handler import get_svg, _type
+from uiwiz.element import Element
+from uiwiz.svg.svg_handler import _type, get_svg
 
 
 class Toast(Element):

@@ -1,6 +1,7 @@
-from uiwiz.app import UiwizApp
-import uiwiz.ui as ui
 import uvicorn
+
+import uiwiz.ui as ui
+from uiwiz.app import UiwizApp
 
 app = UiwizApp()
 

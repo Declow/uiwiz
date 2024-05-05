@@ -1,9 +1,11 @@
 from datetime import date, datetime, timezone
+
+import pandas as pd
+import uvicorn
 from fastapi import Request
 from pydantic import BaseModel
-from uiwiz import UiwizApp, ui, element
-import uvicorn
-import pandas as pd
+
+from uiwiz import UiwizApp, element, ui
 
 app = UiwizApp()
 

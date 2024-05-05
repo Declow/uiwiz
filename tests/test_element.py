@@ -1,5 +1,6 @@
 from unittest import mock
-from uiwiz import ui, element
+
+from uiwiz import element, ui
 
 
 def test_element_html():

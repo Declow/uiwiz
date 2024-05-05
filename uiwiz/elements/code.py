@@ -1,5 +1,6 @@
-from uiwiz.elements.html import Html
 import markdown2
+
+from uiwiz.elements.html import Html
 
 
 class Code(Html):

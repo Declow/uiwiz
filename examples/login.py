@@ -1,13 +1,14 @@
+from datetime import datetime, timedelta, timezone
+
+import uvicorn
 from fastapi import Request
 from pydantic import BaseModel
-from uiwiz.login_response import LoginResponse
-from uiwiz import ui, UiwizApp
-from uiwiz.asgi_request_middelware import get_request
-import uvicorn
-from datetime import datetime, timezone, timedelta
-from starlette.authentication import requires
-from starlette.authentication import AuthCredentials, AuthenticationBackend, SimpleUser
+from starlette.authentication import AuthCredentials, AuthenticationBackend, SimpleUser, requires
 from starlette.middleware.authentication import AuthenticationMiddleware
+
+from uiwiz import UiwizApp, ui
+from uiwiz.asgi_request_middelware import get_request
+from uiwiz.login_response import LoginResponse
 
 auth_header = "sometokenheader"
 # if auth header is included and the server responses with this header
