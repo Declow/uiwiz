@@ -1,9 +1,7 @@
 from datetime import date, datetime, timezone
 from fastapi import Request
 from pydantic import BaseModel
-from uiwiz.app import UiwizApp
-from uiwiz.element import Element
-import uiwiz.ui as ui
+from uiwiz import UiwizApp, ui, element
 import uvicorn
 import pandas as pd
 
@@ -139,7 +137,7 @@ if True:
             on_change=replace,
             target=lambda: res3.id,
         )
-        with Element() as res3:
+        with element() as res3:
             create_label(message)
 
         ui.textarea(
