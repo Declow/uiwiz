@@ -249,7 +249,8 @@ class Element:
             if not self.is_void_element:
                 lst.append("</%s>" % self.tag)
 
-        return "".join(lst)
+        html = "".join(lst)
+        return self.after_render(html)
 
     def render_oob(self) -> str:
         lst = []
@@ -260,6 +261,9 @@ class Element:
 
     def before_render(self):
         pass
+
+    def after_render(self, html: str):
+        return html
 
     def add_event_to_attributes(self):
         if self.event == {}:
