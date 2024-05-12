@@ -52,7 +52,7 @@ class Frame:
         target_id = self.last_id if self.last_id else headers.get("hx-target")
         if self.used_hx_headers is False:
             self.used_hx_headers = True
-            
+
             if swap in ["outerHTML", "this"]:
                 self.last_id = target_id
             else:
