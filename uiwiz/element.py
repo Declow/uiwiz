@@ -1,9 +1,9 @@
 import asyncio
 import html
 import os
-import random
 from pathlib import Path
 from typing import Callable, Optional, Union
+from uuid import uuid4
 
 from uiwiz.asgi_request_middelware import get_request
 from uiwiz.event import Event
@@ -26,8 +26,6 @@ VOID_ELEMENTS = [
     "wbr",
 ]
 
-MAX_RAND_ID = 999999999
-
 
 class Frame:
     stacks: dict[int, "Frame"] = {}
@@ -46,23 +44,25 @@ class Frame:
 
     def get_id(self) -> str:
         headers = get_request().headers
-        if swap := headers.get("hx-swap"):
-            target_id = self.last_id if self.last_id else headers.get("hx-target")
+        swap = headers.get("hx-swap")
 
-            if self.used_hx_headers is False:
-                if swap in ["outerHTML", "this"]:
-                    self.last_id = target_id
-                else:
-                    generator = random.Random(target_id)
-                    self.last_id = f"a-{generator.randint(10000, MAX_RAND_ID)}"
-                self.used_hx_headers = True
-                return self.last_id
+        if swap is None:
+            return f"a-{self.id_count}"
 
-            generator = random.Random(target_id)
-            self.last_id = f"a-{generator.randint(10000, MAX_RAND_ID)}"
+        target_id = self.last_id if self.last_id else headers.get("hx-target")
+        if self.used_hx_headers is False:
+            self.used_hx_headers = True
+            
+            if swap in ["outerHTML", "this"]:
+                self.last_id = target_id
+            else:
+                self.last_id = str(uuid4())
+
             return self.last_id
 
-        return f"a-{self.id_count}"
+        self.last_id = str(uuid4())
+
+        return self.last_id
 
     def remove_frame(self, element: "Element") -> None:
         if element is None:
