@@ -10,7 +10,7 @@ python = ">=3.9"
 uvicorn = {extras = ["standard"], version = "^0.29.0"}
 fastapi = "^0.111.0"
 jinja2 = "^3.1.4"
-pandas = "^2.1.2"
+pandas = "^2.2.2"
 markdown2 = [
     {extras = ["all"], version = "^2.4.12", python = ">=3.6,<4"}
 ]
@@ -20,7 +20,7 @@ openpyxl = "^3.1.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.1.8"
-pytest = "^8.1.1"
+pytest = "^8.2.0"
 
 [tool.ruff]
 # Allow lines to be as long as 120.
