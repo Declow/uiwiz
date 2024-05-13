@@ -34,7 +34,6 @@ class Frame:
         self.root_element: Optional[Element] = None
         self.current_element: Optional[Element] = None
         self.oob_elements: list[Element] = []
-        self.used_hx_headers: bool = False
         self.id_count: int = 0  # used for element id
         self.scripts: list[str] = []
         self.libraries: list[str] = []
@@ -50,17 +49,10 @@ class Frame:
             return f"a-{self.id_count}"
 
         target_id = self.last_id if self.last_id else headers.get("hx-target")
-        if self.used_hx_headers is False:
-            self.used_hx_headers = True
-
-            if swap in ["outerHTML", "this"]:
-                self.last_id = target_id
-            else:
-                self.last_id = str(uuid4())
-
-            return self.last_id
-
         self.last_id = str(uuid4())
+
+        if swap in ["outerHTML", "this"]:
+            self.last_id = target_id
 
         return self.last_id
 
