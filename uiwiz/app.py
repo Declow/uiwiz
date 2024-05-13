@@ -57,6 +57,17 @@ class UiwizApp(FastAPI):
         def return_default_js(request: Request):
             return self.render(request, template_name="default.js", media_type="application/javascript")
 
+    def __get_title__(self, frame: Frame, route_title: Optional[str] = None) -> str:
+        title = self.title
+
+        if route_title:
+            title = route_title
+
+        if dynamic_title := frame.title:
+            title = dynamic_title
+
+        return title
+
     def render(
         self,
         request: Request,
@@ -69,7 +80,7 @@ class UiwizApp(FastAPI):
         html = frame.render()
         libs = frame.render_libs()
         ext = frame.render_ext()
-        page_title = title if title else self.title
+        page_title = self.__get_title__(frame, title)
         theme = self.theme
         if cookie_theme := request.cookies.get("data-theme"):
             theme = f"data-theme={escape(cookie_theme)}"
@@ -86,6 +97,7 @@ class UiwizApp(FastAPI):
                     "toast_delay": self.toast_delay,
                     "error_classes": self.error_classes,
                     "auth_header_name": self.auth_header,
+                    "description_content": frame.meta_description_content,
                 },
                 status_code=status_code,
                 headers={"Cache-Control": "no-store", "X-uiwiz-Content": "page"},

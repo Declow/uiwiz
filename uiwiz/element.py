@@ -27,6 +27,12 @@ VOID_ELEMENTS = [
 ]
 
 
+def get_task_id() -> int:
+    try:
+        return id(asyncio.current_task())
+    except RuntimeError:
+        return 0
+
 class Frame:
     stacks: dict[int, "Frame"] = {}
 
@@ -40,6 +46,8 @@ class Frame:
         self.extensions: set[str] = set()
         self.app = get_request().app
         self.last_id = None
+        self.title: Optional[str] = None
+        self.meta_description_content: str = ""
 
     def get_id(self) -> str:
         headers = get_request().headers
@@ -87,7 +95,7 @@ class Frame:
             return self.root_element.render_js(self.extensions)
         return ""
 
-    def add_extension(self, path: Path):
+    def add_extension(self, path: Path) -> None:
         _, filename = os.path.split(path)
         prefix = "/_static/ext/"
         endpoint = prefix + filename
@@ -102,16 +110,21 @@ class Frame:
         return cls.stacks[_id]
 
     @classmethod
-    def del_stack(cls):
+    def del_stack(cls) -> None:
         cls.get_stack().remove_frame(None)
         del cls.stacks[get_task_id()]
 
+    @classmethod
+    def set_title(cls, title: str) -> None:
+        if isinstance(title, str) is False:
+            raise Exception(f"Expected str got: {type(title)}")
+        Frame.get_stack().title = title
 
-def get_task_id() -> int:
-    try:
-        return id(asyncio.current_task())
-    except RuntimeError:
-        return 0
+    @classmethod
+    def set_meta_description_content(cls, content: str) -> None:
+        if isinstance(content, str) is False:
+            raise Exception(f"Expected str got: {type(content)}")
+        Frame.get_stack().meta_description_content = content
 
 
 class Element:

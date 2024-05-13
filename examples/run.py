@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from uiwiz import UiwizApp, ui
 from uiwiz.element import Element as element
+from uiwiz.element import Frame
 
 app = UiwizApp()
 
