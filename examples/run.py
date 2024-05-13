@@ -5,7 +5,8 @@ import uvicorn
 from fastapi import Request
 from pydantic import BaseModel
 
-from uiwiz import UiwizApp, element, ui
+from uiwiz import UiwizApp, ui
+from uiwiz.element import Element as element
 
 app = UiwizApp()
 
