@@ -19,7 +19,6 @@ class TextArea(Element):
         super().__init__("textarea")
         self.attributes["name"] = name
         self.attributes["placeholder"] = placeholder
-        self.inline = True
         self.classes(TextArea._classes)
 
         if on_change:

@@ -10,7 +10,6 @@ class Button(Element):
         super().__init__(tag="button")
         self.content = title
         self.classes()
-        self.inline = True
 
     def on_click(
         self,
