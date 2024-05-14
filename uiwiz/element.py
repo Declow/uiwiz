@@ -33,6 +33,7 @@ def get_task_id() -> int:
     except RuntimeError:
         return 0
 
+
 class Frame:
     stacks: dict[int, "Frame"] = {}
 
