@@ -88,7 +88,7 @@ class Frame:
 
     def render_libs(self) -> str:
         if self.root_element:
-            return self.root_element.render_js(self.libraries)
+            return self.root_element.render_libs(self.libraries)
         return ""
 
     def render_ext(self) -> str:
@@ -323,6 +323,17 @@ class Element:
         lst = set()
         for lib in lst_js:
             lst.add('<script src="%s"></script>' % lib)
+        return "".join(lst)
+
+    def render_libs(self, lst_libs: list[str]) -> str:
+        lst = set()
+        for lib in lst_libs:
+            if lib.endswith("css"):
+                lst.add('<link href="%s" rel="stylesheet" type="text/css" />' % lib)
+            elif lib.endswith("js"):
+                lst.add('<script src="%s"></script>' % lib)
+            else:
+                raise Exception("lib type not supported, supported types css, js")
         return "".join(lst)
 
     def __str__(self) -> str:
