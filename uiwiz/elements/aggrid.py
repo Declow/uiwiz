@@ -18,10 +18,12 @@ class Aggrid(Element):
         autoSizeColumn = "autoSizeAll"
         fitColumnContent = "sizeToFit"
 
-    _classes: str = "ag-theme-alpine"
+    _classes: str = "ag-theme-quartz ag-theme-uiwiz"
 
     def __init__(self, df: pd.DataFrame, column_option: OPTIONS = OPTIONS.autoSizeColumn) -> None:
-        super().__init__("div", libraries=["/static/libs/aggrid-community.min.js"], extension=JS_PATH)
+        super().__init__(
+            "div", libraries=["/static/libs/aggrid-community.min.js", "/static/aggridtheme.css"], extension=JS_PATH
+        )
         self.classes(Aggrid._classes)
 
         cols, rows = Aggrid.create_cols_and_rows(df)

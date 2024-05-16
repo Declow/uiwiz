@@ -1,0 +1,7 @@
+.ag-theme-uiwiz {
+    --ag-border-color: var(--fallback-bc,oklch(var(--bc)/.2));
+    --ag-foreground-color: var(--p);
+    --ag-background-color: var(--bc);
+    --ag-header-background-color: oklch(var(--b3)/1);
+    --ag-row-hover-color: oklch(var(--b2)/1);
+}
