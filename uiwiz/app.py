@@ -229,13 +229,13 @@ class UiwizApp(FastAPI):
 
         return decorator
 
-    def include_page_router(self, page_router: PageRouter):
+    def add_page_router(self, page_router: PageRouter):
         for key, value in page_router.paths.items():
             if not self.route_exists(key):
                 self.app_paths[value.get("func")] = key
             type = value.get("type")
             if type == "page":
-                self.page(key)(value.get("func"))
+                self.page(key, *value.get("args"), **value.get("kwargs"))(value.get("func"))
             if type == "ui":
                 self.ui(key)(value.get("func"))
 

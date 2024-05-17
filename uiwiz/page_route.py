@@ -9,18 +9,17 @@ class PageRouter:
         self,
         path: str,
         *args,
-        title: Optional[str] = "uiwiz",
-        favicon: Optional[str] = None,
+        **kwargs,
     ) -> Callable:
-        def setup(func, *args, **kwargs):
-            self.paths[path] = {"func": func, "type": "page"}
+        def setup(func):
+            self.paths[path] = {"func": func, "type": "page", "args": args, "kwargs": kwargs}
             return func
 
         return setup
 
-    def ui(self, path: str) -> Callable:
-        def setup(func, *args, **kwargs):
-            self.paths[path] = {"func": func, "type": "ui"}
+    def ui(self, path: str, *args, **kwargs) -> Callable:
+        def setup(func):
+            self.paths[path] = {"func": func, "type": "page", "args": args, "kwargs": kwargs}
             return func
 
         return setup
