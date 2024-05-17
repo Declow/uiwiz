@@ -1,7 +1,8 @@
-from uiwiz.page_route import PageRouter
 from uiwiz import ui
+from uiwiz.page_route import PageRouter
 
 router = PageRouter()
+
 
 @router.page("/second_page", title="Second Page")
 async def second_page():

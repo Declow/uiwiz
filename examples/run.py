@@ -4,11 +4,12 @@ import uvicorn
 from fastapi import Request
 from pydantic import BaseModel
 
+from examples.data import df
 from uiwiz import UiwizApp, ui
 from uiwiz.element import Element as element
-from examples.data import df
 
 app = UiwizApp()
+
 
 def create_nav():
     with ui.nav():
