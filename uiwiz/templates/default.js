@@ -25,15 +25,45 @@ function remove(evt) {
     }, {{ toast_delay }});
 }
 
+function handleInvalidInputs(evt) {
+    if (evt.detail.xhr.status == 422) {
+        res = JSON.parse(evt.detail.xhr.response);
+
+        res.fieldErrors.forEach(key => {
+            evt.target.querySelector(`[name='${key}']`).classList.add("invalid")
+        });
+
+        res.fieldOk.forEach(key => {
+            evt.target.querySelector(`[name='${key}']`).classList.remove("invalid")
+        });
+    }
+}
+
 document.body.addEventListener('htmx:responseError', function (evt) {
-    console.log(evt);
     (function () {
         var container = document.getElementById("toast");
         var error = document.createElement('div');
-        error.className = "{{error_classes}}";
+        error.className = "{{ error_classes }}";
         error.innerHTML = `<span id="a-1">${evt.detail.error}</span>`;
         container.prepend(error);
+
+        handleInvalidInputs(evt);
     }());
+});
+
+function handlePreviousInvalidInputsNowValid(evt) {
+    if (evt.detail.successful && evt.target.tagName == "FORM") {
+        var all = [...evt.target.getElementsByTagName('*')];
+        all.forEach(val => {
+            if (val.classList.contains("invalid")) {
+                val.classList.remove("invalid");
+            }
+        });
+    }
+}
+
+document.body.addEventListener("htmx:afterRequest", function (evt) {
+    handlePreviousInvalidInputsNowValid(evt);
 });
 
 function getAttributeFromElement(element, attrName) {

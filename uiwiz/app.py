@@ -8,8 +8,10 @@ from pathlib import Path
 from typing import Callable, Optional, Union
 
 from fastapi import FastAPI, Response
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
@@ -56,6 +58,17 @@ class UiwizApp(FastAPI):
         @self.get("/_static/default.js")
         def return_default_js(request: Request):
             return self.render(request, template_name="default.js", media_type="application/javascript")
+
+        @self.exception_handler(RequestValidationError)
+        async def handle_validation_error(request: Request, exc: RequestValidationError):
+            fields_with_errors = [item.get("loc")[1] for item in exc.errors() if item.get("loc")[1] in exc.body]
+            ok_fields = [item for item in exc.body.keys() if item not in fields_with_errors]
+            return JSONResponse(
+                status_code=422,
+                content=jsonable_encoder(
+                    {"detail": exc.errors(), "fieldErrors": fields_with_errors, "fieldOk": ok_fields}
+                ),
+            )
 
     def __get_title__(self, frame: Frame, route_title: Optional[str] = None) -> str:
         title = self.title
