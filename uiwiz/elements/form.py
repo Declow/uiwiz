@@ -14,7 +14,7 @@ class Form(Element):
         self,
         func: Optional[Callable] = None,
         target: Union[Callable, str, Element] = None,
-        swap: Optional[str] = "beforeend",
+        swap: Optional[str] = "none",
         params: Optional[dict[str, str]] = None,
     ):
         self.event = {"func": func, "trigger": "submit", "target": target, "swap": swap, "params": params}
