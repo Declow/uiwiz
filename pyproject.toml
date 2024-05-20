@@ -20,7 +20,7 @@ openpyxl = "^3.1.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.1.8"
-pytest = "^8.2.0"
+pytest = "^8.2.1"
 
 [tool.ruff]
 # Allow lines to be as long as 120.
