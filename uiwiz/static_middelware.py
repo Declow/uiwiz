@@ -23,7 +23,7 @@ class AsgiTtlMiddelware:
             request = Request(scope)
             if "static/" in str(request.url):
                 headers = MutableHeaders(scope=message)
-                headers.append("Cache-Control", f"max-age={self.cache_age}")
+                headers["Cache-Control"] = f"max-age={self.cache_age}"
 
             await send(message)
 
