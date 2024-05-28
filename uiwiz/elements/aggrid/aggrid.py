@@ -10,6 +10,8 @@ from fastapi.responses import JSONResponse
 
 from uiwiz.element import Element
 
+LIB_PATH = Path(__file__).parent / "aggrid-community.min.js"
+CSS_PATH = Path(__file__).parent / "aggridtheme.css"
 JS_PATH = Path(__file__).parent / "aggrid.js"
 
 
@@ -21,9 +23,7 @@ class Aggrid(Element):
     _classes: str = "ag-theme-quartz ag-theme-uiwiz"
 
     def __init__(self, df: pd.DataFrame, column_option: OPTIONS = OPTIONS.autoSizeColumn) -> None:
-        super().__init__(
-            "div", libraries=["/static/libs/aggrid-community.min.js", "/static/aggridtheme.css"], extension=JS_PATH
-        )
+        super().__init__("div", extension=[CSS_PATH, JS_PATH, LIB_PATH])
         self.classes(Aggrid._classes)
 
         cols, rows = Aggrid.create_cols_and_rows(df)

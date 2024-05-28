@@ -91,7 +91,6 @@ class UiwizApp(FastAPI):
     ):
         frame = Frame.get_stack()
         html = frame.render()
-        libs = frame.render_libs()
         ext = frame.render_ext()
         page_title = self.__get_title__(frame, title)
         theme = self.theme
@@ -105,7 +104,6 @@ class UiwizApp(FastAPI):
                     "root_element": [html],
                     "title": page_title,
                     "theme": theme,
-                    "libs": libs,
                     "ext": ext,
                     "toast_delay": self.toast_delay,
                     "error_classes": self.error_classes,

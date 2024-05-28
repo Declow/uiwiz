@@ -1,5 +1,5 @@
 from uiwiz.element import Element as element
-from uiwiz.elements.aggrid import Aggrid as aggrid
+from uiwiz.elements.aggrid.aggrid import Aggrid as aggrid
 from uiwiz.elements.avatar import Avatar as avatar
 from uiwiz.elements.button import Button as button
 from uiwiz.elements.checkbox import Checkbox as checkbox

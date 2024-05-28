@@ -43,7 +43,6 @@ class Frame:
         self.oob_elements: list[Element] = []
         self.id_count: int = 0  # used for element id
         self.scripts: list[str] = []
-        self.libraries: list[str] = []
         self.extensions: set[str] = set()
         self.app = get_request().app
         self.last_id = None
@@ -86,22 +85,23 @@ class Frame:
             return output
         return ""
 
-    def render_libs(self) -> str:
-        if self.root_element:
-            return self.root_element.render_libs(self.libraries)
-        return ""
-
     def render_ext(self) -> str:
         if self.root_element:
-            return self.root_element.render_js(self.extensions)
+            return self.root_element.render_libs(self.extensions)
         return ""
 
-    def add_extension(self, path: Path) -> None:
-        _, filename = os.path.split(path)
-        prefix = "/_static/ext/"
-        endpoint = prefix + filename
-        self.extensions.add(endpoint)
-        self.app.register_extension(path, prefix)
+    def add_extension(self, extensions: Optional[Union[list[Path], Path]]) -> None:
+        if extensions is None:
+            return
+        if not isinstance(extensions, list):
+            extensions = [extensions]
+
+        for extension in extensions:
+            _, filename = os.path.split(extension)
+            prefix = "/_static/ext/"
+            endpoint = prefix + filename
+            self.extensions.add(endpoint)
+            self.app.register_extension(extension, prefix)
 
     @classmethod
     def get_stack(cls) -> "Frame":
@@ -134,14 +134,10 @@ class Element:
         tag="div",
         content="",
         render_html=True,
-        libraries: Optional[list[str]] = None,
-        extension: Path = None,
+        extension: Optional[Union[list[Path], Path]] = None,
         oob: bool = False,
     ) -> None:
         self.stack = Frame.get_stack()
-        if libraries is None:
-            libraries = []
-        self.stack.libraries.extend(libraries)
         if extension:
             self.stack.add_extension(extension)
         self.attributes: dict[str, str] = {}
@@ -318,12 +314,6 @@ class Element:
             return "#" + target
 
         return target
-
-    def render_js(self, lst_js: list[str]) -> str:
-        lst = set()
-        for lib in lst_js:
-            lst.add('<script src="%s"></script>' % lib)
-        return "".join(lst)
 
     def render_libs(self, lst_libs: list[str]) -> str:
         lst = set()
