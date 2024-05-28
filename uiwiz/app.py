@@ -158,6 +158,7 @@ class UiwizApp(FastAPI):
     def post(self, path: str, *args, **kwargs):
         s = super()
 
+        @functools.wraps(s.post)
         def decorator(func: Callable, *args, **kwargs) -> Callable:
             if not self.route_exists(path):
                 self.app_paths[func] = path
