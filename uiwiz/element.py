@@ -166,7 +166,7 @@ class Element:
         return html
 
     def add_event_to_attributes(self):
-        if self.event:
+        if self.event == {}:
             return
 
         self.attributes["hx-target"] = self.get_target(self.event.get("target"))

@@ -1,6 +1,17 @@
-from typing import Callable, Optional, Union
+from dataclasses import dataclass
+from typing import Callable, List, Optional, Union
 
 from uiwiz.element import Element
+from uiwiz.elements.input import Input
+from uiwiz.elements.textarea import TextArea
+
+# from uiwiz.elements.
+
+
+@dataclass
+class FieldAnno:
+    klass: Union[Input, TextArea] = None
+    placeholder: Optional[str] = None
 
 
 class Form(Element):
