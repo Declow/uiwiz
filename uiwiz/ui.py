@@ -29,3 +29,4 @@ from uiwiz.elements.theme_selector import ThemeSelector as themeSelector
 from uiwiz.elements.toast import Toast as toast
 from uiwiz.elements.toggle import Toggle as toggle
 from uiwiz.elements.upload import Upload as upload
+from uiwiz.elements.hidden_input import HiddenInput as hiddenInput

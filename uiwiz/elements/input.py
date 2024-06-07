@@ -29,7 +29,8 @@ class Input(Element):
         super().__init__("input")
         self.classes(Input._classes)
         self.attributes["name"] = name
-        self.attributes["placeholder"] = placeholder
+        if placeholder:
+            self.attributes["placeholder"] = placeholder
         self.attributes["autocomplete"] = "off"
 
         if on_change:

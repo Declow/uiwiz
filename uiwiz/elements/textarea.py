@@ -18,7 +18,8 @@ class TextArea(Element):
     ) -> None:
         super().__init__("textarea")
         self.attributes["name"] = name
-        self.attributes["placeholder"] = placeholder
+        if placeholder:
+            self.attributes["placeholder"] = placeholder
         self.classes(TextArea._classes)
 
         if on_change:
