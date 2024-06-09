@@ -1,6 +1,5 @@
-
-
 from typing import Any
+
 from uiwiz.element import Element
 
 

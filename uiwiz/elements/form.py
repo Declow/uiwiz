@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from typing import Callable, List, Optional, Union
 
 from uiwiz.element import Element
+from uiwiz.elements.checkbox import Checkbox
 from uiwiz.elements.input import Input
 from uiwiz.elements.textarea import TextArea
-from uiwiz.elements.checkbox import Checkbox
 
 # from uiwiz.elements.
 

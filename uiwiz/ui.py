@@ -11,6 +11,7 @@ from uiwiz.elements.drawer import Drawer as drawer
 from uiwiz.elements.dropdown import Dropdown as dropdown
 from uiwiz.elements.footer import Footer as footer
 from uiwiz.elements.form import Form as form
+from uiwiz.elements.hidden_input import HiddenInput as hiddenInput
 from uiwiz.elements.html import Html as html
 from uiwiz.elements.input import Input as input
 from uiwiz.elements.label import Label as label
@@ -29,4 +30,3 @@ from uiwiz.elements.theme_selector import ThemeSelector as themeSelector
 from uiwiz.elements.toast import Toast as toast
 from uiwiz.elements.toggle import Toggle as toggle
 from uiwiz.elements.upload import Upload as upload
-from uiwiz.elements.hidden_input import HiddenInput as hiddenInput
