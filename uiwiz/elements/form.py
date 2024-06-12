@@ -10,7 +10,7 @@ from uiwiz.elements.textarea import TextArea
 
 
 @dataclass
-class FieldAnno:
+class UiAnno:
     type: Union[Input, TextArea, Checkbox] = None
     placeholder: Optional[str] = None
 

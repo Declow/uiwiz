@@ -1,13 +1,14 @@
 import inspect
+from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Annotated, Literal, get_args, get_origin, get_type_hints
+from typing import Annotated, Any, Literal, TypedDict, TypeVar, Union, get_args, get_origin, get_type_hints
 
 import uvicorn
 from pydantic import BaseModel, Field
 
 import uiwiz.ui as ui
 from uiwiz.app import UiwizApp
-from uiwiz.elements.form import FieldAnno
+from uiwiz.elements.form import UiAnno
 
 app = UiwizApp()
 
@@ -60,8 +61,13 @@ def render_element_radio(field_class: type, key: str) -> None:
             ui.radio(name=key, value=value)
 
 
-def render_element_dropdown(field_class: type, key: str) -> None:
-    ui.dropdown(key, get_args(field_class), "xxx")
+def render_element_dropdown(field_class: type, key: str, compact: bool) -> None:
+    if compact:
+        ui.dropdown(key, get_args(field_class), "xxx")
+    else:
+        with ui.row():
+            ui.element(content=display_name(key)).classes("flex-auto w-36 font-bold")
+            ui.dropdown(key, get_args(field_class), "xxx")
 
 
 def render_model(type: BaseModel, compact: bool = True) -> None:
@@ -86,37 +92,50 @@ def render_model(type: BaseModel, compact: bool = True) -> None:
                     if annotated:
                         field_type = args[0]
                         for ele in args:
-                            if isinstance(ele, FieldAnno):
+                            if isinstance(ele, UiAnno):
                                 render_label = False if ele.type is ui.hiddenInput else True
                                 placeholder = ele.placeholder if ele.placeholder else key
                                 render_element(ele.type, field_type, key, placeholder, compact, render_label)
                     else:
                         ele = switch.get(get_origin(field_type))
                         if ele:
-                            render_element_dropdown(field_type, key)
-                            render_element_radio(field_type, key)
+                            render_element_dropdown(field_type, key, compact)
+                            # render_element_radio(field_type, key)
             ui.button("Save")
 
 
-def render_instance(instance: BaseModel) -> None:
-    if isinstance(instance, BaseModel) == False:
-        raise ValueError("type must be a pydantic model")
+T = TypeVar("T")
+
+
+def render_instance(instance: Union[BaseModel, T]) -> None:
+    fields: dict
+    if isinstance(instance, dict):
+        fields = instance
+    else:
+        fields = get_type_hints(instance)
 
     with ui.element().classes("card w-96 bg-base-100 shadow-lg"):
         with ui.col():
-            for k, v in instance.model_fields.items():
+            for k in fields.keys():
                 with ui.row():
                     ui.element(content=display_name(k)).classes("flex-auto w-36 font-bold")
-                    ui.element(content=getattr(instance, k))
+                    value: Any
+                    if isinstance(instance, dict):
+                        value = instance.get(k)
+                    else:
+                        value = getattr(instance, k)
+                    ui.element(content=value)
+
+def render_data()
 
 
 class DataInput(BaseModel):
+    id: Annotated[int, UiAnno(ui.hiddenInput)]
     enum: Literal["asd", "ok"] = "ok"
-    id: Annotated[int, FieldAnno(ui.hiddenInput)]
     only_str_defined: str
-    name: Annotated[str, FieldAnno(ui.input, "test")] = Field(min_length=1)
-    desc: Annotated[str, FieldAnno(ui.textarea)] = Field(min_length=1)
-    age: Annotated[int, FieldAnno(ui.input)] = Field(ge=0)
+    name: Annotated[str, UiAnno(ui.input, "test")] = Field(min_length=1)
+    desc: Annotated[str, UiAnno(ui.textarea)] = Field(min_length=1)
+    age: Annotated[int, UiAnno(ui.input)] = Field(ge=0)
     is_active: bool = False
     event_at_date: date
 
@@ -130,11 +149,25 @@ def create_form():
     return form
 
 
+@dataclass
+class TestDataClasses:
+    id: int
+    name: str
+    enum: Literal["asd", "ok"] = "ok"
+
+
+class Test(TypedDict):
+    id: int
+    name: str
+
+
 def create_display():
     ins = DataInput(
         id=1, only_str_defined="test", name="test", desc="test", age=1, is_active=True, event_at_date=date.today()
     )
     render_instance(ins)
+    render_instance(TestDataClasses(id=1, name="asdf"))
+    render_instance(Test(id=1, name="asdf"))
 
 
 @app.ui("/handle/submit")
