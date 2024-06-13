@@ -5,7 +5,7 @@ from uiwiz.element import Element
 
 class Input(Element):
     root_class: str = "input "
-    _classes: str = "input-bordered w-full max-w-xs"
+    _classes: str = "input-bordered w-full"
 
     def __init__(
         self,
