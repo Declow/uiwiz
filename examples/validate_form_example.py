@@ -1,14 +1,17 @@
 import inspect
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Annotated, Any, Literal, TypedDict, TypeVar, Union, get_args, get_origin, get_type_hints
+from typing import Annotated, Any, Literal, Optional, get_args, get_origin, get_type_hints
 
 import uvicorn
 from pydantic import BaseModel, Field
+from pydantic_core import PydanticUndefinedType
 
 import uiwiz.ui as ui
 from uiwiz.app import UiwizApp
 from uiwiz.elements.form import UiAnno
+from uiwiz.elements.label import Label
+from uiwiz.elements.radio import Radio
 
 app = UiwizApp()
 
@@ -23,7 +26,7 @@ switch = {
     int: ui.input,
     float: ui.input,
     bool: ui.toggle,
-    Literal: ui.radio,
+    Literal: ui.dropdown,
     date: ui.datepicker,
     datetime: ui.datepicker,
 }
@@ -34,24 +37,38 @@ def display_name(input: str) -> str:
 
 
 def render_element(
-    ele: ui.element, field_class: type, key: str, placeholder: str, compact: bool, render_label=True
+    ele: ui.element,
+    field_class: type,
+    key: str,
+    placeholder: str,
+    compact: bool,
+    render_label: bool = True,
+    classes: Optional[str] = None,
+    value: Any = None,
 ) -> None:
     kwargs = {"name": key}
+    if value:
+        kwargs["value"] = value
 
     place = display_name(placeholder)
+    label: Optional[Label] = None
     if render_label:
         if compact:
             if inspect.signature(ele).parameters.get("placeholder") is None:
-                ui.label(place)
+                label = ui.label(place).classes("flex-auto w-24")
             else:
                 kwargs["placeholder"] = place
         else:
-            ui.label(place).classes("font-bold")
+            label = ui.label(place).classes("flex-auto w-36 font-bold")
     if field_class is Literal:
         print("field class is literal")
     el: ui.element = ele(**kwargs)
+    if classes:
+        el.classes(classes)
     if field_class is int:
         el.value = "0"
+    if label:
+        label.set_for(el)
 
 
 def render_element_radio(field_class: type, key: str) -> None:
@@ -61,22 +78,23 @@ def render_element_radio(field_class: type, key: str) -> None:
             ui.radio(name=key, value=value)
 
 
-def render_element_dropdown(field_class: type, key: str, compact: bool) -> None:
+def render_element_dropdown(field_class: type, key: str, placeholder: Optional[str], compact: bool) -> None:
+    if isinstance(placeholder, PydanticUndefinedType):
+        placeholder = "---"
     if compact:
-        ui.dropdown(key, get_args(field_class), "xxx")
+        ui.dropdown(key, get_args(field_class), placeholder)
     else:
-        with ui.row():
-            ui.element(content=display_name(key)).classes("flex-auto w-36 font-bold")
-            ui.dropdown(key, get_args(field_class), "xxx")
+        ui.element(content=display_name(key)).classes("flex-auto w-36 font-bold")
+        ui.dropdown(key, get_args(field_class), placeholder)
 
 
-def render_model(type: BaseModel, compact: bool = True) -> None:
-    if issubclass(type, BaseModel) == False:
+def render_model(_type: BaseModel, compact: bool = True) -> None:
+    if issubclass(_type, BaseModel) == False:
         raise ValueError("type must be a pydantic model")
 
     with ui.element().classes("card w-96 bg-base-100 shadow-md"):
         with ui.col():
-            hints = get_type_hints(type, include_extras=True)
+            hints = get_type_hints(_type, include_extras=True)
             for key, field_type in hints.items():
                 args = get_args(field_type)
                 annotated = Annotated == get_origin(field_type)
@@ -95,18 +113,35 @@ def render_model(type: BaseModel, compact: bool = True) -> None:
                             if isinstance(ele, UiAnno):
                                 render_label = False if ele.type is ui.hiddenInput else True
                                 placeholder = ele.placeholder if ele.placeholder else key
-                                render_element(ele.type, field_type, key, placeholder, compact, render_label)
+                                if field_args := get_args(field_type):
+                                    for arg in field_args:
+                                        with ui.row():
+                                            render_element(
+                                                ele.type,
+                                                field_type,
+                                                key,
+                                                arg,
+                                                compact,
+                                                render_label,
+                                                ele.classes,
+                                                value=arg,
+                                            )
+                                else:
+                                    render_element(
+                                        ele.type, field_type, key, placeholder, compact, render_label, ele.classes
+                                    )
                     else:
                         ele = switch.get(get_origin(field_type))
                         if ele:
-                            render_element_dropdown(field_type, key, compact)
+                            render_element_dropdown(field_type, key, _type.model_fields[key].default, compact)
                             # render_element_radio(field_type, key)
             ui.button("Save")
 
 
 class DataInput(BaseModel):
     id: Annotated[int, UiAnno(ui.hiddenInput)]
-    enum: Literal["asd", "ok"] = "ok"
+    enum: Literal["asd", "ok"]
+    enum2: Annotated[Literal["asd", "ok"], UiAnno(ui.radio)] = "ok"
     only_str_defined: str
     name: Annotated[str, UiAnno(ui.input, "test")] = Field(min_length=1)
     desc: Annotated[str, UiAnno(ui.textarea)] = Field(min_length=1)
@@ -131,7 +166,6 @@ class TestDataClasses:
     enum: Literal["asd", "ok"] = "ok"
 
 
-
 def create_display():
     ins = DataInput(
         id=1, only_str_defined="test", name="test", desc="test", age=1, is_active=True, event_at_date=date.today()
@@ -154,7 +188,7 @@ def handle_submit(data: DataInput):
 async def test():
     create_nav()
     with ui.element().classes("col lg:px-80"):
-        create_display()
+        # create_display()
         create_form()
 
 

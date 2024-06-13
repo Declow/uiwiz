@@ -13,6 +13,7 @@ from uiwiz.elements.textarea import TextArea
 class UiAnno:
     type: Union[Input, TextArea, Checkbox] = None
     placeholder: Optional[str] = None
+    classes: Optional[str] = None
 
 
 class Form(Element):
