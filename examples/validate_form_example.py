@@ -104,31 +104,6 @@ def render_model(type: BaseModel, compact: bool = True) -> None:
             ui.button("Save")
 
 
-T = TypeVar("T")
-
-
-def render_instance(instance: Union[BaseModel, T]) -> None:
-    fields: dict
-    if isinstance(instance, dict):
-        fields = instance
-    else:
-        fields = get_type_hints(instance)
-
-    with ui.element().classes("card w-96 bg-base-100 shadow-lg"):
-        with ui.col():
-            for k in fields.keys():
-                with ui.row():
-                    ui.element(content=display_name(k)).classes("flex-auto w-36 font-bold")
-                    value: Any
-                    if isinstance(instance, dict):
-                        value = instance.get(k)
-                    else:
-                        value = getattr(instance, k)
-                    ui.element(content=value)
-
-def render_data()
-
-
 class DataInput(BaseModel):
     id: Annotated[int, UiAnno(ui.hiddenInput)]
     enum: Literal["asd", "ok"] = "ok"
@@ -156,18 +131,17 @@ class TestDataClasses:
     enum: Literal["asd", "ok"] = "ok"
 
 
-class Test(TypedDict):
-    id: int
-    name: str
-
 
 def create_display():
     ins = DataInput(
         id=1, only_str_defined="test", name="test", desc="test", age=1, is_active=True, event_at_date=date.today()
     )
-    render_instance(ins)
-    render_instance(TestDataClasses(id=1, name="asdf"))
-    render_instance(Test(id=1, name="asdf"))
+    # ui.show(ins)
+    # ui.show(TestDataClasses(id=1, name="asdf"))
+    # dic = {"id": 1, "name": "test", "enum": ["asd", "ok"], "test": {"test": "test"}}
+    # ui.show(dic)
+    # ui.show([ins,ins,ins,ins])
+    # ui.show([dic,dic])
 
 
 @app.ui("/handle/submit")
