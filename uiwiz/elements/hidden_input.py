@@ -4,6 +4,8 @@ from uiwiz.element import Element
 
 
 class HiddenInput(Element):
+    _classes: str = ""
+
     def __init__(self, name: str = None, value: Any = None) -> None:
         """HiddenInput
 
