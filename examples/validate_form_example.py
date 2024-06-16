@@ -1,7 +1,7 @@
 import inspect
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Annotated, Any, Literal, Optional, get_args, get_origin, get_type_hints
+from typing import Annotated, Any, Literal, Optional, Tuple, get_args, get_origin, get_type_hints
 
 import uvicorn
 from pydantic import BaseModel, Field
@@ -98,15 +98,8 @@ def render_model(_type: BaseModel, compact: bool = True) -> None:
             for key, field_type in hints.items():
                 args = get_args(field_type)
                 annotated = Annotated == get_origin(field_type)
-                # type_to_use = (
-                #     switch.get(get_origin(field_type)) if switch.get(get_origin(field_type)) else switch.get(field_type)
-                # )
-                if len(args) == 0:
-                    if annotated:
-                        render_element(switch.get(field_type), field_type, key, key, compact)
-
-                    render_element(switch.get(field_type), field_type, key, key, compact)
-                else:
+                render_type_hint_without_args(args, annotated, ui.input, field_type, key, compact)
+                if len(args) > 0:
                     if annotated:
                         field_type = args[0]
                         for ele in args:
@@ -134,9 +127,14 @@ def render_model(_type: BaseModel, compact: bool = True) -> None:
                         ele = switch.get(get_origin(field_type))
                         if ele:
                             render_element_dropdown(field_type, key, _type.model_fields[key].default, compact)
-                            # render_element_radio(field_type, key)
             ui.button("Save")
 
+def render_type_hint_without_args(args: Tuple, annotated: bool, ele: ui.element, field_type, key, compact) -> ui.element:
+    if len(args) == 0:
+        if annotated:
+            render_element(switch.get(field_type), field_type, key, key, compact)
+
+        render_element(switch.get(field_type), field_type, key, key, compact)
 
 class DataInput(BaseModel):
     id: Annotated[int, UiAnno(ui.hiddenInput)]
