@@ -5,9 +5,9 @@ from typing import Annotated, Literal
 import uvicorn
 from pydantic import BaseModel, Field
 
-from uiwiz.model_handler import UiAnno
 import uiwiz.ui as ui
 from uiwiz.app import UiwizApp
+from uiwiz.model_handler import UiAnno
 
 app = UiwizApp()
 
@@ -33,27 +33,15 @@ def create_form():
     ui.modelForm(DataInput, compact=False).on_submit(handle_submit)
     ui.modelForm(DataInput, compact=True)
 
-    # render_model(
-    #     DataInput,
-    #     handle_submit,
-    #     compact=True,
-    #     id={"model": ui.input, "placeholder": 1},
-    #     enum={
-    #         "model": ui.dropdown,
-    #         "items": ["asd", "ok", "values"],
-    #     },
-    # )
-
-    # render_model(
-    #     DataInput,
-    #     None,
-    #     compact=True,
-    #     id={"model": ui.input, "placeholder": 1},
-    #     enum={
-    #         "model": ui.dropdown,
-    #         "items": ["asd", "ok", "values"],
-    #     },
-    # )
+    ui.modelForm(
+        DataInput,
+        compact=True,
+        id={"ui": ui.input, "placeholder": 1},
+        enum={
+            "ui": ui.dropdown,
+            "items": ["asd", "ok", "values"],
+        },
+    ).on_submit(handle_submit)
 
 
 @dataclass

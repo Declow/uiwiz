@@ -1,10 +1,11 @@
+import inspect
 from dataclasses import dataclass
 from datetime import date, datetime
-import inspect
-from typing import Annotated, Any, Callable, Literal, Optional, Tuple, Union, get_args, get_origin, get_type_hints
+from typing import Annotated, Any, Literal, Optional, Tuple, Union, get_args, get_origin, get_type_hints
 
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
+
 from uiwiz.element import Element
 from uiwiz.elements.button import Button
 from uiwiz.elements.checkbox import Checkbox
@@ -46,18 +47,83 @@ class ModelForm:
     form: Form
     button: Button
 
-    def __init__(self, model: BaseModel, compact: bool = True):
+    def __init__(self, model: BaseModel, compact: bool = True, **kwargs):
         self.model = model
         self.compact = compact
-        self.render_model(
-            model,
-        )
+        self.render_model(model, **kwargs)
         self.button.render_html = False
 
     def on_submit(self, *args, **kwargs) -> None:
         self.button.render_html = True
         self.form.on_submit(*args, **kwargs)
         return self
+
+    def render_model(self, _type: BaseModel, **kwargs) -> None:
+        """
+        Why give the on submit function as a parameter?
+        The renderere needs to know if the save should be created or not.
+        """
+        if issubclass(_type, BaseModel) == False:
+            raise ValueError("type must be a pydantic model")
+
+        with Form().classes("card w-96 bg-base-100 shadow-md") as form:
+            with Col():
+                hints = get_type_hints(_type, include_extras=True)
+                for key, field_type in hints.items():
+                    args = get_args(field_type)
+                    annotated = Annotated == get_origin(field_type)
+                    if key in kwargs:
+                        self.render_key_override(key, field_type, **kwargs)
+                    else:
+                        self.render_type_hint_without_args(args, annotated, field_type, key)
+                        self.render_with_args_annotated(args, annotated, _type, field_type, key)
+                self.button = Button("Save")
+        self.form = form
+
+    def render_key_override(self, key: str, field_type: type, **kwargs) -> None:
+        if key in kwargs:
+            args: dict = kwargs[key]
+            model = args.pop("ui")
+            if not issubclass(model, Element):
+                raise ValueError("type must be a ui element")
+            if "name" not in args:
+                args["name"] = key
+
+            model(**args)
+
+            # self.render_element(
+            #     model,
+            #     field_type,
+            #     key,
+            # )
+        else:
+            raise ValueError("key not found in kwargs. Unable to render")
+
+    def render_type_hint_without_args(self, args: Tuple, annotated: bool, field_type, key) -> Element:
+        if len(args) == 0:
+            if annotated:
+                self.render_element(switch.get(field_type), field_type, key, key, self.compact)
+
+            self.render_element(switch.get(field_type), field_type, key, key, self.compact)
+
+    def render_with_args_annotated(
+        self, args: Tuple, annotated: bool, _type: BaseModel, field_type: Tuple, key: str
+    ) -> Element:
+        if len(args) > 0:
+            if annotated:
+                field_type = args[0]
+                for ele in args:
+                    if isinstance(ele, UiAnno):
+                        render_label = False if ele.type is HiddenInput else True
+                        placeholder = ele.placeholder if ele.placeholder else key
+                        if field_args := get_args(field_type):
+                            self.render_element_radio(ele, field_type, key, render_label, field_args)
+                        else:
+                            self.render_element(ele.type, field_type, key, placeholder, render_label, ele.classes)
+            else:
+                ele = switch.get(get_origin(field_type))
+                if ele:
+                    self.render_element_dropdown(field_type, key, _type.model_fields[key].default)
 
     def render_element(
         self,
@@ -83,8 +149,6 @@ class ModelForm:
                     kwargs["placeholder"] = place
             else:
                 label = Label(place).classes("flex-auto w-36 font-bold")
-        if field_class is Literal:
-            print("field class is literal")
         el: Element = ele(**kwargs)
         if classes:
             el.classes(classes)
@@ -93,11 +157,32 @@ class ModelForm:
         if label:
             label.set_for(el)
 
-    def render_element_radio(self, field_class: type, key: str) -> None:
-        for value in get_args(field_class):
+    # def create_kwargs(
+    #     self,
+    #     key: str,
+    # ) -> dict:
+    #     # kwargs = {"name": key, "placeholder": }
+    #     return kwargs
+
+    def render_element_radio(
+        self,
+        ele: Element,
+        field_class: type,
+        key: str,
+        render_label: bool,
+        field_args: Tuple,
+    ) -> None:
+        for arg in field_args:
             with Row():
-                Element(content=__display_name__(value)).classes("flex-auto w-36 font-bold")
-                Radio(name=key, value=value)
+                self.render_element(
+                    Radio,
+                    field_class,
+                    key,
+                    arg,
+                    render_label,
+                    ele.classes,
+                    value=arg,
+                )
 
     def render_element_dropdown(self, field_class: type, key: str, placeholder: Optional[str]) -> None:
         if isinstance(placeholder, PydanticUndefinedType):
@@ -107,74 +192,3 @@ class ModelForm:
         else:
             Element(content=__display_name__(key)).classes("flex-auto w-36 font-bold")
             Dropdown(key, get_args(field_class), placeholder)
-
-    def render_model(self, _type: BaseModel, **kwargs) -> None:
-        """
-        Why give the on submit function as a parameter?
-        The renderere needs to know if the save should be created or not.
-        """
-        if issubclass(_type, BaseModel) == False:
-            raise ValueError("type must be a pydantic model")
-
-        with Form().classes("card w-96 bg-base-100 shadow-md") as form:
-            with Col():
-                hints = get_type_hints(_type, include_extras=True)
-                for key, field_type in hints.items():
-                    args = get_args(field_type)
-                    annotated = Annotated == get_origin(field_type)
-                    if key in kwargs:
-                        self.render_key_override(key, **kwargs)
-                    else:
-                        self.render_type_hint_without_args(args, annotated, field_type, key)
-                        self.render_with_args_annotated(args, annotated, _type, field_type, key)
-                self.button = Button("Save")
-        self.form = form
-
-    def render_key_override(self, key: str, **kwargs) -> None:
-        if key in kwargs:
-            args: dict = kwargs[key]
-            model = args.pop("model")
-            if not issubclass(model, Element):
-                raise ValueError("type must be a ui element")
-            if "name" not in args:
-                args["name"] = key
-
-            model(**args)
-        else:
-            raise ValueError("key not found in kwargs. Unable to render")
-
-    def render_type_hint_without_args(self, args: Tuple, annotated: bool, field_type, key) -> Element:
-        if len(args) == 0:
-            if annotated:
-                self.render_element(switch.get(field_type), field_type, key, key, self.compact)
-
-            self.render_element(switch.get(field_type), field_type, key, key, self.compact)
-
-    def render_with_args_annotated(
-        self, args: Tuple, annotated: bool, _type: str, field_type: Tuple, key: str
-    ) -> Element:
-        if len(args) > 0:
-            if annotated:
-                field_type = args[0]
-                for ele in args:
-                    if isinstance(ele, UiAnno):
-                        render_label = False if ele.type is HiddenInput else True
-                        placeholder = ele.placeholder if ele.placeholder else key
-                        if field_args := get_args(field_type):
-                            for arg in field_args:
-                                with Row():
-                                    self.render_element(
-                                        ele.type,
-                                        field_type,
-                                        key,
-                                        arg,
-                                        render_label,
-                                        ele.classes,
-                                        value=arg,
-                                    )
-                        else:
-                            self.render_element(ele.type, field_type, key, placeholder, render_label, ele.classes)
-            else:
-                ele = switch.get(get_origin(field_type))
-                if ele:
-                    self.render_element_dropdown(field_type, key, _type.model_fields[key].default)
