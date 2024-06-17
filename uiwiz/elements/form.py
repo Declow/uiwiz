@@ -6,15 +6,6 @@ from uiwiz.elements.checkbox import Checkbox
 from uiwiz.elements.input import Input
 from uiwiz.elements.textarea import TextArea
 
-# from uiwiz.elements.
-
-
-@dataclass
-class UiAnno:
-    type: Union[Input, TextArea, Checkbox] = None
-    placeholder: Optional[str] = None
-    classes: Optional[str] = None
-
 
 class Form(Element):
     root_class: str = ""
