@@ -88,7 +88,7 @@ def render_element_dropdown(field_class: type, key: str, placeholder: Optional[s
         ui.dropdown(key, get_args(field_class), placeholder)
 
 
-def render_model(_type: BaseModel, compact: bool = True) -> None:
+def render_model(_type: BaseModel, compact: bool = True, **kwargs) -> None:
     if issubclass(_type, BaseModel) == False:
         raise ValueError("type must be a pydantic model")
 
@@ -98,43 +98,67 @@ def render_model(_type: BaseModel, compact: bool = True) -> None:
             for key, field_type in hints.items():
                 args = get_args(field_type)
                 annotated = Annotated == get_origin(field_type)
-                render_type_hint_without_args(args, annotated, ui.input, field_type, key, compact)
-                if len(args) > 0:
-                    if annotated:
-                        field_type = args[0]
-                        for ele in args:
-                            if isinstance(ele, UiAnno):
-                                render_label = False if ele.type is ui.hiddenInput else True
-                                placeholder = ele.placeholder if ele.placeholder else key
-                                if field_args := get_args(field_type):
-                                    for arg in field_args:
-                                        with ui.row():
-                                            render_element(
-                                                ele.type,
-                                                field_type,
-                                                key,
-                                                arg,
-                                                compact,
-                                                render_label,
-                                                ele.classes,
-                                                value=arg,
-                                            )
-                                else:
-                                    render_element(
-                                        ele.type, field_type, key, placeholder, compact, render_label, ele.classes
-                                    )
-                    else:
-                        ele = switch.get(get_origin(field_type))
-                        if ele:
-                            render_element_dropdown(field_type, key, _type.model_fields[key].default, compact)
+                if key in kwargs:
+                    render_key_override(key, **kwargs)
+                else:
+                    render_type_hint_without_args(args, annotated, ui.input, field_type, key, compact)
+                    render_with_args_annotated(args, annotated, ui.toggle, _type, field_type, key, compact)
             ui.button("Save")
 
-def render_type_hint_without_args(args: Tuple, annotated: bool, ele: ui.element, field_type, key, compact) -> ui.element:
+
+def render_key_override(key: str, **kwargs) -> None:
+    if key in kwargs:
+        args: dict = kwargs[key]
+        model = args.pop("model")
+        if not issubclass(model, ui.element):
+            raise ValueError("type must be a ui element")
+        if "name" not in args:
+            args["name"] = key
+        model(**args)
+    else:
+        raise ValueError("key not found in kwargs. Unable to render")
+
+
+def render_type_hint_without_args(
+    args: Tuple, annotated: bool, ele: ui.element, field_type, key, compact
+) -> ui.element:
     if len(args) == 0:
         if annotated:
             render_element(switch.get(field_type), field_type, key, key, compact)
 
         render_element(switch.get(field_type), field_type, key, key, compact)
+
+
+def render_with_args_annotated(
+    args: Tuple, annotated: bool, ele: ui.element, _type: str, field_type: Tuple, key: str, compact: bool
+) -> ui.element:
+    if len(args) > 0:
+        if annotated:
+            field_type = args[0]
+            for ele in args:
+                if isinstance(ele, UiAnno):
+                    render_label = False if ele.type is ui.hiddenInput else True
+                    placeholder = ele.placeholder if ele.placeholder else key
+                    if field_args := get_args(field_type):
+                        for arg in field_args:
+                            with ui.row():
+                                render_element(
+                                    ele.type,
+                                    field_type,
+                                    key,
+                                    arg,
+                                    compact,
+                                    render_label,
+                                    ele.classes,
+                                    value=arg,
+                                )
+                    else:
+                        render_element(ele.type, field_type, key, placeholder, compact, render_label, ele.classes)
+        else:
+            ele = switch.get(get_origin(field_type))
+            if ele:
+                render_element_dropdown(field_type, key, _type.model_fields[key].default, compact)
+
 
 class DataInput(BaseModel):
     id: Annotated[int, UiAnno(ui.hiddenInput)]
@@ -153,6 +177,17 @@ def create_form():
         render_model(DataInput, compact=False)
     with ui.form().on_submit(handle_submit) as form:
         render_model(DataInput, compact=True)
+
+    with ui.form().on_submit(handle_submit) as form:
+        render_model(
+            DataInput,
+            compact=True,
+            id={"model": ui.input, "placeholder": 1},
+            enum={
+                "model": ui.dropdown,
+                "items": ["asd", "ok", "values"],
+            },
+        )
 
     return form
 
