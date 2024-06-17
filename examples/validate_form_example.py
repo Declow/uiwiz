@@ -19,7 +19,7 @@ def create_nav():
 
 class DataInput(BaseModel):
     id: Annotated[int, UiAnno(ui.hiddenInput)]
-    enum: Literal["asd", "ok"]
+    enum: Literal["val", "ok"]
     enum2: Annotated[Literal["asd", "ok"], UiAnno(ui.radio)] = "ok"
     only_str_defined: str
     name: Annotated[str, UiAnno(ui.input, "test")] = Field(min_length=1)

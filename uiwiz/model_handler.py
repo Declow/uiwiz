@@ -102,9 +102,9 @@ class ModelForm:
     def render_type_hint_without_args(self, args: Tuple, annotated: bool, field_type, key) -> Element:
         if len(args) == 0:
             if annotated:
-                self.render_element(switch.get(field_type), field_type, key, key, self.compact)
+                self.render_element(switch.get(field_type), field_type, key, key)
 
-            self.render_element(switch.get(field_type), field_type, key, key, self.compact)
+            self.render_element(switch.get(field_type), field_type, key, key)
 
     def render_with_args_annotated(
         self, args: Tuple, annotated: bool, _type: BaseModel, field_type: Tuple, key: str
@@ -114,12 +114,11 @@ class ModelForm:
                 field_type = args[0]
                 for ele in args:
                     if isinstance(ele, UiAnno):
-                        render_label = False if ele.type is HiddenInput else True
                         placeholder = ele.placeholder if ele.placeholder else key
                         if field_args := get_args(field_type):
-                            self.render_element_radio(ele, field_type, key, render_label, field_args)
+                            self.render_element_radio(ele, field_type, key, field_args)
                         else:
-                            self.render_element(ele.type, field_type, key, placeholder, render_label, ele.classes)
+                            self.render_element(ele.type, field_type, key, placeholder, ele.classes)
             else:
                 ele = switch.get(get_origin(field_type))
                 if ele:
@@ -131,24 +130,26 @@ class ModelForm:
         field_class: type,
         key: str,
         placeholder: str,
-        render_label: bool = True,
         classes: Optional[str] = None,
         value: Any = None,
+        **kwargs,
     ) -> None:
-        kwargs = {"name": key}
+        kwargs = {**{"name": key}, **kwargs}
         if value:
             kwargs["value"] = value
 
         place = __display_name__(placeholder)
         label: Optional[Label] = None
-        if render_label:
-            if self.compact:
-                if inspect.signature(ele).parameters.get("placeholder") is None:
-                    label = Label(place).classes("flex-auto w-24")
-                else:
-                    kwargs["placeholder"] = place
+        if ele is not HiddenInput:
+            label = Label(place).classes("flex-auto w-36 font-bold")
+
+            if self.compact and inspect.signature(ele).parameters.get("placeholder"):
+                label.render_html = False
+                kwargs["placeholder"] = place
             else:
-                label = Label(place).classes("flex-auto w-36 font-bold")
+                label.classes("flex-auto w-24")
+                label.render_html = True
+
         el: Element = ele(**kwargs)
         if classes:
             el.classes(classes)
@@ -157,19 +158,16 @@ class ModelForm:
         if label:
             label.set_for(el)
 
-    # def create_kwargs(
-    #     self,
-    #     key: str,
-    # ) -> dict:
-    #     # kwargs = {"name": key, "placeholder": }
-    #     return kwargs
+    # def create_kwargs(self, key: str, placeholder: str, value: str, **kwargs) -> dict:
+    #     __kwargs = {**{"name": key, "placeholder": placeholder, "value": value}, **kwargs}
+    #     print(__kwargs)
+    #     return __kwargs
 
     def render_element_radio(
         self,
-        ele: Element,
+        ele: UiAnno,
         field_class: type,
         key: str,
-        render_label: bool,
         field_args: Tuple,
     ) -> None:
         for arg in field_args:
@@ -179,16 +177,12 @@ class ModelForm:
                     field_class,
                     key,
                     arg,
-                    render_label,
                     ele.classes,
                     value=arg,
                 )
 
     def render_element_dropdown(self, field_class: type, key: str, placeholder: Optional[str]) -> None:
         if isinstance(placeholder, PydanticUndefinedType):
-            placeholder = "---"
-        if self.compact:
-            Dropdown(key, get_args(field_class), placeholder)
-        else:
-            Element(content=__display_name__(key)).classes("flex-auto w-36 font-bold")
-            Dropdown(key, get_args(field_class), placeholder)
+            placeholder = __display_name__(key)
+
+        self.render_element(Dropdown, field_class, key, placeholder, items=get_args(field_class))
