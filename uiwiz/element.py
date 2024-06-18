@@ -74,15 +74,15 @@ class Element:
 
     @property
     def id(self):
-        return self.attributes["id"]
+        return self.attributes.get("id")
 
     @property
     def name(self):
-        return self.attributes["name"]
+        return self.attributes.get("name")
 
     @property
     def value(self):
-        return self.attributes["value"]
+        return self.attributes.get("value")
 
     @value.setter
     def value(self, value):
