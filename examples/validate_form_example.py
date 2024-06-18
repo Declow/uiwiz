@@ -39,6 +39,7 @@ def create_form():
         id={"ui": ui.input, "placeholder": 1},
         enum={
             "ui": ui.dropdown,
+            "placeholder": "Select",
             "items": ["asd", "ok", "values"],
         },
     ).on_submit(handle_submit)

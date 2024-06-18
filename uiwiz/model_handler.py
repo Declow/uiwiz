@@ -58,11 +58,7 @@ class ModelForm:
         self.form.on_submit(*args, **kwargs)
         return self
 
-    def render_model(self, _type: BaseModel, **kwargs) -> None:
-        """
-        Why give the on submit function as a parameter?
-        The renderere needs to know if the save should be created or not.
-        """
+    def render_model(self, _type: BaseModel, **kwargs) -> Form:
         if issubclass(_type, BaseModel) == False:
             raise ValueError("type must be a pydantic model")
 
@@ -73,29 +69,28 @@ class ModelForm:
                     args = get_args(field_type)
                     annotated = Annotated == get_origin(field_type)
                     if key in kwargs:
-                        self.render_key_override(key, field_type, **kwargs)
+                        self.render_key_override(args, annotated, key, field_type, **kwargs)
                     else:
                         self.render_type_hint_without_args(args, annotated, field_type, key)
                         self.render_with_args_annotated(args, annotated, _type, field_type, key)
                 self.button = Button("Save")
         self.form = form
 
-    def render_key_override(self, key: str, field_type: type, **kwargs) -> None:
+    def render_key_override(self, args: Tuple, annotated: bool, key: str, field_type: type, **kwargs) -> None:
         if key in kwargs:
-            args: dict = kwargs[key]
-            model = args.pop("ui")
+            model_args: dict = kwargs[key]
+            model = model_args.pop("ui")
+            placeholder = str(model_args.pop("placeholder", key))
             if not issubclass(model, Element):
                 raise ValueError("type must be a ui element")
-            if "name" not in args:
-                args["name"] = key
+            if "name" not in model_args:
+                model_args["name"] = key
 
-            model(**args)
-
-            # self.render_element(
-            #     model,
-            #     field_type,
-            #     key,
-            # )
+            field_type, arg = self.get_type_and_uianno(args)
+            classes = None
+            if arg:
+                classes = arg.classes
+            self.render_element(model, field_type, key, placeholder, classes, **model_args)
         else:
             raise ValueError("key not found in kwargs. Unable to render")
 
@@ -111,18 +106,24 @@ class ModelForm:
     ) -> Element:
         if len(args) > 0:
             if annotated:
-                field_type = args[0]
-                for ele in args:
-                    if isinstance(ele, UiAnno):
-                        placeholder = ele.placeholder if ele.placeholder else key
-                        if field_args := get_args(field_type):
-                            self.render_element_radio(ele, field_type, key, field_args)
-                        else:
-                            self.render_element(ele.type, field_type, key, placeholder, ele.classes)
+                field_type, ele = self.get_type_and_uianno(args)
+                if ele:
+                    placeholder = ele.placeholder if ele.placeholder else key
+                    if field_args := get_args(field_type):
+                        self.render_element_radio(ele, field_type, key, field_args)
+                    else:
+                        self.render_element(ele.type, field_type, key, placeholder, ele.classes)
             else:
                 ele = switch.get(get_origin(field_type))
                 if ele:
                     self.render_element_dropdown(field_type, key, _type.model_fields[key].default)
+
+    def get_type_and_uianno(self, args: Tuple) -> Optional[Tuple[type, UiAnno]]:
+        field_type = args[0]
+        for arg in args:
+            if isinstance(arg, UiAnno):
+                return field_type, arg
+        return field_type, None
 
     def render_element(
         self,
@@ -131,12 +132,9 @@ class ModelForm:
         key: str,
         placeholder: str,
         classes: Optional[str] = None,
-        value: Any = None,
         **kwargs,
     ) -> None:
         kwargs = {**{"name": key}, **kwargs}
-        if value:
-            kwargs["value"] = value
 
         place = __display_name__(placeholder)
         label: Optional[Label] = None
@@ -153,7 +151,7 @@ class ModelForm:
         el: Element = ele(**kwargs)
         if classes:
             el.classes(classes)
-        if field_class is int:
+        if field_class is int and placeholder is None:
             el.value = "0"
         if label:
             label.set_for(el)
