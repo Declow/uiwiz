@@ -31,7 +31,7 @@ class DataInput(BaseModel):
 
 def create_form():
     ui.modelForm(DataInput, compact=False).on_submit(handle_submit)
-    ui.modelForm(DataInput, compact=True)
+    ui.modelForm(DataInput, compact=True)  # Missing on submit. No button is created
 
     ui.modelForm(
         DataInput,
@@ -45,25 +45,6 @@ def create_form():
     ).on_submit(handle_submit)
 
 
-@dataclass
-class TestDataClasses:
-    id: int
-    name: str
-    enum: Literal["asd", "ok"] = "ok"
-
-
-def create_display():
-    ins = DataInput(
-        id=1, only_str_defined="test", name="test", desc="test", age=1, is_active=True, event_at_date=date.today()
-    )
-    # ui.show(ins)
-    # ui.show(TestDataClasses(id=1, name="asdf"))
-    # dic = {"id": 1, "name": "test", "enum": ["asd", "ok"], "test": {"test": "test"}}
-    # ui.show(dic)
-    # ui.show([ins,ins,ins,ins])
-    # ui.show([dic,dic])
-
-
 @app.ui("/handle/submit")
 def handle_submit(data: DataInput):
     ui.toast("Data saved").success()
@@ -74,7 +55,6 @@ def handle_submit(data: DataInput):
 async def test():
     create_nav()
     with ui.element().classes("col lg:px-80"):
-        # create_display()
         create_form()
 
 

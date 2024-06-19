@@ -53,7 +53,7 @@ class ModelForm:
         self.render_model(model, **kwargs)
         self.button.render_html = False
 
-    def on_submit(self, *args, **kwargs) -> None:
+    def on_submit(self, *args, **kwargs) -> "ModelForm":
         self.button.render_html = True
         self.form.on_submit(*args, **kwargs)
         return self
@@ -82,7 +82,7 @@ class ModelForm:
             model = model_args.pop("ui")
             placeholder = str(model_args.pop("placeholder", key))
             if not issubclass(model, Element):
-                raise ValueError("type must be a ui element")
+                raise ValueError("type must be type of Element")
             if "name" not in model_args:
                 model_args["name"] = key
 
@@ -90,16 +90,16 @@ class ModelForm:
             classes = None
             if arg:
                 classes = arg.classes
-            self.render_element(model, field_type, key, placeholder, classes, **model_args)
+            self.render_element(model, field_type, key, classes, placeholder=placeholder, **model_args)
         else:
             raise ValueError("key not found in kwargs. Unable to render")
 
     def render_type_hint_without_args(self, args: Tuple, annotated: bool, field_type, key) -> Element:
         if len(args) == 0:
             if annotated:
-                self.render_element(switch.get(field_type), field_type, key, key)
+                self.render_element(switch.get(field_type), field_type, key, placeholder=key)
 
-            self.render_element(switch.get(field_type), field_type, key, key)
+            self.render_element(switch.get(field_type), field_type, key, placeholder=key)
 
     def render_with_args_annotated(
         self, args: Tuple, annotated: bool, _type: BaseModel, field_type: Tuple, key: str
@@ -112,13 +112,13 @@ class ModelForm:
                     if field_args := get_args(field_type):
                         self.render_element_radio(ele, field_type, key, field_args)
                     else:
-                        self.render_element(ele.type, field_type, key, placeholder, ele.classes)
+                        self.render_element(ele.type, field_type, key, ele.classes, placeholder=placeholder)
             else:
                 ele = switch.get(get_origin(field_type))
                 if ele:
                     self.render_element_dropdown(field_type, key, _type.model_fields[key].default)
 
-    def get_type_and_uianno(self, args: Tuple) -> Optional[Tuple[type, UiAnno]]:
+    def get_type_and_uianno(self, args: Tuple) -> Optional[Tuple[type, Optional[UiAnno]]]:
         field_type = args[0]
         for arg in args:
             if isinstance(arg, UiAnno):
@@ -130,36 +130,32 @@ class ModelForm:
         ele: Element,
         field_class: type,
         key: str,
-        placeholder: str,
         classes: Optional[str] = None,
         **kwargs,
     ) -> None:
         kwargs = {**{"name": key}, **kwargs}
+        placeholder = "placeholder"
+        kwargs[placeholder] = __display_name__(kwargs[placeholder])
 
-        place = __display_name__(placeholder)
         label: Optional[Label] = None
         if ele is not HiddenInput:
-            label = Label(place).classes("flex-auto w-36 font-bold")
+            label = Label(kwargs[placeholder]).classes("flex-auto w-36 font-bold")
 
-            if self.compact and inspect.signature(ele).parameters.get("placeholder"):
+            if self.compact and inspect.signature(ele).parameters.get(placeholder):
                 label.render_html = False
-                kwargs["placeholder"] = place
             else:
                 label.classes("flex-auto w-24")
                 label.render_html = True
+        if not inspect.signature(ele).parameters.get(placeholder):
+            kwargs.pop(placeholder)
 
         el: Element = ele(**kwargs)
         if classes:
             el.classes(classes)
-        if field_class is int and placeholder is None:
+        if field_class is int and kwargs.get(placeholder) is None:
             el.value = "0"
         if label:
             label.set_for(el)
-
-    # def create_kwargs(self, key: str, placeholder: str, value: str, **kwargs) -> dict:
-    #     __kwargs = {**{"name": key, "placeholder": placeholder, "value": value}, **kwargs}
-    #     print(__kwargs)
-    #     return __kwargs
 
     def render_element_radio(
         self,
@@ -174,8 +170,8 @@ class ModelForm:
                     Radio,
                     field_class,
                     key,
-                    arg,
                     ele.classes,
+                    placeholder=arg,
                     value=arg,
                 )
 
@@ -183,4 +179,4 @@ class ModelForm:
         if isinstance(placeholder, PydanticUndefinedType):
             placeholder = __display_name__(key)
 
-        self.render_element(Dropdown, field_class, key, placeholder, items=get_args(field_class))
+        self.render_element(Dropdown, field_class, key, placeholder=placeholder, items=get_args(field_class))
