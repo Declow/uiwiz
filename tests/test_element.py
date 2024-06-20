@@ -1,6 +1,7 @@
 from unittest import mock
 
-from uiwiz import element, ui
+from uiwiz import ui
+from uiwiz.frame import Frame
 
 
 def test_element_html():
@@ -72,3 +73,38 @@ def test_before_render_lifecycle():
     str(el)
 
     mo.assert_called_once()
+
+
+def test_element_get_name():
+    el = ui.element()
+    assert el.name is None
+
+
+def test_element_get_value():
+    el = ui.element()
+    assert el.value is None
+
+
+def test_element_set_value():
+    el = ui.element()
+    el.value = "test"
+    assert el.value == "test"
+
+
+def test_element_get_classes():
+    el = ui.element().classes("glass")
+    assert el.get_classes() == "glass"
+
+
+def test_add_script():
+    script = 'console.log("test")'
+    el = ui.element()
+    el.script = script
+    str(el)
+    print(Frame.get_stack().scripts)
+    assert Frame.get_stack().scripts[0] == script
+
+
+def test_oob_no_render():
+    el = ui.element(oob=True)
+    assert el.render_self(False) == ""

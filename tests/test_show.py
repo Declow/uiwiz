@@ -1,6 +1,8 @@
 from dataclasses import dataclass
-from uiwiz import ui
+
 from bs4 import BeautifulSoup
+
+from uiwiz import ui
 
 
 def test_show_dict():
