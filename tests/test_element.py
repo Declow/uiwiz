@@ -101,7 +101,6 @@ def test_add_script():
     el = ui.element()
     el.script = script
     str(el)
-    print(Frame.get_stack().scripts)
     assert Frame.get_stack().scripts[0] == script
 
 
