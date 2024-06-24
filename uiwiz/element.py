@@ -165,12 +165,12 @@ class Element:
     def after_render(self, html: str):
         return html
 
-    def add_event_to_attributes(self):
+    def add_event_to_attributes(self) -> None:
         if self.event == {}:
-            return
+            return None
 
         self.attributes["hx-target"] = self.get_target(self.event.get("target"))
-        self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
+        self.attributes["hx-swap"] = self.event.get("swap", "outerHTML")
 
         self.attributes["hx-post"] = self.get_endpoint()
         self.attributes["hx-trigger"] = self.event.get("trigger")
