@@ -8,6 +8,7 @@ class Button(Element):
 
     def __init__(self, title: str) -> None:
         super().__init__(tag="button")
+        self.attributes["type"] = "button"
         self.content = title
         self.classes()
 
