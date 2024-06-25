@@ -1,9 +1,4 @@
-from unittest import mock
-
 from uiwiz import ui
-from uiwiz.app import UiwizApp
-from uiwiz.frame import Frame
-from uiwiz.page_route import PageRouter
 
 
 def test_avatar():
