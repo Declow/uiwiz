@@ -16,7 +16,7 @@ def test_button_submit():
 
     @btn.stack.app.ui("/submit")
     def func():
-        pass
+        pass  # pragma: no cover
 
     btn.on_click(func)
     output = str(btn)
