@@ -12,7 +12,8 @@ class Datepicker(Element):
         if default_date:
             self.default_date(default_date)
 
-    def default_date(self, date: Union[datetime, date]):
+    def default_date(self, date: Union[datetime, date]) -> "Datepicker":
         if date is None:
-            raise Exception("Date cannot be None")
+            raise ValueError("Date cannot be None")
         self.value = date.strftime("%Y-%m-%d")
+        return self
