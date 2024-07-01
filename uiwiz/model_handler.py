@@ -46,11 +46,17 @@ class ModelForm:
     compact: bool
     form: Form
     button: Button
+    instance: Optional[BaseModel]
 
     def __init__(self, model: BaseModel, compact: bool = True, **kwargs):
         self.model = model
+        self.instance = None
+
+        if isinstance(model, BaseModel):
+            self.model = model.__class__
+            self.instance = model
         self.compact = compact
-        self.render_model(model, **kwargs)
+        self.render_model(**kwargs)
         self.button.render_html = False
 
     def on_submit(self, *args, **kwargs) -> "ModelForm":
@@ -58,12 +64,12 @@ class ModelForm:
         self.form.on_submit(*args, **kwargs)
         return self
 
-    def render_model(self, _type: BaseModel, **kwargs) -> Form:
-        if issubclass(_type, BaseModel) == False:
+    def render_model(self, **kwargs) -> Form:
+        if issubclass(self.model, BaseModel) == False:
             raise ValueError("type must be a pydantic model")
 
         with Form().classes("card w-96 bg-base-100 shadow-md") as form:
-            hints = get_type_hints(_type, include_extras=True)
+            hints = get_type_hints(self.model, include_extras=True)
             for key, field_type in hints.items():
                 args = get_args(field_type)
                 annotated = Annotated == get_origin(field_type)
@@ -71,7 +77,7 @@ class ModelForm:
                     self.render_key_override(args, key, field_type, **kwargs)
                 else:
                     self.render_type_hint_without_args(args, annotated, field_type, key)
-                    self.render_with_args_annotated(args, annotated, _type, field_type, key)
+                    self.render_with_args_annotated(args, annotated, field_type, key)
             self.button = Button("Save")
         self.form = form
 
@@ -100,9 +106,7 @@ class ModelForm:
 
             self.render_element(switch.get(field_type), field_type, key, placeholder=key)
 
-    def render_with_args_annotated(
-        self, args: Tuple, annotated: bool, _type: BaseModel, field_type: Tuple, key: str
-    ) -> Element:
+    def render_with_args_annotated(self, args: Tuple, annotated: bool, field_type: Tuple, key: str) -> Element:
         if len(args) > 0:
             if annotated:
                 field_type, ele = self.get_type_and_uianno(args)
@@ -115,7 +119,7 @@ class ModelForm:
             else:
                 ele = switch.get(get_origin(field_type))
                 if ele:
-                    self.render_element_dropdown(field_type, key, _type.model_fields[key].default)
+                    self.render_element_dropdown(field_type, key, self.model.model_fields[key].default)
 
     def get_type_and_uianno(self, args: Tuple) -> Optional[Tuple[type, Optional[UiAnno]]]:
         field_type = args[0]
@@ -148,6 +152,8 @@ class ModelForm:
         if not inspect.signature(ele).parameters.get(placeholder):
             kwargs.pop(placeholder)
 
+        if self.instance:
+            kwargs["value"] = getattr(self.instance, key)
         el: Element = ele(**kwargs)
         if classes:
             el.classes(classes)
