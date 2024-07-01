@@ -68,14 +68,14 @@ class ModelForm:
                 args = get_args(field_type)
                 annotated = Annotated == get_origin(field_type)
                 if key in kwargs:
-                    self.render_key_override(args, annotated, key, field_type, **kwargs)
+                    self.render_key_override(args, key, field_type, **kwargs)
                 else:
                     self.render_type_hint_without_args(args, annotated, field_type, key)
                     self.render_with_args_annotated(args, annotated, _type, field_type, key)
             self.button = Button("Save")
         self.form = form
 
-    def render_key_override(self, args: Tuple, annotated: bool, key: str, field_type: type, **kwargs) -> None:
+    def render_key_override(self, args: Tuple, key: str, field_type: type, **kwargs) -> None:
         if key in kwargs:
             model_args: dict = kwargs[key]
             model = model_args.pop("ui")
