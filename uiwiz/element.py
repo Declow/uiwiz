@@ -74,15 +74,15 @@ class Element:
 
     @property
     def id(self):
-        return self.attributes["id"]
+        return self.attributes.get("id")
 
     @property
     def name(self):
-        return self.attributes["name"]
+        return self.attributes.get("name")
 
     @property
     def value(self):
-        return self.attributes["value"]
+        return self.attributes.get("value")
 
     @value.setter
     def value(self, value):
@@ -165,9 +165,9 @@ class Element:
     def after_render(self, html: str):
         return html
 
-    def add_event_to_attributes(self):
-        if self.event:
-            return
+    def add_event_to_attributes(self) -> None:
+        if self.event == {}:
+            return None
 
         self.attributes["hx-target"] = self.get_target(self.event.get("target"))
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"

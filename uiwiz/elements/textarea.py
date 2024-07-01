@@ -5,12 +5,12 @@ from uiwiz.element import Element
 
 class TextArea(Element):
     root_class: str = "textarea "
-    _classes: str = "textarea-bordered"
+    _classes: str = "textarea-bordered w-full"
 
     def __init__(
         self,
         placeholder: str = None,
-        name="input",
+        name: str = "input",
         on_change: Callable = None,
         target: Callable = None,
         trigger: str = "input",
@@ -18,7 +18,8 @@ class TextArea(Element):
     ) -> None:
         super().__init__("textarea")
         self.attributes["name"] = name
-        self.attributes["placeholder"] = placeholder
+        if placeholder:
+            self.attributes["placeholder"] = placeholder
         self.classes(TextArea._classes)
 
         if on_change:

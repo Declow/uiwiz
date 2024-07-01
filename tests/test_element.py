@@ -1,6 +1,7 @@
 from unittest import mock
 
-from uiwiz import element, ui
+from uiwiz import ui
+from uiwiz.frame import Frame
 
 
 def test_element_html():
@@ -59,7 +60,7 @@ def test_event():
     html = str(ui.button("Click me").on_click(func))
 
     assert (
-        f'<button id="a-0" class="btn " hx-target="this" hx-swap="outerHTML" hx-post="/_uiwiz/hash/{func.__hash__()}" hx-trigger="click" hx-ext="json-enc">Click me</button>'
+        f'<button id="a-0" type="button" class="btn " hx-target="this" hx-swap="outerHTML" hx-post="/_uiwiz/hash/{func.__hash__()}" hx-trigger="click" hx-ext="json-enc">Click me</button>'
         == html
     )
 
@@ -72,3 +73,37 @@ def test_before_render_lifecycle():
     str(el)
 
     mo.assert_called_once()
+
+
+def test_element_get_name():
+    el = ui.element()
+    assert el.name is None
+
+
+def test_element_get_value():
+    el = ui.element()
+    assert el.value is None
+
+
+def test_element_set_value():
+    el = ui.element()
+    el.value = "test"
+    assert el.value == "test"
+
+
+def test_element_get_classes():
+    el = ui.element().classes("glass")
+    assert el.get_classes() == "glass"
+
+
+def test_add_script():
+    script = 'console.log("test")'
+    el = ui.element()
+    el.script = script
+    str(el)
+    assert Frame.get_stack().scripts[0] == script
+
+
+def test_oob_no_render():
+    el = ui.element(oob=True)
+    assert el.render_self(False) == ""

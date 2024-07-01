@@ -10,7 +10,7 @@ def test_page_router_page():
 
     @pr.page(route)
     def func():
-        ...
+        ...  # pragma: no cover
 
     expected_output: Path = {"args": (), "kwargs": {}, "func": func, "type": "page"}
 
@@ -23,7 +23,7 @@ def test_page_router_ui():
 
     @pr.ui(route)
     def func():
-        ...
+        ...  # pragma: no cover
 
     expected_output: Path = {"args": (), "kwargs": {}, "func": func, "type": "ui"}
 
@@ -36,7 +36,7 @@ def test_page_go_to_get_request():
 
     @pr.page(route)
     def func():
-        ...
+        ...  # pragma: no cover
 
     app = UiwizApp()
     app.add_page_router(pr)
@@ -57,7 +57,7 @@ def test_ui_go_to_post_request():
 
     @pr.ui(route)
     def func():
-        ...
+        ...  # pragma: no cover
 
     app = UiwizApp()
     app.add_page_router(pr)

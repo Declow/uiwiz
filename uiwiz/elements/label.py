@@ -20,3 +20,7 @@ class Label(Bindable):
     def set_text(self, text: str) -> "Label":
         self.content = text
         return self
+
+    def set_for(self, for_: Element) -> "Label":
+        self.attributes["for"] = for_.id
+        return self
