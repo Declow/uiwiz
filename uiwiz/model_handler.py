@@ -139,12 +139,18 @@ class ModelForm:
         kwargs = {**{"name": key}, **kwargs}
         placeholder = "placeholder"
         kwargs[placeholder] = __display_name__(kwargs[placeholder])
+        compact = self.compact
+
+        ele_args = [item[0] for item in inspect.signature(ele.__init__).parameters.items()]
+        if self.instance and "value" in ele_args:
+            kwargs["value"] = getattr(self.instance, key)
+            compact = False
 
         label: Optional[Label] = None
         if ele is not HiddenInput:
             label = Label(kwargs[placeholder]).classes("flex-auto w-36 font-bold")
 
-            if self.compact and inspect.signature(ele).parameters.get(placeholder):
+            if compact and inspect.signature(ele).parameters.get(placeholder):
                 label.render_html = False
             else:
                 label.classes("flex-auto w-24")
@@ -152,13 +158,13 @@ class ModelForm:
         if not inspect.signature(ele).parameters.get(placeholder):
             kwargs.pop(placeholder)
 
-        if self.instance:
-            kwargs["value"] = getattr(self.instance, key)
+        # if self.instance and "placeholder" in ele_args:
+        #     kwargs["placeholder"] = getattr(self.instance, key)
         el: Element = ele(**kwargs)
         if classes:
             el.classes(classes)
-        if field_class is int and kwargs.get(placeholder) is None:
-            el.value = "0"
+        # if field_class is int and kwargs.get(placeholder) is None:
+        #     el.value = "0"
         if label:
             label.set_for(el)
 

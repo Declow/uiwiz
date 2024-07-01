@@ -11,6 +11,7 @@ class TextArea(Element):
         self,
         placeholder: str = None,
         name: str = "input",
+        value: str = None,
         on_change: Callable = None,
         target: Callable = None,
         trigger: str = "input",
@@ -20,6 +21,8 @@ class TextArea(Element):
         self.attributes["name"] = name
         if placeholder:
             self.attributes["placeholder"] = placeholder
+        if value:
+            self.value = value
         self.classes(TextArea._classes)
 
         if on_change:

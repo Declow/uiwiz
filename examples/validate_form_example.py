@@ -44,6 +44,17 @@ def create_form():
         },
     ).on_submit(handle_submit)
 
+    instance = DataInput(
+        id=1,
+        enum="val",
+        only_str_defined="asd",
+        name="test",
+        desc="This is a test",
+        age=1,
+        event_at_date=date.today(),
+    )
+    ui.modelForm(instance, compact=True).on_submit(handle_submit)
+
 
 @app.ui("/handle/submit")
 def handle_submit(data: DataInput):
