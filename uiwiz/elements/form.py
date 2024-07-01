@@ -1,14 +1,10 @@
-from dataclasses import dataclass
-from typing import Callable, List, Optional, Union
+from typing import Callable, Optional, Union
 
 from uiwiz.element import Element
-from uiwiz.elements.checkbox import Checkbox
-from uiwiz.elements.input import Input
-from uiwiz.elements.textarea import TextArea
 
 
 class Form(Element):
-    root_class: str = ""
+    root_class: str = "col "
 
     def __init__(self) -> None:
         super().__init__("form")
