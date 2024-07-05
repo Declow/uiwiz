@@ -20,7 +20,7 @@ def create_nav():
 class DataInput(BaseModel):
     id: Annotated[int, UiAnno(ui.hiddenInput)]
     enum: Literal["val", "ok"]
-    enum2: Annotated[Literal["asd", "ok"], UiAnno(ui.radio)] = "ok"
+    enum2: Annotated[Literal["asd", "ok"], UiAnno(ui.radio)] = "asd"
     only_str_defined: str
     name: Annotated[str, UiAnno(ui.input, "test")] = Field(min_length=1)
     desc: Annotated[str, UiAnno(ui.textarea)] = Field(min_length=1)
@@ -30,19 +30,19 @@ class DataInput(BaseModel):
 
 
 def create_form():
-    ui.modelForm(DataInput, compact=False).on_submit(handle_submit)
-    ui.modelForm(DataInput, compact=True)  # Missing on submit. No button is created
+    # ui.modelForm(DataInput, compact=False).on_submit(handle_submit)
+    # ui.modelForm(DataInput, compact=True)  # Missing on submit. No button is created
 
-    ui.modelForm(
-        DataInput,
-        compact=True,
-        id={"ui": ui.input, "placeholder": 1},
-        enum={
-            "ui": ui.dropdown,
-            "placeholder": "Select",
-            "items": ["asd", "ok", "values"],
-        },
-    ).on_submit(handle_submit)
+    # ui.modelForm(
+    #     DataInput,
+    #     compact=True,
+    #     id={"ui": ui.input, "placeholder": 1},
+    #     enum={
+    #         "ui": ui.dropdown,
+    #         "placeholder": "Select",
+    #         "items": ["asd", "ok", "values"],
+    #     },
+    # ).on_submit(handle_submit)
 
     instance = DataInput(
         id=1,
@@ -51,9 +51,10 @@ def create_form():
         name="test",
         desc="This is a test",
         age=1,
+        is_active=False,
         event_at_date=date.today(),
     )
-    ui.modelForm(instance, compact=True).on_submit(handle_submit)
+    ui.modelForm(instance, compact=False).on_submit(handle_submit)
 
 
 @app.ui("/handle/submit")

@@ -11,6 +11,7 @@ from uiwiz.elements.button import Button
 from uiwiz.elements.checkbox import Checkbox
 from uiwiz.elements.col import Col
 from uiwiz.elements.datepicker import Datepicker
+from uiwiz.elements.divider import Divider
 from uiwiz.elements.dropdown import Dropdown
 from uiwiz.elements.form import Form
 from uiwiz.elements.hidden_input import HiddenInput
@@ -68,7 +69,7 @@ class ModelForm:
         if issubclass(self.model, BaseModel) == False:
             raise ValueError("type must be a pydantic model")
 
-        with Form().classes("card w-96 bg-base-100 shadow-md") as form:
+        with Form().classes("card w-full bg-base-100 shadow-md") as form:
             hints = get_type_hints(self.model, include_extras=True)
             for key, field_type in hints.items():
                 args = get_args(field_type)
@@ -140,33 +141,42 @@ class ModelForm:
         placeholder = "placeholder"
         kwargs[placeholder] = __display_name__(kwargs[placeholder])
         compact = self.compact
+        with Element().classes("flex flex-nowrap w-full"):
+            ele_args = [item[0] for item in inspect.signature(ele.__init__).parameters.items()]
+            compact = self.extend_kwargs(kwargs, ele_args, key)
 
-        ele_args = [item[0] for item in inspect.signature(ele.__init__).parameters.items()]
+            label: Optional[Label] = None
+            if ele is not HiddenInput:
+                label = Label(kwargs[placeholder]).classes("flex-auto w-36 font-bold")
+
+                if compact and inspect.signature(ele).parameters.get(placeholder):
+                    label.render_html = False
+                else:
+                    label.classes("flex-auto w-52")
+                    label.render_html = True
+            if not inspect.signature(ele).parameters.get(placeholder):
+                kwargs.pop(placeholder)
+
+            if self.instance and "placeholder" in ele_args:
+                kwargs["placeholder"] = getattr(self.instance, key)
+            el: Element = ele(**kwargs)
+            if classes:
+                el.classes(classes)
+            # if field_class is int and kwargs.get(placeholder) is None:
+            #     el.value = "0"
+            if label:
+                label.set_for(el)
+
+    def extend_kwargs(self, kwargs: dict, ele_args: list[str], key: str) -> bool:
+        compact = self.compact
         if self.instance and "value" in ele_args:
             kwargs["value"] = getattr(self.instance, key)
             compact = False
 
-        label: Optional[Label] = None
-        if ele is not HiddenInput:
-            label = Label(kwargs[placeholder]).classes("flex-auto w-36 font-bold")
-
-            if compact and inspect.signature(ele).parameters.get(placeholder):
-                label.render_html = False
-            else:
-                label.classes("flex-auto w-24")
-                label.render_html = True
-        if not inspect.signature(ele).parameters.get(placeholder):
-            kwargs.pop(placeholder)
-
-        # if self.instance and "placeholder" in ele_args:
-        #     kwargs["placeholder"] = getattr(self.instance, key)
-        el: Element = ele(**kwargs)
-        if classes:
-            el.classes(classes)
-        # if field_class is int and kwargs.get(placeholder) is None:
-        #     el.value = "0"
-        if label:
-            label.set_for(el)
+        if self.instance and "checked" in ele_args:
+            kwargs["checked"] = getattr(self.instance, key)
+            compact = False
+        return compact
 
     def render_element_radio(
         self,
@@ -175,16 +185,11 @@ class ModelForm:
         key: str,
         field_args: Tuple,
     ) -> None:
+        Divider()
         for arg in field_args:
             with Row():
-                self.render_element(
-                    Radio,
-                    field_class,
-                    key,
-                    ele.classes,
-                    placeholder=arg,
-                    value=arg,
-                )
+                self.render_element(Radio, field_class, key, ele.classes, placeholder=arg)
+        Divider()
 
     def render_element_dropdown(self, field_class: type, key: str, placeholder: Optional[str]) -> None:
         if isinstance(placeholder, PydanticUndefinedType):

@@ -5,12 +5,12 @@ from uiwiz.element import Element
 
 
 class Datepicker(Element):
-    def __init__(self, name: str, default_date: Optional[datetime] = None) -> None:
+    def __init__(self, name: str, value: Optional[datetime] = None) -> None:
         super().__init__("input")
         self.attributes["name"] = name
         self.attributes["type"] = "date"
-        if default_date:
-            self.default_date(default_date)
+        if value:
+            self.default_date(value)
 
     def default_date(self, date: Union[datetime, date]) -> "Datepicker":
         if date is None:

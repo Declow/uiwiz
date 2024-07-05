@@ -22,7 +22,7 @@ class TextArea(Element):
         if placeholder:
             self.attributes["placeholder"] = placeholder
         if value:
-            self.value = value
+            self.content = value
         self.classes(TextArea._classes)
 
         if on_change:
