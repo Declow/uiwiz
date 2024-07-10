@@ -11,6 +11,7 @@ class Input(Element):
         self,
         placeholder: str = None,
         name=None,
+        value: str = None,
         on_change: Optional[Callable] = None,
         target: Optional[Callable] = None,
         trigger: str = "input",
@@ -31,6 +32,8 @@ class Input(Element):
         self.attributes["name"] = name
         if placeholder:
             self.attributes["placeholder"] = placeholder
+        if value:
+            self.value = value
         self.attributes["autocomplete"] = "off"
 
         if on_change:
