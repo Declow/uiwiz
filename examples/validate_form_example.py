@@ -13,7 +13,7 @@ app = UiwizApp()
 
 
 def create_nav():
-    with ui.nav():
+    with ui.nav().classes("bg-neutral shadow-xl"):
         ui.button("this is from a method")
 
 
@@ -30,28 +30,33 @@ class DataInput(BaseModel):
 
 
 def create_form():
-    # ui.modelForm(DataInput, compact=False).on_submit(handle_submit)
-    # ui.modelForm(DataInput, compact=True)  # Missing on submit. No button is created
+    ui.modelForm(DataInput, compact=False).on_submit(handle_submit)
+    ui.modelForm(DataInput, compact=True)  # Missing on submit. No button is created
 
-    # ui.modelForm(
-    #     DataInput,
-    #     compact=True,
-    #     id={"ui": ui.input, "placeholder": 1},
-    #     enum={
-    #         "ui": ui.dropdown,
-    #         "placeholder": "Select",
-    #         "items": ["asd", "ok", "values"],
-    #     },
-    # ).on_submit(handle_submit)
+    # Customizing the form
+    # Override the annotation for the name field
+    ui.modelForm(
+        DataInput,
+        compact=True,
+        id={"ui": ui.input, "value": 1},
+        enum={
+            "ui": ui.dropdown,
+            "placeholder": "Select",
+            "items": ["asd", "ok", "values"],
+        },
+    ).on_submit(handle_submit)
 
+    # Using the instance
+    # This will prefill the form with the instance data
     instance = DataInput(
         id=1,
         enum="val",
+        enum2="asd",
         only_str_defined="asd",
         name="test",
         desc="This is a test",
         age=1,
-        is_active=False,
+        is_active=True,
         event_at_date=date.today(),
     )
     ui.modelForm(instance, compact=False).on_submit(handle_submit)
