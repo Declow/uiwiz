@@ -60,7 +60,7 @@ def test_event():
     html = str(ui.button("Click me").on_click(func))
 
     assert (
-        f'<button id="a-0" type="button" class="btn " hx-target="this" hx-swap="outerHTML" hx-post="/_uiwiz/hash/{func.__hash__()}" hx-trigger="click" hx-ext="json-enc">Click me</button>'
+        f'<button id="a-0" class="btn " hx-target="this" hx-swap="outerHTML" hx-post="/_uiwiz/hash/{func.__hash__()}" hx-trigger="click" hx-ext="json-enc">Click me</button>'
         == html
     )
 
