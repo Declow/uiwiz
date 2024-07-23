@@ -104,3 +104,14 @@ htmx.on("htmx:configRequest", (evt)=> {
         evt.detail.path = evt.detail.path + "?next=" + next
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.togglee').forEach(function(toggle) {
+        toggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const icon = this.querySelector('.toggle-icon');
+            icon.textContent = icon.textContent === '▼' ? '▶' : '▼';
+            this.classList.toggle('expanded');
+        });
+    });
+});
