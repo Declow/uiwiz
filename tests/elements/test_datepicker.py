@@ -1,6 +1,8 @@
-from uiwiz import ui
 from datetime import datetime, timezone
+
 import pytest
+
+from uiwiz import ui
 
 
 def test_datepicker():
