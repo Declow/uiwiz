@@ -1,5 +1,4 @@
 import uvicorn
-from fastapi import Request
 
 from uiwiz import UiwizApp, ui
 
@@ -9,12 +8,13 @@ app = UiwizApp()
 def create_nav():
     with ui.nav():
         ui.button("this is from a method")
+        ui.themeSelector()
 
 
 @app.page("/")
-async def test(request: Request):
+async def test():
     create_nav()
-    with ui.element().classes("col mx-auto"):
+    with ui.element().classes("col lg:px-80"):
         json_data = {
             "name": "John Doe",
             "age": 30,
