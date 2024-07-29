@@ -17,14 +17,14 @@ async def test():
     with ui.element().classes("col lg:px-80"):
         json_data = {
             "name": "John Doe",
-            "age": 30,
+            "age": 50,
             "address": {"street": "123 Main St", "city": "Anytown", "country": "USA"},
             "hobbies": ["reading", "swimming", "coding"],
             "family": {
                 "spouse": "Jane Doe",
                 "children": [
-                    {"name": "Billy", "age": 5, "children": [{"name": "test", "age": 1}]},
-                    {"name": "Sally", "age": 3},
+                    {"name": "Billy", "age": 20, "children": [{"name": "test", "age": 1}]},
+                    {"name": "Sally", "age": 18},
                 ],
             },
         }
