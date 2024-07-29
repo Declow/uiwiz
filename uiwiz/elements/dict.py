@@ -1,4 +1,3 @@
-import json
 from typing import Optional, Union
 
 from uiwiz.element import Element
@@ -28,7 +27,7 @@ class Dict(Element):
                             else:
                                 key_element.content = f"{key}:"
                                 key_element.classes("pl-2")
-                                Element("p", json.dumps(value)).classes("text-primary pl-2")
+                                Element("p", value).classes("text-primary pl-2")
             elif isinstance(obj, list):
                 for item in obj:
                     if isinstance(item, dict):
@@ -36,6 +35,6 @@ class Dict(Element):
                     else:
                         Element(content=item)
             else:
-                Element(content=json.dumps(obj)).classes("text-primary")
+                Element(content=obj).classes("text-primary")
 
         format_json(data)
