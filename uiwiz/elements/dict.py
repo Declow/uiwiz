@@ -1,12 +1,15 @@
-from typing import Optional, Union
+from typing import Iterable, Union
 
 from uiwiz.element import Element
 
 
 class Dict(Element):
-    def __init__(self, data: Optional[Union[list, dict]]) -> None:
+    def __init__(self, data: Union[Iterable[dict], dict]) -> None:
         if not data:
             raise ValueError("Data cannot be None or empty")
+        if not isinstance(data, (Iterable, dict)):
+            raise ValueError("Data not of type list or dict")
+        super().__init__()
         self.generate(data)
 
     def generate(self, data):
