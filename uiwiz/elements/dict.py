@@ -3,11 +3,9 @@ from typing import Optional, Union
 
 from uiwiz.element import Element
 
-TYPE = Optional[Union[list, dict]]
-
 
 class Dict(Element):
-    def __init__(self, data: TYPE) -> None:
+    def __init__(self, data: Optional[Union[list, dict]]) -> None:
         if not data:
             raise ValueError("Data cannot be None or empty")
         self.generate(data)
