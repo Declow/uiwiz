@@ -20,9 +20,15 @@ async def test():
             "age": 30,
             "address": {"street": "123 Main St", "city": "Anytown", "country": "USA"},
             "hobbies": ["reading", "swimming", "coding"],
-            "family": {"spouse": "Jane Doe", "children": [{"name": "Billy", "age": 5}, {"name": "Sally", "age": 3}]},
+            "family": {
+                "spouse": "Jane Doe",
+                "children": [
+                    {"name": "Billy", "age": 5, "children": [{"name": "test", "age": 1}]},
+                    {"name": "Sally", "age": 3},
+                ],
+            },
         }
-        ui.json(json_data)
+        ui.dict(json_data)
 
 
 if __name__ == "__main__":
