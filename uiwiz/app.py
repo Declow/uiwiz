@@ -21,6 +21,7 @@ from uiwiz.element import Element
 from uiwiz.frame import Frame
 from uiwiz.page_route import PageRouter
 from uiwiz.static_middelware import AsgiTtlMiddelware
+from uiwiz.shared import resources
 
 logger = logging.getLogger("uiwiz")
 logger.addHandler(logging.NullHandler())
@@ -70,6 +71,18 @@ class UiwizApp(FastAPI):
                     {"detail": exc.errors(), "fieldErrors": fields_with_errors, "fieldOk": ok_fields}
                 ),
             )
+
+        @self.get("/_static/extension/{extension}/{filename}")
+        def get_extension(extension: str, filename: str):
+            resource_key = f"{extension}/{filename}"
+            if resource_key not in resources:
+                return Response(status_code=404)
+
+            with open(resources[resource_key]) as f:
+                content = f.read()
+
+            content_type, _ = guess_type(resource_key)
+            return Response(content, media_type=content_type)
 
     def __get_title__(self, frame: Frame, route_title: Optional[str] = None) -> str:
         title = self.title
@@ -135,24 +148,6 @@ class UiwizApp(FastAPI):
 
     def add_static_files(self, url_path: str, local_directory: Union[str, Path]) -> None:
         self.mount(url_path, StaticFiles(directory=str(local_directory)))
-
-    def register_extension(self, path: Path, prefix: str):
-        _, filename = os.path.split(path)
-        if filename in self.extensions:
-            return
-        self.extensions[filename] = path
-
-        def get_extension(filename):
-            if filename not in self.extensions:
-                return Response(status_code=404)
-
-            with open(self.extensions[filename]) as f:
-                content = f.read()
-
-            content_type, _ = guess_type(filename)
-            return Response(content, media_type=content_type)
-
-        self.get(prefix + "{filename}")(get_extension)
 
     def post(self, path: str, *args, **kwargs):
         s = super()
