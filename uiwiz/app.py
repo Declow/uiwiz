@@ -20,8 +20,8 @@ from uiwiz.asgi_request_middelware import AsgiRequestMiddelware
 from uiwiz.element import Element
 from uiwiz.frame import Frame
 from uiwiz.page_route import PageRouter
-from uiwiz.static_middelware import AsgiTtlMiddelware
 from uiwiz.shared import resources
+from uiwiz.static_middelware import AsgiTtlMiddelware
 
 logger = logging.getLogger("uiwiz")
 logger.addHandler(logging.NullHandler())
