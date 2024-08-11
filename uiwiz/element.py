@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import html
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Callable, List, Optional, Union
 
 from uiwiz.event import Event
 from uiwiz.frame import Frame
+from uiwiz.shared import register_resource
 
 # https://developer.mozilla.org/en-US/docs/Glossary/Void_element
 VOID_ELEMENTS = [
@@ -32,12 +33,12 @@ class Element:
         tag="div",
         content="",
         render_html=True,
-        extension: Optional[Union[list[Path], Path]] = None,
         oob: bool = False,
     ) -> None:
         self.stack = Frame.get_stack()
-        if extension:
-            self.stack.add_extension(extension)
+        if hasattr(self.__class__, "extensions") and self.__class__.extensions:
+            for extension in self.__class__.extensions:
+                self.stack.add_extension(self.__class__, extension)
         self.attributes: dict[str, str] = {}
         self.attributes["id"] = self.stack.get_id()
         self.stack.id_count += 1
@@ -71,6 +72,13 @@ class Element:
 
     def __exit__(self, *_):
         self.stack.current_element = self.parent_element
+
+    def __init_subclass__(cls, extensions: List[Path] = None, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        cls.extensions = extensions
+        if extensions:
+            for extension in extensions:
+                register_resource(f"{cls.__name__}/{extension.name}", extension)
 
     @property
     def id(self):

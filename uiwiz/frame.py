@@ -75,7 +75,7 @@ class Frame:
             return self.root_element.render_libs(self.extensions)
         return ""
 
-    def add_extension(self, extensions: Optional[Union[list[Path], Path]]) -> None:
+    def add_extension(self, cls, extensions: Optional[Union[list[Path], Path]]) -> None:
         if extensions is None:
             return
         if not isinstance(extensions, list):
@@ -83,10 +83,9 @@ class Frame:
 
         for extension in extensions:
             _, filename = os.path.split(extension)
-            prefix = "/_static/ext/"
+            prefix = f"/_static/extension/{cls.__name__}/"
             endpoint = prefix + filename
             self.extensions.add(endpoint)
-            self.app.register_extension(extension, prefix)
 
     @classmethod
     def get_stack(cls) -> "Frame":
