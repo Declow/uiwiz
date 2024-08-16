@@ -56,7 +56,6 @@ class ThemeSelector(Element):
 
     def setup_listener(self):
         self.script = f"""
-
 function selectTheme(value) {{
     console.log(value);
     element = document.getElementById("html");
@@ -67,5 +66,4 @@ function selectTheme(value) {{
 document.getElementById("{self.theme_selector.id}").addEventListener('change', function() {{
     selectTheme(this.value);
 }});
-
 """

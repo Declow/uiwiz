@@ -57,7 +57,7 @@ class UiwizApp(FastAPI):
         self.extensions: dict[str, Path] = {}
         self.app_paths: dict[str, Path] = {}
 
-        @self.get("/_static/default.js")
+        @self.get("/_static/default.js", include_in_schema=False)
         def return_default_js(request: Request):
             return self.render(request, template_name="default.js", media_type="application/javascript")
 
@@ -72,7 +72,7 @@ class UiwizApp(FastAPI):
                 ),
             )
 
-        @self.get("/_static/extension/{extension}/{filename}")
+        @self.get("/_static/extension/{extension}/{filename}", include_in_schema=False)
         def get_extension(extension: str, filename: str):
             resource_key = f"{extension}/{filename}"
             if resource_key not in resources:
@@ -142,10 +142,6 @@ class UiwizApp(FastAPI):
     def route_exists(self, path: str) -> None:
         return path in list(self.app_paths.values())
 
-    def remove_route(self, path: str) -> None:
-        """Remove routes with the given path."""
-        self.routes[:] = [r for r in self.routes if getattr(r, "path", None) != path]
-
     def add_static_files(self, url_path: str, local_directory: Union[str, Path]) -> None:
         self.mount(url_path, StaticFiles(directory=str(local_directory)))
 
@@ -153,7 +149,7 @@ class UiwizApp(FastAPI):
         s = super()
 
         @functools.wraps(s.post)
-        def decorator(func: Callable, *args, **kwargs) -> Callable:
+        def decorator(func: Callable, *ags, **kvargs) -> Callable:
             if not self.route_exists(path):
                 self.app_paths[func] = path
             return s.post(path, *args, **kwargs)(func)
@@ -168,7 +164,6 @@ class UiwizApp(FastAPI):
         favicon: Optional[str] = None,
     ) -> Callable:
         def decorator(func: Callable, *args, **kwargs) -> Callable:
-            self.remove_route(path)
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
 
             @functools.wraps(func)
@@ -200,13 +195,12 @@ class UiwizApp(FastAPI):
             if not self.route_exists(path):
                 self.app_paths[decorated] = path
 
-            return self.get(path)(decorated)
+            return self.get(path, include_in_schema=False)(decorated)
 
         return decorator
 
     def ui(self, path: str) -> Callable:
         def decorator(func: Callable) -> Callable:
-            self.remove_route(path)
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
 
             @functools.wraps(func)
@@ -235,7 +229,7 @@ class UiwizApp(FastAPI):
             if not self.route_exists(path):
                 self.app_paths[decorated] = path
 
-            return self.post(path)(decorated)
+            return self.post(path, include_in_schema=False)(decorated)
 
         return decorator
 
