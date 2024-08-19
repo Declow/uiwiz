@@ -131,11 +131,13 @@ class ModelForm:
                     self.render_element_dropdown(field_type, key, self.model.model_fields[key].default)
 
     def get_type_and_uianno(self, args: Tuple) -> Optional[Tuple[type, Optional[UiAnno]]]:
-        field_type = args[0]
-        for arg in args:
-            if isinstance(arg, UiAnno):
-                return field_type, arg
-        return field_type, None
+        if args:
+            field_type = args[0]
+            for arg in args:
+                if isinstance(arg, UiAnno):
+                    return field_type, arg
+            return field_type, None
+        return None, None
 
     def render_element(
         self,

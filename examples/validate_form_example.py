@@ -27,6 +27,7 @@ class DataInput(BaseModel):
     age: Annotated[int, UiAnno(ui.input)] = Field(ge=0)
     is_active: bool = False
     event_at_date: date
+    test: int
 
 
 def create_form():
@@ -58,8 +59,11 @@ def create_form():
         age=1,
         is_active=True,
         event_at_date=date.today(),
+        test=10,
     )
-    ui.modelForm(instance, compact=False).on_submit(handle_submit)
+    ui.modelForm(
+        instance, compact=False, test={"ui": ui.dropdown, "placeholder": "Select", "items": [1, 2, 3, 4]}
+    ).on_submit(handle_submit)
 
 
 @app.ui("/handle/submit")
