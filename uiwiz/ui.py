@@ -23,6 +23,7 @@ from uiwiz.elements.radio import Radio as radio
 from uiwiz.elements.range import Range as range
 from uiwiz.elements.row import Row as row
 from uiwiz.elements.spinner import Spinner as spinner
+from uiwiz.elements.swapy.swapy import SwapyContainer
 from uiwiz.elements.table import Table as table
 from uiwiz.elements.tabs import Tab as tab
 from uiwiz.elements.tabs import Tabs as tabs

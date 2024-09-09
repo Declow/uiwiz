@@ -28,7 +28,7 @@ class Frame:
         self.oob_elements: list[Element] = []
         self.id_count: int = 0  # used for element id
         self.scripts: list[str] = []
-        self.extensions: set[str] = set()
+        self.extensions: list[str] = []
         self.app = get_request().app
         self.last_id = None
         self.title: Optional[str] = None
@@ -85,7 +85,8 @@ class Frame:
             _, filename = os.path.split(extension)
             prefix = f"/_static/extension/{cls.__name__}/"
             endpoint = prefix + filename
-            self.extensions.add(endpoint)
+            if endpoint not in self.extensions:
+                self.extensions.append(endpoint)
 
     @classmethod
     def get_stack(cls) -> "Frame":

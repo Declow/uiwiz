@@ -222,12 +222,12 @@ class Element:
         return target
 
     def render_libs(self, lst_libs: list[str]) -> str:
-        lst = set()
+        lst = []
         for lib in lst_libs:
             if lib.endswith("css"):
-                lst.add('<link href="%s" rel="stylesheet" type="text/css" />' % lib)
+                lst.append('<link href="%s" rel="stylesheet" type="text/css" />' % lib)
             elif lib.endswith("js"):
-                lst.add('<script src="%s"></script>' % lib)
+                lst.append('<script src="%s"></script>' % lib)
             else:
                 raise Exception("lib type not supported, supported types css, js")
         return "".join(lst)
