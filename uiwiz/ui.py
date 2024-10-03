@@ -17,7 +17,7 @@ from uiwiz.elements.html import Html as html
 from uiwiz.elements.input import Input as input
 from uiwiz.elements.label import Label as label
 from uiwiz.elements.link import Link as link
-from uiwiz.elements.markdown import Markdown as markdown
+from uiwiz.elements.markdown.markdown import Markdown as markdown
 from uiwiz.elements.nav import Nav as nav
 from uiwiz.elements.radio import Radio as radio
 from uiwiz.elements.range import Range as range
