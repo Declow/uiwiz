@@ -13,11 +13,11 @@ class SwapyContainer(Element, extensions=[LIB_PATH, JS_PATH]):
     def __init__(self) -> None:
         super().__init__()
 
-    def slot(self) -> Element:
+    def slot(self, slot_name=None) -> Element:
         slot = Element()
         SwapyContainer.counter += 1
         slot.classes(f"section-{SwapyContainer.counter}")
-        slot.attributes["data-swapy-slot"] = f"slot-{SwapyContainer.counter}"
+        slot.attributes["data-swapy-slot"] = f"slot-{SwapyContainer.counter}" if slot_name is None else slot_name
         return slot
 
     def item(self) -> Element:
