@@ -22,10 +22,6 @@ async def test():
                 with ui.tab("Content 2"):
                     with ui.col():
                         ui.label("asd2")
-                        ui.label("asd2")
-                        ui.label("asd2")
-                        ui.label("asd2")
-                        ui.label("asd2")
                 with ui.tab("This is 3").active():
                     ui.label("cccxxx3")
                     ui.spinner().infinity()

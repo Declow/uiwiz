@@ -49,7 +49,7 @@ async def test(request: Request):
         ui.markdown(code)
         ui.link("some text", "/second").classes("btn")
 
-        ui.upload(name="file", on_upload=handle_upload, target=lambda: table.id)
+        ui.upload(name="file").on_upload(on_upload=handle_upload, target=lambda: table.id)
         ui.checkbox("check")
         table = ui.table(pd.DataFrame())
         ui.dropdown("select", ["item 1", "item 2"], "Pick item")
