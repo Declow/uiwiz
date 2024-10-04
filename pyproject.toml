@@ -2,7 +2,7 @@
 name = "uiwiz"
 version = "0.0.0"
 description = ""
-authors = ["Declow <Ditlev.stjerne@gmai.com>"]
+authors = ["Declow <Ditlev.stjerne@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
