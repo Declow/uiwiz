@@ -17,6 +17,20 @@ ON_EVENTS = Literal[
     "paste",
 ]
 
+# HTMX Swap Events
+# https://htmx.org/attributes/hx-swap/
+SWAP_EVENTS = Literal[
+    "innerHTML",
+    "outerHTML",
+    "textContent",
+    "beforebegin",
+    "afterbegin",
+    "beforeend",
+    "afterend",
+    "delete",
+    "none",
+]
+
 
 class Event(TypedDict):
     func: Callable
