@@ -1,4 +1,5 @@
 from typing import Callable, Optional, Union
+
 from uiwiz.element import Element
 from uiwiz.event import ON_EVENTS, SWAP_EVENTS
 
