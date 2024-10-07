@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import markdown2
 
 from uiwiz.elements.html import Html
