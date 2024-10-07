@@ -1,10 +1,11 @@
 from typing import Callable, Optional, Union
 
 from uiwiz.element import Element
+from uiwiz.elements.extensions.on_event import OnEvent
 from uiwiz.event import ON_EVENTS
 
 
-class TextArea(Element):
+class TextArea(OnEvent):
     root_class: str = "textarea "
     _classes: str = "textarea-bordered w-full"
 

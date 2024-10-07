@@ -1,10 +1,11 @@
 from typing import Callable, Optional, Union
 
 from uiwiz.element import Element
+from uiwiz.elements.extensions.on_event import OnEvent
 from uiwiz.event import ON_EVENTS
 
 
-class Input(Element):
+class Input(OnEvent):
     root_class: str = "input "
     _classes: str = "input-bordered w-full"
 

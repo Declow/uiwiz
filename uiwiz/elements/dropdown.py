@@ -1,9 +1,8 @@
-from typing import Callable, Optional, Union
 from uiwiz.element import Element
-from uiwiz.event import ON_EVENTS
+from uiwiz.elements.extensions.on_event import OnEvent
 
 
-class Dropdown(Element):
+class Dropdown(OnEvent):
     root_class: str = "select "
     _classes: str = "select-bordered w-full max-w-xs"
 
@@ -19,14 +18,3 @@ class Dropdown(Element):
                 e.value = v
                 if placeholder == v:
                     e.attributes["selected"] = "selected"
-
-    def on(
-        self,
-        func: Callable,
-        trigger: ON_EVENTS,
-        target: Union[Callable, str, Element] = None,
-        swap: Optional[str] = None,
-        params: Optional[dict[str, str]] = None,
-    ) -> "Dropdown":
-        self.event = {"func": func, "trigger": trigger, "target": target, "swap": swap, "params": params}
-        return self

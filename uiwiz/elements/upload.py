@@ -1,9 +1,10 @@
 from typing import Callable, Optional, Union
 
 from uiwiz.element import Element
+from uiwiz.elements.extensions.on_event import OnEvent
 
 
-class Upload(Element):
+class Upload(OnEvent):
     root_class: str = "file-input "
     _classes: str = "file-input-bordered file-input-sm"
 
