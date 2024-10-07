@@ -114,6 +114,12 @@ class Element:
         return self.attributes["class"]
 
     def classes(self, input: str = ""):
+        """
+        Set tailwind classes for the element.
+
+        :param input: The tailwind classes to apply to the element.
+        :return: The current instance of the element.
+        """
         self.attributes["class"] = getattr(self.__class__, "root_class", "") + input
         return self
 
@@ -150,7 +156,7 @@ class Element:
         if self.render_html:
             self.add_event_to_attributes()
 
-            lst.append("<%s %s>" % (self.tag, self.dict_to_attrs()))
+            lst.append("<%s %s>" % (self.tag, self.__dict_to_attrs__()))
             lst.append(self.content)
             lst.extend([child.render_self() if child.oob is False else "" for child in self.children])
 
@@ -180,7 +186,7 @@ class Element:
         self.attributes["hx-target"] = self.get_target(self.event.get("target"))
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
-        self.attributes["hx-post"] = self.get_endpoint()
+        self.attributes["hx-post"] = self.__get_endpoint__()
         self.attributes["hx-trigger"] = self.event.get("trigger")
 
         if vals := self.event.get("vals"):
@@ -192,7 +198,7 @@ class Element:
         else:
             self.attributes["hx-ext"] = "json-enc"
 
-    def get_endpoint(self) -> str:
+    def __get_endpoint__(self) -> str:
         func = self.event["func"]
         endpoint: Optional[str] = self.stack.app.app_paths.get(func)
         if endpoint:
@@ -244,7 +250,7 @@ class Element:
         self.set_frame(Frame.get_stack())
         self.stack.root_element = self
 
-    def dict_to_attrs(self):
+    def __dict_to_attrs__(self):
         ATTR_NO_VALUE = object()
         return " ".join(
             (key if value is ATTR_NO_VALUE else '%s="%s"' % (key, value)) for key, value in self.attributes.items()
