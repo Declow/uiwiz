@@ -1,9 +1,26 @@
-from typing import Callable, Optional, TypedDict
+from typing import Callable, Literal, Optional, TypedDict
+
+ON_EVENTS = Literal[
+    "input",
+    "change",
+    "click",
+    "focus",
+    "blur",
+    "submit",
+    "reset",
+    "keydown",
+    "keyup",
+    "keypress",
+    "scroll",
+    "copy",
+    "cut",
+    "paste",
+]
 
 
 class Event(TypedDict):
     func: Callable
-    trigger: str
+    trigger: ON_EVENTS
     target: Optional[str]
     swap: Optional[str]
     include: Optional[str]

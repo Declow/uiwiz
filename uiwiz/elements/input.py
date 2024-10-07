@@ -1,6 +1,7 @@
 from typing import Callable, Optional, Union
 
 from uiwiz.element import Element
+from uiwiz.event import ON_EVENTS
 
 
 class Input(Element):
@@ -47,8 +48,8 @@ class Input(Element):
     def on(
         self,
         func: Callable,
+        trigger: ON_EVENTS = "input",
         target: Union[Callable, str, Element] = None,
-        trigger: str = "input",
         swap: Optional[str] = None,
         params: Optional[dict[str, str]] = None,
     ) -> "Input":
