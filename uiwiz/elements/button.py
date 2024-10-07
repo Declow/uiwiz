@@ -1,9 +1,10 @@
 from typing import Callable, Optional, Union
 
 from uiwiz.element import Element
+from uiwiz.elements.extensions.on_event import OnEvent
 
 
-class Button(Element):
+class Button(OnEvent):
     root_class: str = "btn "
 
     def __init__(self, title: str) -> None:

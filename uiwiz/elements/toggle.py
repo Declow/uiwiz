@@ -1,7 +1,10 @@
+from typing import Callable, Optional, Union
 from uiwiz.element import Element
+from uiwiz.elements.extensions.on_event import OnEvent
+from uiwiz.event import ON_EVENTS
 
 
-class Toggle(Element):
+class Toggle(OnEvent):
     root_class: str = "toggle "
 
     def __init__(self, name: str, checked: bool = False) -> None:

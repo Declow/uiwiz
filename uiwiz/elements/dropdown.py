@@ -1,7 +1,8 @@
 from uiwiz.element import Element
+from uiwiz.elements.extensions.on_event import OnEvent
 
 
-class Dropdown(Element):
+class Dropdown(OnEvent):
     root_class: str = "select "
     _classes: str = "select-bordered w-full max-w-xs"
 

@@ -1,7 +1,7 @@
-from uiwiz.element import Element
+from uiwiz.elements.extensions.on_event import OnEvent
 
 
-class Checkbox(Element):
+class Checkbox(OnEvent):
     root_class: str = "checkbox "
 
     def __init__(self, name: str, checked: bool = False) -> None:

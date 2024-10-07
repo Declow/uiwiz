@@ -1,7 +1,7 @@
-from uiwiz.element import Element
+from uiwiz.elements.extensions.on_event import OnEvent
 
 
-class Radio(Element):
+class Radio(OnEvent):
     root_class: str = "radio"
 
     def __init__(self, name: str, checked: bool = False) -> None:

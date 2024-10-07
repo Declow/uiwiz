@@ -1,7 +1,10 @@
+from typing import Callable, Optional, Union
 from uiwiz.element import Element
+from uiwiz.elements.extensions.on_event import OnEvent
+from uiwiz.event import ON_EVENTS
 
 
-class Range(Element):
+class Range(OnEvent):
     root_class: str = "range "
 
     def __init__(self, min: int, max: int, value: int, name: str, step: int = None) -> None:
