@@ -14,11 +14,11 @@ class Markdown(Html, extensions=[MARKDOWN, CODE_HIGHLIGHT]):
         self.render_html = False
         self.classes("markdown-body")
 
-    def render_self(self, *_) -> str:
+    def render_self(self, *args, **kwargs) -> str:
         output = ""
         self.content = markdown2.markdown(self.content, extras=["fenced-code-blocks"])
         self.content = self.content.replace("<ul>", '<ul class="list-disc">')
         self.content = self.content.replace("<ol>", '<ol class="list-decimal">')
         self.render_html = True
-        output = super().render_self()
+        output = super().render_self(*args, **kwargs)
         return output
