@@ -1,3 +1,7 @@
-const container = document.querySelector('#swapy')
+const containers = document.querySelectorAll('#swapy')
+var swapies = [];
 
-const swapy = Swapy.createSwapy(container)
+containers.forEach((container) => {
+    const swapy = Swapy.createSwapy(container)
+    swapies.push(swapy)
+});

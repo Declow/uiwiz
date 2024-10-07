@@ -44,11 +44,3 @@
     opacity: 0;
     transition: visibility 0s var(--delay), opacity 0.5s ease-out;
 }
-
-.collapse-title, :where(.collapse > input[type="checkbox"]), :where(.collapse > input[type="radio"]) {
-    width: 100%;
-    padding: 1rem;
-    padding-inline-end: 3rem;
-    min-height: 2.4rem;
-    transition: background-color .2s ease-out;
-}

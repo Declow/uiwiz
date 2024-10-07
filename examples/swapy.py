@@ -89,12 +89,22 @@ if True:
 
         with ui.SwapyContainer() as container:
             container.attributes["id"] = "swapy"
+            with ui.col().classes("col w-full"):
+                with container.slot():
+                    with container.item():
+                        ui.markdown("*this is some text* - Hayoo")
+                with container.slot():
+                    with container.item():
+                        ui.input("test", "some_name")
+
+        with ui.SwapyContainer() as container:
+            container.attributes["id"] = "swapy"
             with container.slot():
                 with container.item():
-                    ui.element(content="test")
+                    ui.element(content="test2")
             with container.slot():
                 with container.item():
-                    ui.element(content="test")
+                    ui.element(content="test3")
 
     with ui.footer():
         ui.label("some footer text")
