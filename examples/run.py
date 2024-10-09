@@ -47,8 +47,9 @@ def run_with_path_param(date: date):
 
 
 @app.page("/")
-async def test(request: Request):
+async def test(request: Request, response: Response):
     create_nav()
+    response.headers["asd"] = "asd"
     with ui.element().classes("col mx-auto"):
         with ui.row():
             ui.button("test").on_click(lambda: create_from_htmx(b))
