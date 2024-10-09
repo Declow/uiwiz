@@ -1,7 +1,7 @@
 from datetime import date, datetime, timezone
 
 import uvicorn
-from fastapi import Request
+from fastapi import Request, Response
 from pydantic import BaseModel
 
 from examples.data import df
@@ -16,8 +16,10 @@ def create_nav():
         ui.button("this is from a method")
 
 
-def e():
+def e(request: Request, response: Response):
     ui.label("new label from htmx")
+    response.headers["asd"] = "asd"
+    response.headers["Cache-Control"] = "no-store-stoer it"
 
 
 async def create_from_htmx(b: ui.button):

@@ -130,14 +130,15 @@ class UiwizApp(FastAPI):
             )
         )
 
-    def render_api(self, status_code: int = 200):
-        return self.return_funtion_response(
-            HTMLResponse(
-                Frame.get_stack().render(),
-                status_code,
-                {"Cache-Control": "no-store", "X-uiwiz-Content": "partial-ui"},
-            )
-        )
+    def render_api(self, status_code: int = 200, response: Optional[Response] = None) -> Response:
+        response.media_type = "text/html"
+        response.body = Frame.get_stack().render().encode("utf-8")
+        response.status_code = status_code
+        standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "partial-ui"}
+        for key, value in standard_headers.items():
+            if key not in response.headers:
+                response.headers[key] = value
+        return self.return_funtion_response(response)
 
     def route_exists(self, path: str) -> None:
         return path in list(self.app_paths.values())
@@ -182,16 +183,6 @@ class UiwizApp(FastAPI):
 
                 return self.render(request, title)
 
-            params = [p for p in inspect.signature(func).parameters.values()]
-            if "request" not in {p.name for p in params}:
-                request = inspect.Parameter(
-                    "request",
-                    inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                    annotation=Request,
-                )
-                params.insert(0, request)
-            decorated.__signature__ = inspect.Signature(params)
-
             if not self.route_exists(path):
                 self.app_paths[decorated] = path
 
@@ -215,16 +206,11 @@ class UiwizApp(FastAPI):
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
                     return self.return_funtion_response(result)
 
-                return self.render_api()
+                response = dec_kwargs.get("response")
+                if not response:
+                    response = Response()
 
-            request = inspect.Parameter("request", inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=Request)
-            params = [p for p in inspect.signature(func).parameters.values()]
-            for p in params:
-                if p.annotation == inspect.Signature.empty:
-                    p._annotation = Request
-            if "request" not in {p.name for p in params}:
-                params.insert(0, request)
-            decorated.__signature__ = inspect.Signature(params)
+                return self.render_api(response=response)
 
             if not self.route_exists(path):
                 self.app_paths[decorated] = path
