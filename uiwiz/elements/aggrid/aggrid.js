@@ -1,12 +1,6 @@
 
 htmx.defineExtension("hx-aggrid", {
     onEvent: function (name, evt) {
-        if (name === "htmx:afterProcessNode") {
-            console.log(evt);
-            const element = evt.detail.elt;
-            gridHandler(element, null, null);
-        }
-
         if (name === "htmx:afterSettle") {
             const response = JSON.parse(evt.detail.xhr.response);
             const cols = response["cols"];
@@ -53,3 +47,9 @@ function createOrGetCurrentGrid(element, cols, rows) {
     }
     return gridApi;
 }
+
+elements = document.querySelectorAll("[hx-aggrid]");
+
+elements.forEach((element) => {
+    gridHandler(element, null, null);
+});

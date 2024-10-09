@@ -217,9 +217,9 @@ class UiwizApp(FastAPI):
                 for key, value in response.headers.items():
                     standard_headers[key] = value
 
-                return self.return_funtion_response(
-                    HTMLResponse(content=Frame.get_stack().render(), headers=standard_headers)
-                )
+                content = "".join([Frame.get_stack().render(), Frame.get_stack().render_ext()])
+
+                return self.return_funtion_response(HTMLResponse(content=content, headers=standard_headers))
 
             self.__ensure_request_response_signature__(decorated)
 
