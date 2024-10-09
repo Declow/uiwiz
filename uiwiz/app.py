@@ -14,6 +14,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from jinja2 import Template
 from starlette.requests import Request
 
 from uiwiz.asgi_request_middelware import AsgiRequestMiddelware
@@ -110,6 +111,9 @@ class UiwizApp(FastAPI):
         theme = self.theme
         if cookie_theme := request.cookies.get("data-theme"):
             theme = f"data-theme={escape(cookie_theme)}"
+
+        o: Template = self.templates.get_template("default.html")
+        o.render()
         return self.return_funtion_response(
             self.templates.TemplateResponse(
                 name=template_name,
