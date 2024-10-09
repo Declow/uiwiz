@@ -14,6 +14,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from jinja2 import Template
 from starlette.requests import Request
 
 from uiwiz.asgi_request_middelware import AsgiRequestMiddelware
@@ -58,8 +59,8 @@ class UiwizApp(FastAPI):
         self.app_paths: dict[str, Path] = {}
 
         @self.get("/_static/default.js", include_in_schema=False)
-        def return_default_js(request: Request):
-            return self.render(request, template_name="default.js", media_type="application/javascript")
+        def return_default_js(request: Request, response: Response):
+            return self.render(request, response, template_name="default.js", media_type="application/javascript")
 
         @self.exception_handler(RequestValidationError)
         async def handle_validation_error(request: Request, exc: RequestValidationError):
@@ -98,10 +99,11 @@ class UiwizApp(FastAPI):
     def render(
         self,
         request: Request,
+        response: Response,
         title: Optional[str] = None,
         status_code: int = 200,
         template_name: str = "default.html",
-        media_type: Optional[str] = None,
+        media_type: str = "text/html",
     ):
         frame = Frame.get_stack()
         html = frame.render()
@@ -110,32 +112,30 @@ class UiwizApp(FastAPI):
         theme = self.theme
         if cookie_theme := request.cookies.get("data-theme"):
             theme = f"data-theme={escape(cookie_theme)}"
-        return self.return_funtion_response(
-            self.templates.TemplateResponse(
-                name=template_name,
-                context={
-                    "request": request,
-                    "root_element": [html],
-                    "title": page_title,
-                    "theme": theme,
-                    "ext": ext,
-                    "toast_delay": self.toast_delay,
-                    "error_classes": self.error_classes,
-                    "auth_header_name": self.auth_header,
-                    "description_content": frame.meta_description_content,
-                },
-                status_code=status_code,
-                headers={"Cache-Control": "no-store", "X-uiwiz-Content": "page"},
-                media_type=media_type,
-            )
-        )
 
-    def render_api(self, status_code: int = 200):
+        standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "page"}
+        default_page: Template = self.templates.get_template(template_name)
+
+        if response:
+            for key, value in response.headers.items():
+                standard_headers[key] = value
+
         return self.return_funtion_response(
             HTMLResponse(
-                Frame.get_stack().render(),
-                status_code,
-                {"Cache-Control": "no-store", "X-uiwiz-Content": "partial-ui"},
+                content=default_page.render(
+                    request=request,
+                    root_element=[html],
+                    title=page_title,
+                    theme=theme,
+                    ext=ext,
+                    toast_delay=self.toast_delay,
+                    error_classes=self.error_classes,
+                    auth_header_name=self.auth_header,
+                    description_content=frame.meta_description_content,
+                ),
+                status_code=status_code,
+                headers=standard_headers,
+                media_type=media_type,
             )
         )
 
@@ -172,25 +172,20 @@ class UiwizApp(FastAPI):
                 Frame.get_stack()
                 Element().classes("flex flex-col min-h-screen h-full")
                 request = dec_kwargs["request"]
-                # NOTE cleaning up the keyword args so the signature is consistent with "func" again
+                response = dec_kwargs["response"]
+
+                # NOTE Ensure the signature matches the parameters of the function
                 dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
                 result = func(*dec_args, **dec_kwargs)
                 if inspect.isawaitable(result):
                     result = await result
+
                 if isinstance(result, Response):
                     return self.return_funtion_response(result)
 
-                return self.render(request, title)
+                return self.render(request, response, title)
 
-            params = [p for p in inspect.signature(func).parameters.values()]
-            if "request" not in {p.name for p in params}:
-                request = inspect.Parameter(
-                    "request",
-                    inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                    annotation=Request,
-                )
-                params.insert(0, request)
-            decorated.__signature__ = inspect.Signature(params)
+            self.__ensure_request_response_signature__(decorated)
 
             if not self.route_exists(path):
                 self.app_paths[decorated] = path
@@ -207,24 +202,26 @@ class UiwizApp(FastAPI):
             async def decorated(*dec_args, **dec_kwargs) -> Response:
                 # Create frame before function is called
                 Frame.get_stack()
-                # NOTE cleaning up the keyword args so the signature is consistent with "func" again
+                response = dec_kwargs["response"]
+
+                # NOTE Ensure the signature matches the parameters of the function
                 dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
                 result = func(*dec_args, **dec_kwargs)
                 if inspect.isawaitable(result):
                     result = await result
+
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
                     return self.return_funtion_response(result)
 
-                return self.render_api()
+                standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "partial-ui"}
+                for key, value in response.headers.items():
+                    standard_headers[key] = value
 
-            request = inspect.Parameter("request", inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=Request)
-            params = [p for p in inspect.signature(func).parameters.values()]
-            for p in params:
-                if p.annotation == inspect.Signature.empty:
-                    p._annotation = Request
-            if "request" not in {p.name for p in params}:
-                params.insert(0, request)
-            decorated.__signature__ = inspect.Signature(params)
+                return self.return_funtion_response(
+                    HTMLResponse(content=Frame.get_stack().render(), headers=standard_headers)
+                )
+
+            self.__ensure_request_response_signature__(decorated)
 
             if not self.route_exists(path):
                 self.app_paths[decorated] = path
@@ -243,6 +240,17 @@ class UiwizApp(FastAPI):
             if type == "ui":
                 self.ui(key)(value.get("func"))
 
-    def return_funtion_response(self, response: Response) -> Response:
+    def return_funtion_response(self, response: Union[str, Response]) -> Union[str, Response]:
         Frame.get_stack().del_stack()
         return response
+
+    def __ensure_request_response_signature__(self, func: Callable):
+        data = {"request": Request, "response": Response}
+
+        params = [p for p in inspect.signature(func).parameters.values()]
+        for key, value in data.items():
+            if key not in {p.name for p in params}:
+                parm = inspect.Parameter(key, inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=value)
+                params.insert(0, parm)
+
+        func.__signature__ = inspect.Signature(params)
