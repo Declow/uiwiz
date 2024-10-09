@@ -20,7 +20,6 @@ def create_nav():
 class DataInput(BaseModel):
     id: Annotated[int, UiAnno(ui.hiddenInput)]
     enum: Literal["val", "ok"]
-    enum2: Annotated[Literal["asd", "ok"], UiAnno(ui.radio)] = "asd"
     only_str_defined: str
     name: Annotated[str, UiAnno(ui.input, "test")] = Field(min_length=1)
     desc: Annotated[str, UiAnno(ui.textarea)] = Field(min_length=1)
@@ -52,7 +51,6 @@ def create_form():
     instance = DataInput(
         id=1,
         enum="val",
-        enum2="asd",
         only_str_defined="asd",
         name="test",
         desc="This is a test",
