@@ -15,7 +15,7 @@ CSS_PATH = Path(__file__).parent / "aggridtheme.css"
 JS_PATH = Path(__file__).parent / "aggrid.js"
 
 
-class Aggrid(Element, extensions=[CSS_PATH, JS_PATH, LIB_PATH]):
+class Aggrid(Element, extensions=[CSS_PATH, LIB_PATH, JS_PATH]):
     class OPTIONS(str, Enum):
         autoSizeColumn = "autoSizeAll"
         fitColumnContent = "sizeToFit"
