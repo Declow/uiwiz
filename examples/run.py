@@ -1,7 +1,7 @@
 from datetime import date, datetime, timezone
 
 import uvicorn
-from fastapi import Request, Response
+from fastapi import Request
 from pydantic import BaseModel
 
 from examples.data import df
@@ -16,10 +16,8 @@ def create_nav():
         ui.button("this is from a method")
 
 
-def e(request: Request, response: Response):
+def e():
     ui.label("new label from htmx")
-    response.headers["asd"] = "asd"
-    response.headers["Cache-Control"] = "no-store-stoer it"
 
 
 async def create_from_htmx(b: ui.button):
@@ -47,9 +45,8 @@ def run_with_path_param(date: date):
 
 
 @app.page("/")
-async def test(request: Request, response: Response):
+async def test(request: Request):
     create_nav()
-    response.headers["asd"] = "asd"
     with ui.element().classes("col mx-auto"):
         with ui.row():
             ui.button("test").on_click(lambda: create_from_htmx(b))
