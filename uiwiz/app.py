@@ -168,6 +168,7 @@ class UiwizApp(FastAPI):
 
             @functools.wraps(func)
             async def decorated(*dec_args, **dec_kwargs) -> Response:
+                Frame.get_stack().del_stack()
                 # Create frame before function is called
                 Frame.get_stack()
                 Element().classes("flex flex-col min-h-screen h-full")
@@ -200,6 +201,7 @@ class UiwizApp(FastAPI):
 
             @functools.wraps(func)
             async def decorated(*dec_args, **dec_kwargs) -> Response:
+                Frame.get_stack().del_stack()
                 # Create frame before function is called
                 Frame.get_stack()
                 response = dec_kwargs["response"]
