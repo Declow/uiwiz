@@ -60,6 +60,8 @@ class UiwizApp(FastAPI):
 
         @self.get("/_static/default.js", include_in_schema=False)
         def return_default_js(request: Request, response: Response):
+            response.headers["cache-control"] = f"max-age={cache_age}"
+            response.headers["x-uiwiz-content"] = "assets"
             return self.render(request, response, template_name="default.js", media_type="application/javascript")
 
         @self.exception_handler(RequestValidationError)
@@ -104,12 +106,14 @@ class UiwizApp(FastAPI):
         status_code: int = 200,
         template_name: str = "default.html",
         media_type: str = "text/html",
+        root_overflow: str = "overflow-y: scroll",
     ):
         frame = Frame.get_stack()
         html = frame.render()
         ext = frame.render_ext()
         page_title = self.__get_title__(frame, title)
         theme = self.theme
+        root_overflow = f'style="{root_overflow}"'
         if cookie_theme := request.cookies.get("data-theme"):
             theme = f"data-theme={escape(cookie_theme)}"
 
@@ -132,6 +136,7 @@ class UiwizApp(FastAPI):
                     error_classes=self.error_classes,
                     auth_header_name=self.auth_header,
                     description_content=frame.meta_description_content,
+                    overflow=root_overflow,
                 ),
                 status_code=status_code,
                 headers=standard_headers,

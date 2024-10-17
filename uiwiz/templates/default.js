@@ -82,21 +82,6 @@ htmx.defineExtension('swap-header', {
     }
 });
 
-{% if auth_header_name %}
-htmx.on("htmx:afterRequest", (evt) => {
-    xhr = evt.detail.xhr;
-
-    if (xhr.getResponseHeader("{{ auth_header_name }}")) {
-        let authToken = xhr.getResponseHeader("{{ auth_header_name }}");
-        localStorage.setItem("{{ auth_header_name }}", authToken);
-    }
-});
-
-htmx.on("htmx:configRequest", (evt)=> {
-    evt.detail.headers["{{ auth_header_name }}"] = localStorage.getItem("{{ auth_header_name }}");
-});
-{% endif %}
-
 htmx.on("htmx:configRequest", (evt)=> {
     const urlParams = new URLSearchParams(window.location.search);
     const next = urlParams.get('next');
