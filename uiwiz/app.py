@@ -110,7 +110,7 @@ class UiwizApp(FastAPI):
     ):
         frame = Frame.get_stack()
         html = frame.render()
-        ext = frame.render_ext()
+        ext_js, ext_css = frame.render_ext()
         page_title = self.__get_title__(frame, title)
         theme = self.theme
         root_overflow = f'style="{root_overflow}"'
@@ -131,7 +131,8 @@ class UiwizApp(FastAPI):
                     root_element=[html],
                     title=page_title,
                     theme=theme,
-                    ext=ext,
+                    ext_js=ext_js,
+                    ext_css=ext_css,
                     toast_delay=self.toast_delay,
                     error_classes=self.error_classes,
                     auth_header_name=self.auth_header,
@@ -224,7 +225,8 @@ class UiwizApp(FastAPI):
                 for key, value in response.headers.items():
                     standard_headers[key] = value
 
-                content = "".join([Frame.get_stack().render(), Frame.get_stack().render_ext()])
+                js, css = Frame.get_stack().render_ext()
+                content = "".join([Frame.get_stack().render(), js, css])
 
                 return self.return_funtion_response(HTMLResponse(content=content, headers=standard_headers))
 

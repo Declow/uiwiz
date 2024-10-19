@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import html
 from pathlib import Path
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 from uiwiz.event import Event
 from uiwiz.frame import Frame
@@ -227,16 +227,21 @@ class Element:
 
         return target
 
-    def render_libs(self, lst_libs: list[str]) -> str:
-        lst = []
-        for lib in lst_libs:
+    def render_ext(self, lst_ext: list[str]) -> Tuple[str, str]:
+        lst_js = []
+        lst_css = []
+        for lib in lst_ext:
             if lib.endswith("css"):
-                lst.insert(0, '<link href="%s" rel="stylesheet" type="text/css" />' % lib)
+                css = '<link href="%s" rel="stylesheet" type="text/css" />' % lib
+                if css not in lst_css:
+                    lst_css.insert(0, css)
             elif lib.endswith("js"):
-                lst.append('<script src="%s"></script>' % lib)
+                js = '<script src="%s"></script>' % lib
+                if js not in lst_js:
+                    lst_js.append(js)
             else:
                 raise Exception("lib type not supported, supported types css, js")
-        return "".join(lst)
+        return "".join(lst_js), "".join(lst_css)
 
     def __str__(self) -> str:
         return self.render()

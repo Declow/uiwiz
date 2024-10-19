@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 from uuid import uuid4
 
 from uiwiz.asgi_request_middelware import get_request
@@ -70,10 +70,10 @@ class Frame:
             return output
         return ""
 
-    def render_ext(self) -> str:
+    def render_ext(self) -> Tuple[str, str]:
         if self.root_element:
-            return self.root_element.render_libs(self.extensions)
-        return ""
+            return self.root_element.render_ext(self.extensions)
+        return "", ""
 
     def add_extension(self, cls, extensions: Optional[Union[list[Path], Path]]) -> None:
         if extensions is None:
