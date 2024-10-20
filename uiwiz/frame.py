@@ -42,7 +42,7 @@ class Frame:
             return f"a-{self.id_count}"
 
         target_id = self.last_id if self.last_id else headers.get("hx-target")
-        if swap in ["outerHTML", "this"] and self.last_id != target_id:
+        if swap.lower() in ["outerhtml", "this"] and self.last_id != target_id:
             self.last_id = target_id
         else:
             self.last_id = "a" + str(uuid4())
