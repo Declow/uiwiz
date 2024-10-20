@@ -4,7 +4,7 @@ import html
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple, Union
 
-from uiwiz.event import Event
+from uiwiz.event import TARGET_TYPE, Event
 from uiwiz.frame import Frame
 from uiwiz.shared import register_resource
 
@@ -200,6 +200,10 @@ class Element:
 
     def __get_endpoint__(self) -> str:
         func = self.event["func"]
+
+        if isinstance(func, str):
+            return str
+
         endpoint: Optional[str] = self.stack.app.app_paths.get(func)
         if endpoint:
             if params := self.event.get("params"):
@@ -211,7 +215,7 @@ class Element:
             self.stack.app.ui(endpoint)(func)
         return endpoint
 
-    def get_target(self, target: Union[Callable, str, "Element", None]) -> str:
+    def get_target(self, target: TARGET_TYPE) -> str:
         _target = "this"
         if target is None:
             return _target

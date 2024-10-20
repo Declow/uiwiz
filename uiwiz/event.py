@@ -1,4 +1,7 @@
-from typing import Callable, Literal, Optional, TypedDict
+from typing import TYPE_CHECKING, Callable, Literal, Optional, TypedDict, Union
+
+if TYPE_CHECKING:
+    from uiwiz.element import Element
 
 ON_EVENTS = Literal[
     "input",
@@ -31,12 +34,15 @@ SWAP_EVENTS = Literal[
     "none",
 ]
 
+TARGET_TYPE = Union[Callable[[], str], str, "Element", None]
+FUNC_TYPE = Union[Callable, str]
+
 
 class Event(TypedDict):
-    func: Callable
+    func: FUNC_TYPE
     trigger: ON_EVENTS
-    target: Optional[str]
-    swap: Optional[str]
+    target: Optional[Union[Callable, str, "Element", None]]
+    swap: Optional[SWAP_EVENTS]
     include: Optional[str]
     vals: Optional[str]
     params: Optional[dict]
