@@ -202,7 +202,7 @@ class Element:
         func = self.event["func"]
 
         if isinstance(func, str):
-            return str
+            return func
 
         endpoint: Optional[str] = self.stack.app.app_paths.get(func)
         if endpoint:
