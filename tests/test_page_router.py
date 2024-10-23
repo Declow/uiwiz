@@ -25,7 +25,14 @@ def test_page_router_ui():
     def func():
         ...  # pragma: no cover
 
-    expected_output: PathDefinition = {"args": (), "kwargs": {}, "func": func, "type": "ui"}
+    expected_output: PathDefinition = {
+        "args": (),
+        "kwargs": {},
+        "func": func,
+        "type": "ui",
+        "include_css": True,
+        "include_js": True,
+    }
 
     assert expected_output == pr.paths.get(route)
 

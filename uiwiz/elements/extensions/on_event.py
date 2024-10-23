@@ -1,13 +1,13 @@
 from typing import Callable, Optional, Union
 
 from uiwiz.element import Element
-from uiwiz.event import ON_EVENTS, SWAP_EVENTS
+from uiwiz.event import FUNC_TYPE, ON_EVENTS, SWAP_EVENTS
 
 
 class OnEvent(Element):
     def on(
         self,
-        func: Callable,
+        func: FUNC_TYPE,
         trigger: ON_EVENTS,
         target: Union[Callable, str, Element] = None,
         swap: Optional[SWAP_EVENTS] = None,
