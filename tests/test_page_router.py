@@ -1,7 +1,7 @@
 from fastapi.routing import APIRoute
 
 from uiwiz.app import UiwizApp
-from uiwiz.page_route import PageRouter, Path
+from uiwiz.page_route import PageRouter, PathDefinition
 
 
 def test_page_router_page():
@@ -12,7 +12,7 @@ def test_page_router_page():
     def func():
         ...  # pragma: no cover
 
-    expected_output: Path = {"args": (), "kwargs": {}, "func": func, "type": "page"}
+    expected_output: PathDefinition = {"args": (), "kwargs": {}, "func": func, "type": "page"}
 
     assert expected_output == pr.paths.get(route)
 
@@ -25,7 +25,7 @@ def test_page_router_ui():
     def func():
         ...  # pragma: no cover
 
-    expected_output: Path = {"args": (), "kwargs": {}, "func": func, "type": "ui"}
+    expected_output: PathDefinition = {"args": (), "kwargs": {}, "func": func, "type": "ui"}
 
     assert expected_output == pr.paths.get(route)
 

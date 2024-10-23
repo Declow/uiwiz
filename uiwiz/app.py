@@ -20,7 +20,7 @@ from starlette.requests import Request
 from uiwiz.asgi_request_middelware import AsgiRequestMiddelware
 from uiwiz.element import Element
 from uiwiz.frame import Frame
-from uiwiz.page_route import PageRouter
+from uiwiz.page_route import PageRouter, PathDefinition
 from uiwiz.shared import resources
 from uiwiz.static_middelware import AsgiTtlMiddelware
 
@@ -201,7 +201,7 @@ class UiwizApp(FastAPI):
 
         return decorator
 
-    def ui(self, path: str) -> Callable:
+    def ui(self, path: str, include_js: bool = True, include_css: bool = True) -> Callable:
         def decorator(func: Callable) -> Callable:
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
 
@@ -225,8 +225,13 @@ class UiwizApp(FastAPI):
                 for key, value in response.headers.items():
                     standard_headers[key] = value
 
+                render = [Frame.get_stack().render()]
                 js, css = Frame.get_stack().render_ext()
-                content = "".join([Frame.get_stack().render(), js, css])
+                if include_css:
+                    render.append(css)
+                if include_js:
+                    render.append(js)
+                content = "".join(render)
 
                 return self.return_funtion_response(HTMLResponse(content=content, headers=standard_headers))
 
@@ -240,6 +245,7 @@ class UiwizApp(FastAPI):
         return decorator
 
     def add_page_router(self, page_router: PageRouter):
+        value: PathDefinition
         for key, value in page_router.paths.items():
             if not self.route_exists(key):
                 self.app_paths[value.get("func")] = key
@@ -247,7 +253,7 @@ class UiwizApp(FastAPI):
             if type == "page":
                 self.page(key, *value.get("args"), **value.get("kwargs"))(value.get("func"))
             if type == "ui":
-                self.ui(key)(value.get("func"))
+                self.ui(key, value["include_js"], value["include_css"])(value.get("func"))
 
     def return_funtion_response(self, response: Union[str, Response]) -> Union[str, Response]:
         Frame.get_stack().del_stack()
