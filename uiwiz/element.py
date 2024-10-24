@@ -2,37 +2,20 @@ from __future__ import annotations
 
 import html
 from pathlib import Path
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, List, Optional, Tuple
 
 from uiwiz.event import TARGET_TYPE, Event
 from uiwiz.frame import Frame
 from uiwiz.shared import register_resource
-
-# https://developer.mozilla.org/en-US/docs/Glossary/Void_element
-VOID_ELEMENTS = [
-    "area",
-    "base",
-    "br",
-    "col",
-    "embed",
-    "hr",
-    "img",
-    "input",
-    "link",
-    "meta",
-    "param",
-    "source",
-    "track",
-    "wbr",
-]
+from uiwiz.element_types import ELEMENT_TYPES, VOID_ELEMENTS
 
 
 class Element:
     def __init__(
         self,
-        tag="div",
-        content="",
-        render_html=True,
+        tag: ELEMENT_TYPES = "div",
+        content: str = "",
+        render_html: bool = True,
         oob: bool = False,
     ) -> None:
         self.stack = Frame.get_stack()

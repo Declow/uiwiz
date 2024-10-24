@@ -1,7 +1,7 @@
-from typing import Callable, Optional, Union
+from typing import Optional
 
 from uiwiz.element import Element
-from uiwiz.event import FUNC_TYPE, ON_EVENTS, SWAP_EVENTS
+from uiwiz.event import FUNC_TYPE, ON_EVENTS, SWAP_EVENTS, TARGET_TYPE
 
 
 class OnEvent(Element):
@@ -9,8 +9,8 @@ class OnEvent(Element):
         self,
         func: FUNC_TYPE,
         trigger: ON_EVENTS,
-        target: Union[Callable, str, Element] = None,
-        swap: Optional[SWAP_EVENTS] = None,
+        target: TARGET_TYPE = None,
+        swap: SWAP_EVENTS = None,
         params: Optional[dict[str, str]] = None,
     ) -> "OnEvent":
         """

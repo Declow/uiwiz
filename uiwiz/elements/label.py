@@ -7,7 +7,7 @@ from uiwiz.elements.extensions.bindable import Bindable
 class Label(Bindable):
     root_class: str = "label "
 
-    def __init__(self, text: Optional[str] = None, for_: Element = None) -> None:
+    def __init__(self, text: Optional[str] = None, for_: Optional[Element] = None) -> None:
         super().__init__(tag="label")
         if text:
             self.content = text

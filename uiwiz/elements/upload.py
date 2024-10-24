@@ -2,6 +2,7 @@ from typing import Callable, Optional, Union
 
 from uiwiz.element import Element
 from uiwiz.elements.extensions.on_event import OnEvent
+from uiwiz.event import FUNC_TYPE, ON_EVENTS, SWAP_EVENTS, TARGET_TYPE
 
 
 class Upload(OnEvent):
@@ -19,10 +20,10 @@ class Upload(OnEvent):
 
     def on_upload(
         self,
-        on_upload: Callable,
-        target: Union[Callable, str, Element] = None,
-        trigger: str = "change",
-        swap: Optional[str] = None,
+        on_upload: FUNC_TYPE,
+        target: TARGET_TYPE = None,
+        trigger: ON_EVENTS = "change",
+        swap: SWAP_EVENTS = None,
     ) -> "Upload":
         self.event = {
             "func": on_upload,

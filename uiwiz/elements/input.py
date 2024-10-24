@@ -2,7 +2,7 @@ from typing import Callable, Optional, Union
 
 from uiwiz.element import Element
 from uiwiz.elements.extensions.on_event import OnEvent
-from uiwiz.event import ON_EVENTS
+from uiwiz.event import FUNC_TYPE, ON_EVENTS, SWAP_EVENTS, TARGET_TYPE
 
 
 class Input(OnEvent):
@@ -11,13 +11,13 @@ class Input(OnEvent):
 
     def __init__(
         self,
-        placeholder: str = None,
-        name=None,
-        value: str = None,
-        on_change: Optional[Callable] = None,
-        target: Optional[Callable] = None,
-        trigger: str = "input",
-        swap: Optional[str] = "swap",
+        name: Optional[str] = None,
+        value: Optional[str] = None,
+        placeholder: Optional[str] = None,
+        on_change: FUNC_TYPE = None,
+        target: TARGET_TYPE = None,
+        trigger: ON_EVENTS = "input",
+        swap: SWAP_EVENTS = "swap",  # TODO: Fix
     ) -> None:
         """Input
 
@@ -48,10 +48,10 @@ class Input(OnEvent):
 
     def on(
         self,
-        func: Callable,
+        func: FUNC_TYPE,
         trigger: ON_EVENTS = "input",
-        target: Union[Callable, str, Element] = None,
-        swap: Optional[str] = None,
+        target: TARGET_TYPE = None,
+        swap: SWAP_EVENTS = None,
         params: Optional[dict[str, str]] = None,
     ) -> "Input":
         self.event = {"func": func, "trigger": trigger, "target": target, "swap": swap, "params": params}

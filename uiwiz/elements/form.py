@@ -1,6 +1,7 @@
 from typing import Callable, Optional, Union
 
 from uiwiz.element import Element
+from uiwiz.event import FUNC_TYPE, SWAP_EVENTS, TARGET_TYPE
 
 
 class Form(Element):
@@ -12,9 +13,9 @@ class Form(Element):
 
     def on_submit(
         self,
-        func: Optional[Callable] = None,
-        target: Union[Callable, str, Element] = None,
-        swap: Optional[str] = "none",
+        func: FUNC_TYPE = None,
+        target: TARGET_TYPE = None,
+        swap: SWAP_EVENTS = "none",
         params: Optional[dict[str, str]] = None,
     ):
         self.event = {"func": func, "trigger": "submit", "target": target, "swap": swap, "params": params}

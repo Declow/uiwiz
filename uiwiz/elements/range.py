@@ -8,7 +8,7 @@ from uiwiz.event import ON_EVENTS
 class Range(OnEvent):
     root_class: str = "range "
 
-    def __init__(self, min: int, max: int, value: int, name: str, step: int = None) -> None:
+    def __init__(self, name: str, value: int, min: int, max: int, step: Optional[int] = None) -> None:
         super().__init__("input")
         self.attributes["type"] = "range"
         self.attributes["name"] = name
