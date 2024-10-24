@@ -4,10 +4,10 @@ import html
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple
 
+from uiwiz.element_types import ELEMENT_TYPES, VOID_ELEMENTS
 from uiwiz.event import TARGET_TYPE, Event
 from uiwiz.frame import Frame
 from uiwiz.shared import register_resource
-from uiwiz.element_types import ELEMENT_TYPES, VOID_ELEMENTS
 
 
 class Element:
