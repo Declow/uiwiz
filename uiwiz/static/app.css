@@ -1,20 +1,3 @@
-.col {
-    display: flex;
-    /* flex-wrap: wrap; */
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem;
-}
-
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 1rem;
-}
-
 .htmx-indicator {
     opacity: 0;
     /* transition: opacity 200ms ease-in; */
