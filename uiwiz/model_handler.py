@@ -52,7 +52,7 @@ class ModelForm:
         self,
         model: BaseModel,
         compact: bool = True,
-        card_classes: str = "card w-full bg-base-100 shadow-lg",
+        card_classes: str = "border border-base-content rounded-lg shadow-lg w-full",
         label_classes: str = "flex-auto w-52",
         **kwargs,  # override fields with custom ui
     ):
