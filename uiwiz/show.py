@@ -11,7 +11,8 @@ from uiwiz.elements.table import Table
 
 
 def __display_name__(input: str) -> str:
-    return input.replace("_", " ")
+    value = str(input)
+    return value.replace("_", " ")
 
 
 T = TypeVar("T")

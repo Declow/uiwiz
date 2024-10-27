@@ -16,4 +16,7 @@ class Link(Element):
         self.classes(Link._classes)
 
     def before_render(self):
-        self.attributes["href"] = self.link()
+        if callable(self.link):
+            self.attributes["href"] = self.link()
+            return
+        self.attributes["href"] = self.link
