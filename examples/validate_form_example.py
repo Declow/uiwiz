@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from datetime import date
 from typing import Annotated, Literal
 
@@ -18,6 +17,17 @@ def create_nav():
 
 
 class DataInput(BaseModel):
+    enum: Literal["val", "ok"]
+    only_str_defined: str
+    name: Annotated[str, UiAnno(ui.input, "test")] = Field(min_length=1)
+    desc: Annotated[str, UiAnno(ui.textarea)] = Field(min_length=1)
+    age: Annotated[int, UiAnno(ui.input)] = Field(ge=0)
+    is_active: bool = False
+    event_at_date: date
+    test: int
+
+
+class DataInputWithId(DataInput):
     id: Annotated[int, UiAnno(ui.hiddenInput)]
     enum: Literal["val", "ok"]
     only_str_defined: str
@@ -36,7 +46,7 @@ def create_form():
     # Customizing the form
     # Override the annotation for the name field
     ui.modelForm(
-        DataInput,
+        DataInputWithId,
         compact=True,
         id={"ui": ui.input, "value": 1},
         enum={
@@ -48,7 +58,7 @@ def create_form():
 
     # Using the instance
     # This will prefill the form with the instance data
-    instance = DataInput(
+    instance = DataInputWithId(
         id=1,
         enum="val",
         only_str_defined="asd",

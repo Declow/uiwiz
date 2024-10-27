@@ -6,7 +6,11 @@ from uiwiz.element import Element
 class HiddenInput(Element):
     _classes: str = ""
 
-    def __init__(self, name: Optional[str] = None, value: Any = None) -> None:
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        value: Any = None,
+    ) -> None:
         """HiddenInput
 
         This element is used for hidden input data

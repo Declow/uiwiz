@@ -70,21 +70,16 @@ if True:
             create_label(f"{message} {input.input}")
 
         ui.input(
-            "This is a placeholder",
             name="input",
-            on_change=replace,
-            target=lambda: res3.id,
-        )
+            placeholder="This is a placeholder",
+        ).on("input", replace, lambda: res3.id, "outerHTML")
         with element() as res3:
             create_label(message)
 
         ui.textarea(
-            "Placeholder",
             name="input",
-            on_change=replace,
-            target=lambda: res2.id,
-            trigger="input, keyup[(ctrlKey||metaKey)&&keyCode==13]",
-        )
+            placeholder="Placeholder",
+        ).on("input, keyup[(ctrlKey||metaKey)&&keyCode==13]", replace, lambda: res2.id)
         res2 = ui.label(message)
 
         ui.table(df)
