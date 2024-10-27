@@ -18,9 +18,8 @@ async def test():
             with ui.element().classes(
                 "sticky top-0 flex h-16 justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm"
             ):
-                with ui.nav().classes("w-full navbar"):
-                    with ui.label(for_=drawer.drawer_toggle).classes("btn drawer-button"):
-                        ui.html(get_svg("menu"))
+                with ui.nav():
+                    drawer.drawer_button()
 
             with ui.element().classes("col"):
                 ui.label("test1")
