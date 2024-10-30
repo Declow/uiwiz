@@ -5,7 +5,7 @@ from uiwiz.event import FUNC_TYPE, SWAP_EVENTS, TARGET_TYPE
 
 
 class Form(Element):
-    root_class: str = "col "
+    root_class: str = "flex flex-col items-start gap-4 p-4 "
 
     def __init__(self) -> None:
         super().__init__("form")

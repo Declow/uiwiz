@@ -45,7 +45,7 @@ class Test:
 @app.page("/")
 async def test(request: Request):
     create_nav()
-    with ui.element().classes("col"):
+    with ui.col():
         ui.markdown(code)
         ui.link("some text", "/second").classes("btn")
 

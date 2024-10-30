@@ -21,7 +21,7 @@ async def test():
                 with ui.nav():
                     drawer.drawer_button()
 
-            with ui.element().classes("col"):
+            with ui.col():
                 ui.label("test1")
                 ui.button("Click me")
                 ui.label("test1")
