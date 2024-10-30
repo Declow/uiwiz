@@ -109,14 +109,13 @@ class UiwizApp(FastAPI):
         root_overflow: str = "overflow-y: scroll",
     ):
         frame = Frame.get_stack()
-        html = frame.render()
         ext_js, ext_css = frame.render_ext()
-        page_title = self.__get_title__(frame, title)
+
         theme = self.theme
-        root_overflow = f'style="{root_overflow}"'
         if cookie_theme := request.cookies.get("data-theme"):
             theme = f"data-theme={escape(cookie_theme)}"
 
+        root_overflow = f'style="{root_overflow}"'
         standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "page"}
         default_page: Template = self.templates.get_template(template_name)
 
@@ -128,8 +127,8 @@ class UiwizApp(FastAPI):
             HTMLResponse(
                 content=default_page.render(
                     request=request,
-                    root_element=[html],
-                    title=page_title,
+                    root_element=[frame.render()],
+                    title=self.__get_title__(frame, title),
                     theme=theme,
                     ext_js=ext_js,
                     ext_css=ext_css,
@@ -138,6 +137,7 @@ class UiwizApp(FastAPI):
                     auth_header_name=self.auth_header,
                     description_content=frame.meta_description_content,
                     overflow=root_overflow,
+                    head=frame.head_ext,
                 ),
                 status_code=status_code,
                 headers=standard_headers,

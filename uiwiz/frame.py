@@ -33,6 +33,7 @@ class Frame:
         self.last_id = None
         self.title: Optional[str] = None
         self.meta_description_content: str = ""
+        self.head_ext: str = ""
 
     def get_id(self) -> str:
         headers = get_request().headers
