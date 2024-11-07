@@ -159,7 +159,7 @@ class Element:
     def before_render(self):
         pass
 
-    def after_render(self, html: str):
+    def after_render(self, html: str) -> str:
         return html
 
     def add_event_to_attributes(self) -> None:

@@ -1,5 +1,8 @@
+from typing import List
+
 import numpy as np
 import pandas as pd
+from pydantic import BaseModel
 
 from uiwiz.element import Element
 
@@ -26,3 +29,29 @@ class Table(Element):
                         with Element("tr"):
                             for _, val in row.items():
                                 Element("td", content=val)
+
+
+class TableV2(Element):
+    _classes_container: str = "w-full overflow-x-auto uiwiz-container-border-radius"
+    _classes_table: str = "table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
+
+    def __init__(self, data: List[BaseModel]) -> None:
+        super().__init__()
+        self.classes(Table._classes_container)
+        if data is None or data == []:
+            pass
+        schema = list(data[0].model_fields.keys())
+
+        with self:
+            with Element("table").classes(Table._classes_table):
+                # columns
+                with Element("thead"):
+                    with Element("tr"):
+                        for col in schema:
+                            Element("th", content=col)
+                # rows
+                with Element("tbody"):
+                    for row in data:
+                        for item in list(row.model_fields.keys()):
+                            with Element("tr"):
+                                Element("td", content=row.__getattribute__(item))
