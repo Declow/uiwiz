@@ -10,7 +10,9 @@ from uiwiz.elements.button import Button
 
 class Table(Element):
     _classes_container: str = "w-full overflow-x-auto uiwiz-container-border-radius"
-    _classes_table: str = "table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
+    _classes_table: str = (
+        "table table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
+    )
 
     def __init__(self, df: pd.DataFrame) -> None:
         super().__init__()
@@ -34,7 +36,9 @@ class Table(Element):
 
 class TableV2(Element):
     _classes_container: str = "w-full overflow-x-auto uiwiz-container-border-radius"
-    _classes_table: str = "table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
+    _classes_table: str = (
+        "table table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
+    )
 
     def __init__(self, data: List[BaseModel]) -> None:
         super().__init__()
