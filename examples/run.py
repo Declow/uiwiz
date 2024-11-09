@@ -39,6 +39,12 @@ class DataInput(BaseModel):
     input: str
 
 
+class TableData(BaseModel):
+    input: str
+    title: str
+    des: str
+
+
 @app.ui("/test/path/param/{date}")
 def run_with_path_param(date: date):
     with ui.element():
@@ -83,7 +89,15 @@ if True:
         ).on("input, keyup[(ctrlKey||metaKey)&&keyCode==13]", replace, lambda: res2.id)
         res2 = ui.label(message)
 
-        TableV2([DataInput(input="asd")])
+        TableV2(
+            [
+                TableData(input="This is input", title="Some title", des="Description"),
+                TableData(input="This is input", title="Some title", des="Description"),
+                TableData(input="This is input", title="Some title", des="Description"),
+                TableData(input="This is input", title="Some title", des="Description"),
+            ]
+        )
+        ui.table(df)
         ui.aggrid(df)
 
         ui.button("Date").on_click(

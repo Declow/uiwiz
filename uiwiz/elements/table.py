@@ -1,10 +1,11 @@
-from typing import List
+from typing import Callable, List, Optional
 
 import numpy as np
 import pandas as pd
 from pydantic import BaseModel
 
 from uiwiz.element import Element
+from uiwiz.elements.button import Button
 
 
 class Table(Element):
@@ -40,18 +41,40 @@ class TableV2(Element):
         self.classes(Table._classes_container)
         if data is None or data == []:
             pass
-        schema = list(data[0].model_fields.keys())
+
+        self.data = data
+        self.schema = list(data[0].model_fields.keys())
+        self.did_render: bool = False
+        self.edit: Optional[Callable] = None
+        # self.save: Optional[Callable] = None
+
+    def form(self, edit: Callable) -> "TableV2":
+        self.edit = edit
+        return self
+
+    def before_render(self):
+        super().before_render()
+        if self.did_render:
+            return None
 
         with self:
             with Element("table").classes(Table._classes_table):
                 # columns
                 with Element("thead"):
                     with Element("tr"):
-                        for col in schema:
+                        for col in self.schema:
                             Element("th", content=col)
                 # rows
-                with Element("tbody"):
-                    for row in data:
-                        for item in list(row.model_fields.keys()):
-                            with Element("tr"):
-                                Element("td", content=row.__getattribute__(item))
+                self.__render_row__()
+
+        self.did_render = True
+
+    def __render_row__(self) -> "TableV2":
+        with Element("tbody"):
+            for row in self.data:
+                with Element("tr") as container:
+                    for item in list(row.model_fields.keys()):
+                        Element("td", content=row.__getattribute__(item))
+                    if self.edit:
+                        Button("Edit").on("click", self.edit, container, "outerHTML")
+        return self
