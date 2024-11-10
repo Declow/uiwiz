@@ -40,6 +40,7 @@ class DataInput(BaseModel):
 
 
 class TableData(BaseModel):
+    id: str
     input: str
     title: str
     des: str
@@ -49,6 +50,14 @@ class TableData(BaseModel):
 def run_with_path_param(date: date):
     with ui.element():
         ui.toast(date.isoformat())
+
+
+@app.ui("/edit/row/{id}")
+async def edit_row(id: str):
+    print(id)
+    with ui.element("tr"):
+        for i in range(4):
+            ui.element("td", "asd")
 
 
 @app.page("/")
@@ -91,12 +100,20 @@ if True:
 
         TableV2(
             [
-                TableData(input="This is input", title="Some title", des="Description"),
-                TableData(input="This is input", title="Some title", des="Description"),
-                TableData(input="This is input", title="Some title", des="Description"),
-                TableData(input="This is input", title="Some title", des="Description"),
+                TableData(id="1", input="This is input", title="Some title", des="Description"),
+                TableData(id="2", input="This is input", title="Some title", des="Description"),
+                TableData(id="3", input="This is input", title="Some title", des="Description"),
+                TableData(id="4", input="This is input", title="Some title", des="Description"),
             ]
-        )
+        ).edit_row_with_id(edit_row, "id")
+        TableV2(
+            [
+                TableData(id="1", input="This is input", title="Some title", des="Description"),
+                TableData(id="2", input="This is input", title="Some title", des="Description"),
+                TableData(id="3", input="This is input", title="Some title", des="Description"),
+                TableData(id="4", input="This is input", title="Some title", des="Description"),
+            ]
+        ).edit_row_without_id(edit_row, "id")
         ui.table(df)
         ui.aggrid(df)
 
