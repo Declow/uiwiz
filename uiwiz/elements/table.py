@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, get_type_hints
 
 import numpy as np
 import pandas as pd
@@ -6,6 +6,8 @@ from pydantic import BaseModel
 
 from uiwiz.element import Element
 from uiwiz.elements.button import Button
+from uiwiz.elements.form import Form
+from uiwiz.model_handler import ModelForm
 
 
 class Table(Element):
@@ -34,10 +36,16 @@ class Table(Element):
                                 Element("td", content=val)
 
 
+class ModelFormRender(ModelForm):
+    def render_model(self, *args, **kwargs) -> Form:
+        self.button = Button("Save")
+        self.button.render_html = False
+
+
 class TableV2(Element):
     _classes_container: str = "w-full overflow-x-auto uiwiz-container-border-radius"
     _classes_table: str = (
-        "table table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
+        "table table-sm table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
     )
 
     def __init__(self, data: List[BaseModel]) -> None:
@@ -52,7 +60,6 @@ class TableV2(Element):
         self.edit: Optional[Callable] = None
         self.id_column_name: Optional[str] = None
         self.show_id: bool = True
-        # self.save: Optional[Callable] = None
 
     def edit_row_with_id(self, edit: Callable, id_column_name: str) -> "TableV2":
         self.edit = edit
@@ -64,6 +71,37 @@ class TableV2(Element):
         self.id_column_name = id_column_name
         self.show_id = False
         return self
+
+    @classmethod
+    def render_edit_row(cls, model: BaseModel, id_column_name: str, save: Callable, cancel: Callable, **kwargs):
+        with Element("tr") as container:
+            rendere = ModelFormRender(model)
+            hints = get_type_hints(model, include_extras=True)
+            for key, field_type in hints.items():
+                with Element("td"):
+                    rendere.render_model_attributes(key, field_type, **kwargs)
+
+            TableV2.__render_save_button__(container, save, cancel, id_column_name, model)
+
+    @classmethod
+    def __render_save_button__(
+        cls, container: Element, save: Callable, cancel: Callable, id_column_name: str, model: BaseModel
+    ) -> Element:
+        with Element("td"):
+            Button("Cancel").classes("btn-sm").on(
+                "click",
+                cancel,
+                container,
+                "none",
+                params={id_column_name: model.__getattribute__(id_column_name)},
+            )
+            Button("Save").classes("btn-sm").on(
+                "click",
+                save,
+                container,
+                "outerHTML",
+                params={id_column_name: model.__getattribute__(id_column_name)},
+            ).attributes["hx-include"] = "closest tr"
 
     def before_render(self):
         super().before_render()
@@ -85,24 +123,22 @@ class TableV2(Element):
                 # rows
                 with Element("tbody"):
                     for row in self.data:
-                        self.__render_row__(row)
+                        self.render_row(row, self.edit, self.id_column_name)
 
         self.did_render = True
 
-    def __render_row__(self, row: BaseModel) -> "TableV2":
+    @classmethod
+    def render_row(cls, row: BaseModel, edit: Optional[Callable], id_column_name: str) -> "TableV2":
         with Element("tr") as container:
             for item in list(row.model_fields.keys()):
-                if self.show_id and self.id_column_name == item:
-                    Element("td", content=row.__getattribute__(item))
-                elif self.id_column_name != item:
-                    Element("td", content=row.__getattribute__(item))
-            if self.edit:
+                Element("td", content=row.__getattribute__(item))
+            if edit:
                 with Element("td"):
-                    Button("Edit").on(
+                    Button("Edit").classes("btn-sm").on(
                         "click",
-                        self.edit,
+                        edit,
                         container,
                         "outerHTML",
-                        params={self.id_column_name: row.__getattribute__(self.id_column_name)},
+                        params={id_column_name: row.__getattribute__(id_column_name)},
                     )
-        return self
+        return container

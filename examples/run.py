@@ -1,4 +1,5 @@
 from datetime import date, datetime, timezone
+from typing import Annotated
 
 import uvicorn
 from fastapi import Request
@@ -8,6 +9,8 @@ from examples.data import df
 from uiwiz import UiwizApp, ui
 from uiwiz.element import Element as element
 from uiwiz.elements.table import TableV2
+from uiwiz.frame import get_task_id
+from uiwiz.model_handler import UiAnno
 
 app = UiwizApp()
 
@@ -40,7 +43,7 @@ class DataInput(BaseModel):
 
 
 class TableData(BaseModel):
-    id: str
+    id: Annotated[str, UiAnno(ui.hiddenInput)]
     input: str
     title: str
     des: str
@@ -52,12 +55,19 @@ def run_with_path_param(date: date):
         ui.toast(date.isoformat())
 
 
+@app.ui("/display/row/")
+async def save_row(model: TableData):
+    TableV2.render_row(model, edit_row, "id")
+
+
 @app.ui("/edit/row/{id}")
 async def edit_row(id: str):
-    print(id)
-    with ui.element("tr"):
-        for i in range(4):
-            ui.element("td", "asd")
+    TableV2.render_edit_row(
+        TableData(id="100", input="input field", title="Great title", des="Very long desc"),
+        "id",
+        save_row,
+        lambda: ui.toast("ddxx"),
+    )
 
 
 @app.page("/")

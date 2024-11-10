@@ -13,13 +13,13 @@
 }
 
 .uiwiz-td-padding td {
-    padding: 0.5rem;
+    padding: 0.2rem;
 }
 .uiwiz-td-padding th {
-    padding-right: 1rem;
+    padding-right: 0.2rem;
 }
 .uiwiz-container-border-radius {
-    border-radius: 0.6rem;
+    border-radius: 0.5rem;
 }
 
 .remove {

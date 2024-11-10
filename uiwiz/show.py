@@ -7,7 +7,8 @@ from pydantic import BaseModel
 from uiwiz.element import Element
 from uiwiz.elements.col import Col
 from uiwiz.elements.row import Row
-from uiwiz.elements.table import Table
+
+# from uiwiz.elements.table import Table
 
 
 def __display_name__(input: str) -> str:
@@ -50,8 +51,8 @@ def render_instance(
     return __render_data__(fields, container_classes, label_classes)
 
 
-def __render_list__(data: list[dict]) -> Element:
-    return Table(pd.DataFrame(data).rename(columns=__display_name__))
+# def __render_list__(data: list[dict]) -> Element:
+#     return Table(pd.DataFrame(data).rename(columns=__display_name__))
 
 
 def __render_data__(data: dict, container_classes: str, label_classes: str) -> Element:
