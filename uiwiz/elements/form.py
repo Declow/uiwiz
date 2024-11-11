@@ -9,7 +9,6 @@ class Form(Element):
 
     def __init__(self) -> None:
         super().__init__("form")
-        self.classes()
 
     def on_submit(
         self,

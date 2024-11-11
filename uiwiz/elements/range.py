@@ -7,6 +7,7 @@ from uiwiz.event import ON_EVENTS
 
 class Range(OnEvent):
     root_class: str = "range "
+    root_size: str = "range-{size}"
 
     def __init__(self, name: str, value: int, min: int, max: int, step: Optional[int] = None) -> None:
         super().__init__("input")
@@ -17,8 +18,6 @@ class Range(OnEvent):
         self.attributes["value"] = value
         if step:
             self.attributes["step"] = step
-
-        self.classes()
 
     @property
     def min(self) -> int:

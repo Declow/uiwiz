@@ -5,6 +5,7 @@ import pandas as pd
 from pydantic import BaseModel
 
 from uiwiz.element import Element
+from uiwiz.element_types import ELEMENT_SIZE
 from uiwiz.elements.button import Button
 from uiwiz.elements.form import Form
 from uiwiz.model_handler import ModelForm
@@ -43,9 +44,10 @@ class ModelFormRender(ModelForm):
 
 
 class TableV2(Element):
+    root_size: str = "table-{size}"
     _classes_container: str = "w-full overflow-x-auto uiwiz-container-border-radius"
     _classes_table: str = (
-        "table table-sm table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
+        "table table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
     )
 
     def __init__(self, data: List[BaseModel]) -> None:
@@ -73,29 +75,43 @@ class TableV2(Element):
         return self
 
     @classmethod
-    def render_edit_row(cls, model: BaseModel, id_column_name: str, save: Callable, cancel: Callable, **kwargs):
+    def render_edit_row(
+        cls,
+        model: BaseModel,
+        id_column_name: str,
+        save: Callable,
+        cancel: Callable,
+        size: ELEMENT_SIZE = "sm",
+        **kwargs,
+    ):
         with Element("tr") as container:
-            rendere = ModelFormRender(model)
+            rendere = ModelFormRender(model, size=size)
             hints = get_type_hints(model, include_extras=True)
             for key, field_type in hints.items():
                 with Element("td"):
                     rendere.render_model_attributes(key, field_type, **kwargs)
 
-            TableV2.__render_save_button__(container, save, cancel, id_column_name, model)
+            TableV2.__render_save_button__(container, save, cancel, id_column_name, model, size)
 
     @classmethod
     def __render_save_button__(
-        cls, container: Element, save: Callable, cancel: Callable, id_column_name: str, model: BaseModel
+        cls,
+        container: Element,
+        save: Callable,
+        cancel: Callable,
+        id_column_name: str,
+        model: BaseModel,
+        size: ELEMENT_SIZE = "sm",
     ) -> Element:
         with Element("td"):
-            Button("Cancel").classes("btn-sm").on(
+            Button("Cancel").size(size).on(
                 "click",
                 cancel,
                 container,
                 "none",
                 params={id_column_name: model.__getattribute__(id_column_name)},
             )
-            Button("Save").classes("btn-sm").on(
+            Button("Save").size(size).on(
                 "click",
                 save,
                 container,
@@ -128,13 +144,15 @@ class TableV2(Element):
         self.did_render = True
 
     @classmethod
-    def render_row(cls, row: BaseModel, edit: Optional[Callable], id_column_name: str) -> "TableV2":
+    def render_row(
+        cls, row: BaseModel, edit: Optional[Callable], id_column_name: str, size: ELEMENT_SIZE = "sm"
+    ) -> "TableV2":
         with Element("tr") as container:
             for item in list(row.model_fields.keys()):
                 Element("td", content=row.__getattribute__(item))
             if edit:
                 with Element("td"):
-                    Button("Edit").classes("btn-sm").on(
+                    Button("Edit").size(size).on(
                         "click",
                         edit,
                         container,

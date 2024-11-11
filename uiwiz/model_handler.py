@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
 
 from uiwiz.element import Element
+from uiwiz.element_types import ELEMENT_SIZE
 from uiwiz.elements.button import Button
 from uiwiz.elements.checkbox import Checkbox
 from uiwiz.elements.datepicker import Datepicker
@@ -54,7 +55,7 @@ class ModelForm:
         compact: bool = True,
         card_classes: str = "border border-base-content rounded-lg shadow-lg w-full",
         label_classes: str = "flex-auto w-52",
-        size: str = "md",
+        size: ELEMENT_SIZE = "md",
         **kwargs,  # override fields with custom ui
     ):
         self.model = model
@@ -66,7 +67,7 @@ class ModelForm:
         self.compact = compact
         self.label_classes = label_classes
         self.card_classes = card_classes
-        self.size = size
+        self._size = size
         self.render_model(**kwargs)
         self.button.render_html = False
 
@@ -175,6 +176,7 @@ class ModelForm:
             if self.instance and "placeholder" in ele_args:
                 kwargs["placeholder"] = getattr(self.instance, key)
             el: Element = ele(**kwargs)
+            el.size(self._size)
             if classes:
                 el.classes(classes)
             if label:

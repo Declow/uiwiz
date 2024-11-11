@@ -11,7 +11,7 @@ class Spinner(Element):
 
     def __init__(self, spinner_for: Element = None) -> None:
         super().__init__("span")
-        self.size = Spinner._size
+        self._size = Spinner._size
         self.type = Spinner._type
         self.spinner_for = spinner_for
         self.__self__format()
@@ -28,28 +28,28 @@ class Spinner(Element):
             self.__self__format()
 
     def __self__format(self) -> None:
-        clazz = Spinner._classes.format(self.type, self.size)
+        clazz = Spinner._classes.format(self.type, self._size)
         if self.spinner_for:
             clazz += " htmx-indicator"
         self.classes(clazz)
 
     def extra_small(self) -> "Spinner":
-        self.size = "xs"
+        self._size = "xs"
         self.__self__format()
         return self
 
     def small(self) -> "Spinner":
-        self.size = "sm"
+        self._size = "sm"
         self.__self__format()
         return self
 
     def medium(self) -> "Spinner":
-        self.size = "md"
+        self._size = "md"
         self.__self__format()
         return self
 
     def large(self) -> "Spinner":
-        self.size = "lg"
+        self._size = "lg"
         self.__self__format()
         return self
 

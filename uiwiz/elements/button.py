@@ -12,7 +12,6 @@ class Button(OnEvent):
     def __init__(self, title: str) -> None:
         super().__init__(tag="button")
         self.content = title
-        self.classes()
 
     def on_click(
         self,
@@ -22,8 +21,4 @@ class Button(OnEvent):
         params: Optional[dict[str, str]] = None,
     ) -> "Button":
         self.event = {"func": func, "trigger": "click", "target": target, "swap": swap, "params": params}
-        return self
-
-    def size(self, size: ELEMENT_SIZE) -> "Button":
-        self.classes(size)
         return self
