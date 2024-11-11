@@ -30,11 +30,29 @@ function handleInvalidInputs(evt) {
         res = JSON.parse(evt.detail.xhr.response);
 
         res.fieldErrors.forEach(key => {
-            evt.target.querySelector(`[name='${key}']`).classList.add("invalid")
+            var tar = evt.target.querySelector(`[name='${key}']`);
+            if (tar != null) {
+                tar.classList.add("invalid");
+            } else {
+                var tar = evt.target.closest("tr");
+                var inputElement = tar ? tar.querySelector(`[name='${key}']`) : null;
+                if (inputElement != null) {
+                    inputElement.classList.add("invalid");
+                }
+            }
         });
 
         res.fieldOk.forEach(key => {
-            evt.target.querySelector(`[name='${key}']`).classList.remove("invalid")
+            var tar = evt.target.querySelector(`[name='${key}']`)
+            if (tar != null) {
+                tar.classList.remove("invalid")
+            } else {
+                var tar = evt.target.closest("tr");
+                var inputElement = tar ? tar.querySelector(`[name='${key}']`) : null;
+                if (inputElement != null) {
+                    inputElement.classList.remove("invalid");
+                }
+            }
         });
     }
 }
