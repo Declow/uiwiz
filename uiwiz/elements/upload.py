@@ -8,7 +8,7 @@ from uiwiz.event import FUNC_TYPE, ON_EVENTS, SWAP_EVENTS, TARGET_TYPE
 class Upload(OnEvent):
     root_class: str = "file-input "
     root_size: str = "file-input-{size}"
-    _classes: str = "file-input-bordered file-input-sm"
+    _classes: str = "file-input-bordered"
 
     def __init__(
         self,
@@ -17,6 +17,7 @@ class Upload(OnEvent):
         super().__init__("input")
         self.attributes["type"] = "file"
         self.attributes["name"] = name
+        self._size = "sm"
         self.classes(Upload._classes)
 
     def on_upload(
