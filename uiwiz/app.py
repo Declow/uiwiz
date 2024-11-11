@@ -1,7 +1,6 @@
 import functools
 import inspect
 import logging
-import os
 from html import escape
 from mimetypes import guess_type
 from pathlib import Path
