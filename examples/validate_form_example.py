@@ -83,7 +83,7 @@ def handle_submit(data: DataInput):
 @app.page("/")
 async def test():
     create_nav()
-    with ui.element().classes("col lg:px-80"):
+    with ui.col().classes("lg:px-80"):
         create_form()
 
 
