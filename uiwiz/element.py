@@ -4,7 +4,7 @@ import html
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple
 
-from uiwiz.element_types import ELEMENT_TYPES, VOID_ELEMENTS
+from uiwiz.element_types import ELEMENT_SIZE, ELEMENT_TYPES, VOID_ELEMENTS
 from uiwiz.event import TARGET_TYPE, Event
 from uiwiz.frame import Frame
 from uiwiz.shared import register_resource
@@ -26,6 +26,7 @@ class Element:
         self.attributes["id"] = self.stack.get_id()
         self.stack.id_count += 1
         self.tag: str = tag
+        self._size = "md"
 
         self.event: Event = {}
         self.parent_element: Element = None
@@ -104,6 +105,23 @@ class Element:
         :return: The current instance of the element.
         """
         self.attributes["class"] = getattr(self.__class__, "root_class", "") + input
+        return self
+    
+    def size(self, size: ELEMENT_SIZE) -> "Element":
+        """
+        Set the size of the element.
+
+        :param size: The size of the element.
+        :return: The current instance of the element.
+        """
+        format = getattr(self.__class__, "root_size", "")
+        if format:
+            old_size = format.format(size=self._size)
+            if old_size in self.attributes["class"]:
+                self.attributes["class"] = self.attributes["class"].replace(f"{old_size}", f"{format.format(size=size)}")
+            else:
+                self.attributes["class"] += f" {format.format(size=size)}"
+            self._size = size
         return self
 
     def render(self, render_script: bool = True) -> str:
