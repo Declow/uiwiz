@@ -61,17 +61,10 @@ class TableV2(Element):
         self.did_render: bool = False
         self.edit: Optional[Callable] = None
         self.id_column_name: Optional[str] = None
-        self.show_id: bool = True
 
-    def edit_row_with_id(self, edit: Callable, id_column_name: str) -> "TableV2":
+    def edit_row(self, edit: Callable, id_column_name: str) -> "TableV2":
         self.edit = edit
         self.id_column_name = id_column_name
-        return self
-
-    def edit_row_without_id(self, edit: Callable, id_column_name: str) -> "TableV2":
-        self.edit = edit
-        self.id_column_name = id_column_name
-        self.show_id = False
         return self
 
     @classmethod
@@ -108,9 +101,9 @@ class TableV2(Element):
                 "click",
                 cancel,
                 container,
-                "none",
+                "outerHTML",
                 params={id_column_name: model.__getattribute__(id_column_name)},
-            )
+            ).attributes["hx-include"] = "closest tr"
             Button("Save").size(size).on(
                 "click",
                 save,
@@ -130,10 +123,7 @@ class TableV2(Element):
                 with Element("thead"):
                     with Element("tr"):
                         for col in self.schema:
-                            if self.show_id and self.id_column_name == col:
-                                Element("th", content=col)
-                            elif self.id_column_name != col:
-                                Element("th", content=col)
+                            Element("th", content=col)
                         if self.edit:
                             Element("th")
                 # rows

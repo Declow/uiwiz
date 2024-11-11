@@ -163,7 +163,7 @@ class ModelForm:
 
             label: Optional[Label] = None
             if ele is not HiddenInput:
-                label = Label(kwargs[placeholder])
+                label = Label(__display_name__(key))
 
                 if compact and inspect.signature(ele).parameters.get(placeholder):
                     label.render_html = False
@@ -174,7 +174,7 @@ class ModelForm:
                 kwargs.pop(placeholder)
 
             if self.instance and "placeholder" in ele_args:
-                kwargs["placeholder"] = getattr(self.instance, key)
+                kwargs["placeholder"] = key
             el: Element = ele(**kwargs)
             el.size(self._size)
             if classes:
