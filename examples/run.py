@@ -42,32 +42,10 @@ class DataInput(BaseModel):
     input: str
 
 
-class TableData(BaseModel):
-    id: Annotated[str, UiAnno(ui.hiddenInput)]
-    input: str
-    title: str
-    des: str
-
-
 @app.ui("/test/path/param/{date}")
 def run_with_path_param(date: date):
     with ui.element():
         ui.toast(date.isoformat())
-
-
-@app.ui("/display/row/")
-async def save_row(model: TableData):
-    TableV2.render_row(model, edit_row, "id")
-
-
-@app.ui("/edit/row/{id}")
-async def edit_row(id: str):
-    TableV2.render_edit_row(
-        TableData(id="100", input="input field", title="Great title", des="Very long desc"),
-        "id",
-        save_row,
-        lambda: ui.toast("ddxx"),
-    )
 
 
 @app.page("/")
@@ -108,22 +86,6 @@ if True:
         ).on("input, keyup[(ctrlKey||metaKey)&&keyCode==13]", replace, lambda: res2.id)
         res2 = ui.label(message)
 
-        TableV2(
-            [
-                TableData(id="1", input="This is input", title="Some title", des="Description"),
-                TableData(id="2", input="This is input", title="Some title", des="Description"),
-                TableData(id="3", input="This is input", title="Some title", des="Description"),
-                TableData(id="4", input="This is input", title="Some title", des="Description"),
-            ]
-        ).edit_row_with_id(edit_row, "id")
-        TableV2(
-            [
-                TableData(id="1", input="This is input", title="Some title", des="Description"),
-                TableData(id="2", input="This is input", title="Some title", des="Description"),
-                TableData(id="3", input="This is input", title="Some title", des="Description"),
-                TableData(id="4", input="This is input", title="Some title", des="Description"),
-            ]
-        ).edit_row_without_id(edit_row, "id")
         ui.table(df)
         ui.aggrid(df)
 
