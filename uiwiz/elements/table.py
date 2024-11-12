@@ -53,11 +53,12 @@ class TableV2(Element):
     def __init__(self, data: List[BaseModel]) -> None:
         super().__init__()
         self.classes(Table._classes_container)
-        if data is None or data == []:
-            pass
+
+        self.schema = []
+        if data:
+            self.schema = list(data[0].model_fields.keys())
 
         self.data = data
-        self.schema = list(data[0].model_fields.keys())
         self.did_render: bool = False
         self.edit: Optional[Callable] = None
         self.id_column_name: Optional[str] = None
@@ -112,7 +113,7 @@ class TableV2(Element):
                 params={id_column_name: model.__getattribute__(id_column_name)},
             ).attributes["hx-include"] = "closest tr"
 
-    def before_render(self):
+    def before_render(self) -> None:
         super().before_render()
         if self.did_render:
             return None
