@@ -67,10 +67,18 @@ class UiwizApp(FastAPI):
         async def handle_validation_error(request: Request, exc: RequestValidationError):
             fields_with_errors = [item.get("loc")[1] for item in exc.errors() if item.get("loc")[1] in exc.body]
             ok_fields = [item for item in exc.body.keys() if item not in fields_with_errors]
+            message = " <br> ".join(
+                [f"{item.get('loc')[1]}: {item.get('msg')}" for item in exc.errors() if item.get("loc")[1] in exc.body]
+            )
             return JSONResponse(
                 status_code=422,
                 content=jsonable_encoder(
-                    {"detail": exc.errors(), "fieldErrors": fields_with_errors, "fieldOk": ok_fields}
+                    {
+                        "detail": exc.errors(),
+                        "fieldErrors": fields_with_errors,
+                        "fieldOk": ok_fields,
+                        "message": message,
+                    }
                 ),
             )
 

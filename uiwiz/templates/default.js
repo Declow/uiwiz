@@ -62,7 +62,7 @@ document.body.addEventListener('htmx:responseError', function (evt) {
         var container = document.getElementById("toast");
         var error = document.createElement('div');
         error.className = "{{ error_classes }}";
-        error.innerHTML = `<span id="a-1">${evt.detail.error}</span>`;
+        error.innerHTML = `<span>${JSON.parse(evt.detail.xhr.response).message}</span>`;
         container.prepend(error);
 
         handleInvalidInputs(evt);
