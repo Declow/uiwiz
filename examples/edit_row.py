@@ -54,6 +54,7 @@ async def edit_row(id: str):
 async def test(request: Request):
     with ui.nav().classes("bg-base-200"):
         ui.element(content="")
+        ui.themeSelector()
 
     with ui.col().classes("lg:px-80"):
         ui.markdown("You need to define a page, edit, save and display endpoints")
