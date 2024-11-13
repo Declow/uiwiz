@@ -97,21 +97,21 @@ class TableV2(Element):
         model: BaseModel,
         size: ELEMENT_SIZE = "sm",
     ) -> Element:
-        with Element("td"):
+        with Element("td").classes("flex justify-center join"):
             Button("Cancel").size(size).on(
                 "click",
                 cancel,
                 container,
                 "outerHTML",
                 params={id_column_name: model.__getattribute__(id_column_name)},
-            ).attributes["hx-include"] = "closest tr"
+            ).classes("btn-warning border border-base-content join-item flex-1").attributes["hx-include"] = "closest tr"
             Button("Save").size(size).on(
                 "click",
                 save,
                 container,
                 "outerHTML",
                 params={id_column_name: model.__getattribute__(id_column_name)},
-            ).attributes["hx-include"] = "closest tr"
+            ).classes("btn-success border border-base-content join-item flex-1").attributes["hx-include"] = "closest tr"
 
     def before_render(self) -> None:
         super().before_render()
@@ -142,8 +142,8 @@ class TableV2(Element):
             for item in list(row.model_fields.keys()):
                 Element("td", content=row.__getattribute__(item))
             if edit:
-                with Element("td"):
-                    Button("Edit").size(size).on(
+                with Element("td").classes("flex justify-center"):
+                    Button("Edit").classes("border border-base-content flex-1").size(size).on(
                         "click",
                         edit,
                         container,
