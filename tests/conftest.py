@@ -16,5 +16,5 @@ def setup_app():
         mo.app = app
         mo.headers = {"hx-target": "a-1"}
         element.Frame.del_stack()
-        yield api_mock
+        yield app
         element.Frame.del_stack()

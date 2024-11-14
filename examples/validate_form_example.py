@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 import uiwiz.ui as ui
 from uiwiz.app import UiwizApp
-from uiwiz.model_handler import UiAnno
+from uiwiz.models.model_handler import UiAnno
 
 app = UiwizApp()
 
@@ -83,7 +83,7 @@ def handle_submit(data: DataInput):
 @app.page("/")
 async def test():
     create_nav()
-    with ui.element().classes("col lg:px-80"):
+    with ui.col().classes("lg:px-80"):
         create_form()
 
 

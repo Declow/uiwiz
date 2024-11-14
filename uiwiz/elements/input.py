@@ -7,6 +7,7 @@ from uiwiz.event import FUNC_TYPE, ON_EVENTS, SWAP_EVENTS, TARGET_TYPE
 
 class Input(OnEvent):
     root_class: str = "input "
+    root_size: str = "input-{size}"
     _classes: str = "input-bordered w-full"
 
     def __init__(

@@ -1,16 +1,17 @@
 from typing import Optional
 
+from uiwiz.element_types import ELEMENT_SIZE
 from uiwiz.elements.extensions.on_event import OnEvent
 from uiwiz.event import FUNC_TYPE, SWAP_EVENTS, TARGET_TYPE
 
 
 class Button(OnEvent):
-    root_class: str = "btn "
+    root_class: str = "btn"
+    root_size: str = "btn-{size}"
 
     def __init__(self, title: str) -> None:
         super().__init__(tag="button")
         self.content = title
-        self.classes()
 
     def on_click(
         self,

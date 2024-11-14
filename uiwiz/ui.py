@@ -31,5 +31,5 @@ from uiwiz.elements.theme_selector import ThemeSelector as themeSelector
 from uiwiz.elements.toast import Toast as toast
 from uiwiz.elements.toggle import Toggle as toggle
 from uiwiz.elements.upload import Upload as upload
-from uiwiz.model_handler import ModelForm as modelForm
-from uiwiz.show import show
+from uiwiz.models.model_handler import ModelForm as modelForm
+from uiwiz.models.show import show

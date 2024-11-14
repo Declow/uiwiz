@@ -18,6 +18,8 @@ VOID_ELEMENTS = [
     "wbr",
 ]
 
+ELEMENT_SIZE = Literal["sm", "md", "lg", "xl", "2xl"]
+
 ELEMENT_TYPES = Literal[
     "a",
     "address",

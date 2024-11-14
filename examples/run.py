@@ -82,7 +82,7 @@ if True:
         ).on("input, keyup[(ctrlKey||metaKey)&&keyCode==13]", replace, lambda: res2.id)
         res2 = ui.label(message)
 
-        ui.table(df)
+        ui.table.from_dataframe(df)
         ui.aggrid(df)
 
         ui.button("Date").on_click(

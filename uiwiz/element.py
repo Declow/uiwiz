@@ -4,7 +4,9 @@ import html
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple
 
-from uiwiz.element_types import ELEMENT_TYPES, VOID_ELEMENTS
+from typing_extensions import Self
+
+from uiwiz.element_types import ELEMENT_SIZE, ELEMENT_TYPES, VOID_ELEMENTS
 from uiwiz.event import TARGET_TYPE, Event
 from uiwiz.frame import Frame
 from uiwiz.shared import register_resource
@@ -26,6 +28,7 @@ class Element:
         self.attributes["id"] = self.stack.get_id()
         self.stack.id_count += 1
         self.tag: str = tag
+        self._size: str = "md"
 
         self.event: Event = {}
         self.parent_element: Element = None
@@ -37,6 +40,8 @@ class Element:
         self.__content__: str = ""
         self.content: str = content
         self.oob: bool = oob
+
+        self.classes()
 
         if self.oob:
             self.attributes["hx-swap-oob"] = "true"
@@ -96,14 +101,44 @@ class Element:
     def get_classes(self) -> str:
         return self.attributes["class"]
 
-    def classes(self, input: str = ""):
+    def classes(self, input: str = "") -> Self:
         """
         Set tailwind classes for the element.
 
         :param input: The tailwind classes to apply to the element.
         :return: The current instance of the element.
         """
-        self.attributes["class"] = getattr(self.__class__, "root_class", "") + input
+        clazz = getattr(self.__class__, "root_class", "")
+        if clazz == "":
+            clazz = input
+        elif input:
+            clazz += f" {input}"
+        if clazz:
+            self.attributes["class"] = clazz
+            self.size(self._size)
+        return self
+
+    def size(self, size: ELEMENT_SIZE) -> Self:
+        """
+        Set the size of the element.
+
+        :param size: The size of the element.
+        :return: The current instance of the element.
+        """
+        format = getattr(self.__class__, "root_size", "")
+        if format:
+            old_size = format.format(size=self._size)
+            if old_size in self.attributes["class"]:
+                self.attributes["class"] = self.attributes["class"].replace(
+                    f"{old_size}", f"{format.format(size=size)}"
+                )
+            else:
+                clazz = self.attributes["class"]
+                if clazz == "":
+                    self.attributes["class"] = format.format(size=size)
+                else:
+                    self.attributes["class"] = f"{self.attributes['class']} {format.format(size=size)}"
+            self._size = size
         return self
 
     def render(self, render_script: bool = True) -> str:
@@ -159,7 +194,7 @@ class Element:
     def before_render(self):
         pass
 
-    def after_render(self, html: str):
+    def after_render(self, html: str) -> str:
         return html
 
     def add_event_to_attributes(self) -> None:
