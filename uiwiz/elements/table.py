@@ -25,6 +25,13 @@ class Table(Element):
     )
 
     def __init__(self, data: List[BaseModel]) -> None:
+        """
+        Creates a table from a list of pydantic models
+
+        :param data: A list of pydantic models
+
+        :return: The current instance of the element.
+        """
         super().__init__()
         self.classes(Table._classes_container)
 
@@ -60,6 +67,7 @@ class Table(Element):
                     rendere.render_model_attributes(key, field_type, **kwargs)
 
             Table.__render_save_button__(container, save, cancel, id_column_name, model, size)
+        return container
 
     @classmethod
     def __render_save_button__(
