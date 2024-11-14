@@ -8,7 +8,7 @@ from uiwiz.element import Element
 from uiwiz.element_types import ELEMENT_SIZE
 from uiwiz.elements.button import Button
 from uiwiz.elements.form import Form
-from uiwiz.model_handler import ModelForm
+from uiwiz.models.model_handler import ModelForm
 
 
 class ModelFormRender(ModelForm):

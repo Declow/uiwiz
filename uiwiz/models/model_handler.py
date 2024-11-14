@@ -20,7 +20,7 @@ from uiwiz.elements.label import Label
 from uiwiz.elements.radio import Radio
 from uiwiz.elements.textarea import TextArea
 from uiwiz.elements.toggle import Toggle
-from uiwiz.show import __display_name__
+from uiwiz.models.display import display_name
 
 
 @dataclass
@@ -155,7 +155,7 @@ class ModelForm:
     ) -> None:
         kwargs = {**{"name": key}, **kwargs}
         placeholder = "placeholder"
-        kwargs[placeholder] = __display_name__(kwargs[placeholder])
+        kwargs[placeholder] = display_name(kwargs[placeholder])
         compact = self.compact
         with Element().classes("flex flex-nowrap w-full"):
             ele_args = [item[0] for item in inspect.signature(ele.__init__).parameters.items()]
@@ -163,7 +163,7 @@ class ModelForm:
 
             label: Optional[Label] = None
             if ele is not HiddenInput:
-                label = Label(__display_name__(key))
+                label = Label(display_name(key))
 
                 if compact and inspect.signature(ele).parameters.get(placeholder):
                     label.render_html = False

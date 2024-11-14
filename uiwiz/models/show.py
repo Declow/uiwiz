@@ -1,4 +1,3 @@
-import itertools
 from typing import TypeVar, Union
 
 import pandas as pd
@@ -7,14 +6,8 @@ from pydantic import BaseModel
 from uiwiz.element import Element
 from uiwiz.elements.col import Col
 from uiwiz.elements.row import Row
-
-# from uiwiz.elements.table import Table
-
-
-def __display_name__(input: str) -> str:
-    value = str(input)
-    return value.replace("_", " ")
-
+from uiwiz.elements.table import Table
+from uiwiz.models.display import display_name
 
 T = TypeVar("T")
 
@@ -51,8 +44,8 @@ def render_instance(
     return __render_data__(fields, container_classes, label_classes)
 
 
-# def __render_list__(data: list[dict]) -> Element:
-#     return Table(pd.DataFrame(data).rename(columns=__display_name__))
+def __render_list__(data: list[dict]) -> Element:
+    return Table.from_dataframe(pd.DataFrame(data).rename(columns=display_name))
 
 
 def __render_data__(data: dict, container_classes: str, label_classes: str) -> Element:
@@ -60,6 +53,6 @@ def __render_data__(data: dict, container_classes: str, label_classes: str) -> E
         with Col():
             for k, v in data.items():
                 with Row():
-                    Element(content=__display_name__(k)).classes(label_classes)
+                    Element(content=display_name(k)).classes(label_classes)
                     Element(content=v)
     return card
