@@ -108,8 +108,10 @@ class Element:
         :param input: The tailwind classes to apply to the element.
         :return: The current instance of the element.
         """
-        self.attributes["class"] = getattr(self.__class__, "root_class", "") + input
-        self.size(self._size)
+        clazz = getattr(self.__class__, "root_class", "") + input
+        if clazz:
+            self.attributes["class"] = clazz
+            self.size(self._size)
         return self
 
     def size(self, size: ELEMENT_SIZE) -> Self:

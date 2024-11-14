@@ -1,5 +1,4 @@
 from datetime import date, datetime, timezone
-from typing import Annotated
 
 import uvicorn
 from fastapi import Request
@@ -8,9 +7,6 @@ from pydantic import BaseModel
 from examples.data import df
 from uiwiz import UiwizApp, ui
 from uiwiz.element import Element as element
-from uiwiz.elements.table import Table
-from uiwiz.frame import get_task_id
-from uiwiz.model_handler import UiAnno
 
 app = UiwizApp()
 

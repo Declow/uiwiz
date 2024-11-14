@@ -6,7 +6,7 @@ from uiwiz.event import FUNC_TYPE, SWAP_EVENTS, TARGET_TYPE
 
 
 class Button(OnEvent):
-    root_class: str = "btn "
+    root_class: str = "btn"
     root_size: str = "btn-{size}"
 
     def __init__(self, title: str) -> None:

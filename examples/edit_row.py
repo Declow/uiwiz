@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from uiwiz import UiwizApp, ui
 from uiwiz.elements.table import Table
-from uiwiz.model_handler import UiAnno
+from uiwiz.models.model_handler import UiAnno
 
 
 # Define data model
