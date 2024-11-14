@@ -108,7 +108,11 @@ class Element:
         :param input: The tailwind classes to apply to the element.
         :return: The current instance of the element.
         """
-        clazz = getattr(self.__class__, "root_class", "") + input
+        clazz = getattr(self.__class__, "root_class", "")
+        if clazz == "":
+            clazz = input
+        elif input:
+            clazz += f" {input}"
         if clazz:
             self.attributes["class"] = clazz
             self.size(self._size)
@@ -129,7 +133,11 @@ class Element:
                     f"{old_size}", f"{format.format(size=size)}"
                 )
             else:
-                self.attributes["class"] += f" {format.format(size=size)}"
+                clazz = self.attributes["class"]
+                if clazz == "":
+                    self.attributes["class"] = format.format(size=size)
+                else:
+                    self.attributes["class"] = f"{self.attributes['class']} {format.format(size=size)}"
             self._size = size
         return self
 
