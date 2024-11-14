@@ -5,7 +5,7 @@ from fastapi import Request
 from pydantic import BaseModel, Field
 
 from uiwiz import UiwizApp, ui
-from uiwiz.elements.table import TableV2
+from uiwiz.elements.table import Table
 from uiwiz.model_handler import UiAnno
 
 
@@ -32,17 +32,17 @@ app = UiwizApp()
 @app.ui("/save/row/")
 async def save_row(model: TableData):
     DATA[model.id] = model
-    TableV2.render_row(DATA[model.id], edit_row, "id")
+    Table.render_row(DATA[model.id], edit_row, "id")
 
 
 @app.ui("/display/row/{id}")
 async def display_row(id: str):
-    TableV2.render_row(DATA[id], edit_row, "id")
+    Table.render_row(DATA[id], edit_row, "id")
 
 
 @app.ui("/edit/row/{id}")
 async def edit_row(id: str):
-    TableV2.render_edit_row(
+    Table.render_edit_row(
         DATA[id],
         "id",
         save_row,
@@ -59,7 +59,7 @@ async def test(request: Request):
     with ui.col().classes("lg:px-80"):
         ui.markdown("You need to define a page, edit, save and display endpoints")
 
-        TableV2(list(DATA.values())).edit_row(edit_row, "id")
+        Table(list(DATA.values())).edit_row(edit_row, "id")
 
 
 if __name__ == "__main__":

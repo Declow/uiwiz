@@ -11,39 +11,13 @@ from uiwiz.elements.form import Form
 from uiwiz.model_handler import ModelForm
 
 
-class Table(Element):
-    _classes_container: str = "w-full overflow-x-auto uiwiz-container-border-radius"
-    _classes_table: str = (
-        "table table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
-    )
-
-    def __init__(self, df: pd.DataFrame) -> None:
-        super().__init__()
-        self.classes(Table._classes_container)
-        df = df.replace({np.nan: "None"})
-
-        with self:
-            with Element("table").classes(Table._classes_table):
-                # columns
-                with Element("thead"):
-                    with Element("tr"):
-                        for col in df.columns:
-                            Element("th", content=col)
-                # rows
-                with Element("tbody"):
-                    for _, row in df.iterrows():
-                        with Element("tr"):
-                            for _, val in row.items():
-                                Element("td", content=val)
-
-
 class ModelFormRender(ModelForm):
     def render_model(self, *args, **kwargs) -> Form:
         self.button = Button("Save")
         self.button.render_html = False
 
 
-class TableV2(Element):
+class Table(Element):
     root_size: str = "table-{size}"
     _classes_container: str = "w-full overflow-x-auto uiwiz-container-border-radius"
     _classes_table: str = (
@@ -63,7 +37,7 @@ class TableV2(Element):
         self.edit: Optional[Callable] = None
         self.id_column_name: Optional[str] = None
 
-    def edit_row(self, edit: Callable, id_column_name: str) -> "TableV2":
+    def edit_row(self, edit: Callable, id_column_name: str) -> "Table":
         self.edit = edit
         self.id_column_name = id_column_name
         return self
@@ -85,7 +59,7 @@ class TableV2(Element):
                 with Element("td"):
                     rendere.render_model_attributes(key, field_type, **kwargs)
 
-            TableV2.__render_save_button__(container, save, cancel, id_column_name, model, size)
+            Table.__render_save_button__(container, save, cancel, id_column_name, model, size)
 
     @classmethod
     def __render_save_button__(
@@ -137,7 +111,7 @@ class TableV2(Element):
     @classmethod
     def render_row(
         cls, row: BaseModel, edit: Optional[Callable], id_column_name: str, size: ELEMENT_SIZE = "sm"
-    ) -> "TableV2":
+    ) -> "Table":
         with Element("tr") as container:
             for item in list(row.model_fields.keys()):
                 Element("td", content=row.__getattribute__(item))
@@ -150,4 +124,23 @@ class TableV2(Element):
                         "outerHTML",
                         params={id_column_name: row.__getattribute__(id_column_name)},
                     )
+        return container
+
+    @classmethod
+    def from_dataframe(cls, df: pd.DataFrame) -> Element:
+        df = df.replace({np.nan: "None"})
+
+        with Element().classes(Table._classes_container) as container:
+            with Element("table").classes(Table._classes_table):
+                # columns
+                with Element("thead"):
+                    with Element("tr"):
+                        for col in df.columns:
+                            Element("th", content=col)
+                # rows
+                with Element("tbody"):
+                    for _, row in df.iterrows():
+                        with Element("tr"):
+                            for _, val in row.items():
+                                Element("td", content=val)
         return container
