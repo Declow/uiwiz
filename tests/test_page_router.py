@@ -1,5 +1,3 @@
-from fastapi.routing import APIRoute
-
 from uiwiz.app import UiwizApp
 from uiwiz.page_route import PageRouter, PathDefinition
 
