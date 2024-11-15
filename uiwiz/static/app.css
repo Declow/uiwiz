@@ -13,10 +13,10 @@
 }
 
 .uiwiz-td-padding td {
-    padding: 0.2rem;
-}
-.uiwiz-td-padding th {
-    padding-right: 0.2rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.5rem; 
 }
 .uiwiz-container-border-radius {
     border-radius: 0.5rem;
