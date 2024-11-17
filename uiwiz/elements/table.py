@@ -24,7 +24,7 @@ class Table(Element):
         "table table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
     )
 
-    def __init__(self, data: List[BaseModel]) -> None:
+    def __init__(self, data: List[BaseModel], id_column_name: Optional[str] = None) -> None:
         """
         Creates a table from a list of pydantic models
 
@@ -42,11 +42,26 @@ class Table(Element):
         self.data = data
         self.did_render: bool = False
         self.edit: Optional[Callable] = None
-        self.id_column_name: Optional[str] = None
+        self.delete: Optional[Callable] = None
+        self.create: Optional[Callable] = None
+        self.id_column_name: Optional[str] = id_column_name
 
-    def edit_row(self, edit: Callable, id_column_name: str) -> "Table":
+    def edit_row(self, edit: Callable) -> "Table":
+        if self.id_column_name is None:
+            raise ValueError("When using edit id_column_name is required")
         self.edit = edit
-        self.id_column_name = id_column_name
+        return self
+
+    def delete_row(self, delete: Callable) -> "Table":
+        if self.id_column_name is None:
+            raise ValueError("When using delete id_column_name is required")
+        self.delete = delete
+        return self
+
+    def create_row(self, create: Callable) -> "Table":
+        if self.id_column_name is None:
+            raise ValueError("When using create delete id_column_name is required")
+        self.create = create
         return self
 
     @classmethod
@@ -66,7 +81,7 @@ class Table(Element):
                 with Element("td"):
                     rendere.render_model_attributes(key, field_type, **kwargs)
 
-            Table.__render_save_button__(container, save, cancel, id_column_name, model, size)
+            Table.__render_save_button__(container, save, cancel, id_column_name, model, size, **kwargs)
         return container
 
     @classmethod
@@ -78,22 +93,35 @@ class Table(Element):
         id_column_name: str,
         model: BaseModel,
         size: ELEMENT_SIZE = "sm",
+        **kwargs,
     ) -> Element:
-        with Element("td").classes("flex justify-center join"):
+        with Element("td").classes("flex justify-end join"):
             Button("Cancel").size(size).on(
                 "click",
                 cancel,
                 container,
                 "outerHTML",
-                params={id_column_name: model.__getattribute__(id_column_name)},
-            ).classes("btn-warning border border-base-content join-item flex-1").attributes["hx-include"] = "closest tr"
+                params={
+                    id_column_name: model.__getattribute__(id_column_name)
+                    if isinstance(model, BaseModel)
+                    else kwargs.get(id_column_name, {}).get("value")
+                },
+            ).classes("btn-warning border border-base-content join-item flex-1 max-w-20").attributes[
+                "hx-include"
+            ] = "closest tr"
             Button("Save").size(size).on(
                 "click",
                 save,
                 container,
                 "outerHTML",
-                params={id_column_name: model.__getattribute__(id_column_name)},
-            ).classes("btn-success border border-base-content join-item flex-1").attributes["hx-include"] = "closest tr"
+                params={
+                    id_column_name: model.__getattribute__(id_column_name)
+                    if isinstance(model, BaseModel)
+                    else kwargs.get(id_column_name, {}).get("value")
+                },
+            ).classes("btn-success border border-base-content join-item flex-1 max-w-20").attributes[
+                "hx-include"
+            ] = "closest tr"
 
     def before_render(self) -> None:
         super().before_render()
@@ -110,24 +138,57 @@ class Table(Element):
                         if self.edit:
                             Element("th")
                 # rows
-                with Element("tbody"):
+                with Element("tbody") as container:
                     for row in self.data:
-                        self.render_row(row, self.edit, self.id_column_name)
-
+                        self.render_row(row, self.id_column_name, self.edit, self.delete)
+        if self.create:
+            Button("Add").on_click(self.create, container, swap="beforeend")
         self.did_render = True
 
     @classmethod
     def render_row(
-        cls, row: BaseModel, edit: Optional[Callable], id_column_name: str, size: ELEMENT_SIZE = "sm"
+        cls,
+        row: BaseModel,
+        id_column_name: Optional[str] = None,
+        edit: Optional[Callable] = None,
+        delete: Optional[Callable] = None,
+        size: ELEMENT_SIZE = "sm",
     ) -> "Table":
         with Element("tr") as container:
             for item in list(row.model_fields.keys()):
                 Element("td", content=row.__getattribute__(item))
-            if edit:
-                with Element("td").classes("flex justify-center"):
-                    Button("Edit").classes("border border-base-content flex-1").size(size).on(
+            if edit and delete:
+                with Element("td").classes("flex justify-end join"):
+                    Button("Edit").classes("border border-base-content flex-1 join-item max-w-20").size(size).on(
                         "click",
                         edit,
+                        container,
+                        "outerHTML",
+                        params={id_column_name: row.__getattribute__(id_column_name)},
+                    )
+                    Button("Delete").classes("btn-error border border-base-content join-item flex-1 max-w-20").size(
+                        size
+                    ).on(
+                        "click",
+                        delete,
+                        container,
+                        "outerHTML",
+                        params={id_column_name: row.__getattribute__(id_column_name)},
+                    )
+            elif edit:
+                with Element("td").classes("flex justify-end"):
+                    Button("Edit").classes("border border-base-content flex-1 max-w-20").size(size).on(
+                        "click",
+                        edit,
+                        container,
+                        "outerHTML",
+                        params={id_column_name: row.__getattribute__(id_column_name)},
+                    )
+            elif delete:
+                with Element("td").classes("flex justify-end"):
+                    Button("Delete").classes("border border-base-content flex-1 max-w-20").size(size).on(
+                        "click",
+                        delete,
                         container,
                         "outerHTML",
                         params={id_column_name: row.__getattribute__(id_column_name)},
