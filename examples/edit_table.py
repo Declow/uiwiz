@@ -79,4 +79,4 @@ async def test(request: Request):
 
 
 if __name__ == "__main__":
-    uvicorn.run("edit_row:app", reload=True)
+    uvicorn.run("edit_table:app", reload=True)
