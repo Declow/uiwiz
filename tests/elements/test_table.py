@@ -25,10 +25,10 @@ def test_table_button(setup_app):
     def edit_func():
         pass
 
-    output = str(ui.table([TableData(input="data")]).edit_row(edit_func, "input"))
+    output = str(ui.table([TableData(input="data")], "input").edit_row(edit_func))
     soup = BeautifulSoup(output, "html.parser")
 
-    assert ["btn", "border", "border-base-content", "flex-1", "btn-sm"] == soup.select("button")[0].attrs["class"]
+    assert ["btn", "border", "border-base-content", "flex-1", "flex-initial", "btn-sm"] == soup.select("button")[0].attrs["class"]
     assert "click" == soup.select("button")[0].attrs["hx-trigger"]
     assert endpoint == soup.select("button")[0].attrs["hx-post"]
     assert "outerHTML" == soup.select("button")[0].attrs["hx-swap"]
@@ -49,7 +49,7 @@ def test_table_edit_row(setup_app):
     output = str(ui.table.render_edit_row(TableData(input="data"), "input", render_row_func, edit_func))
     soup = BeautifulSoup(output, "html.parser")
 
-    assert ["btn", "btn-warning", "border", "border-base-content", "join-item", "flex-1", "btn-sm"] == soup.select(
+    assert ["btn", "btn-warning", "border", "border-base-content", "join-item", "flex-1", "flex-initial", "btn-sm"] == soup.select(
         "button"
     )[0].attrs["class"]
 
