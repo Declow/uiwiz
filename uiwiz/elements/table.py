@@ -106,7 +106,7 @@ class Table(Element):
                     if isinstance(model, BaseModel)
                     else kwargs.get(id_column_name, {}).get("value")
                 },
-            ).classes("btn-warning border border-base-content join-item flex-1 max-w-20").attributes[
+            ).classes("btn-warning border border-base-content join-item flex-1 flex-initial").attributes[
                 "hx-include"
             ] = "closest tr"
             Button("Save").size(size).on(
@@ -119,7 +119,7 @@ class Table(Element):
                     if isinstance(model, BaseModel)
                     else kwargs.get(id_column_name, {}).get("value")
                 },
-            ).classes("btn-success border border-base-content join-item flex-1 max-w-20").attributes[
+            ).classes("btn-success border border-base-content join-item flex-1 flex-initial").attributes[
                 "hx-include"
             ] = "closest tr"
 
@@ -159,14 +159,14 @@ class Table(Element):
                 Element("td", content=row.__getattribute__(item))
             if edit and delete:
                 with Element("td").classes("flex justify-end join"):
-                    Button("Edit").classes("border border-base-content flex-1 join-item max-w-20").size(size).on(
+                    Button("Edit").classes("border border-base-content flex-1 join-item flex-initial").size(size).on(
                         "click",
                         edit,
                         container,
                         "outerHTML",
                         params={id_column_name: row.__getattribute__(id_column_name)},
                     )
-                    Button("Delete").classes("btn-error border border-base-content join-item flex-1 max-w-20").size(
+                    Button("Delete").classes("btn-error border border-base-content join-item flex-1 flex-initial").size(
                         size
                     ).on(
                         "click",
@@ -174,10 +174,10 @@ class Table(Element):
                         container,
                         "outerHTML",
                         params={id_column_name: row.__getattribute__(id_column_name)},
-                    )
+                    ).attributes["hx-confirm"] = "Are you sure?"
             elif edit:
                 with Element("td").classes("flex justify-end"):
-                    Button("Edit").classes("border border-base-content flex-1 max-w-20").size(size).on(
+                    Button("Edit").classes("border border-base-content flex-1 flex-initial").size(size).on(
                         "click",
                         edit,
                         container,
@@ -186,7 +186,7 @@ class Table(Element):
                     )
             elif delete:
                 with Element("td").classes("flex justify-end"):
-                    Button("Delete").classes("border border-base-content flex-1 max-w-20").size(size).on(
+                    Button("Delete").classes("border border-base-content flex-1 flex-initial").size(size).on(
                         "click",
                         delete,
                         container,
