@@ -7,7 +7,7 @@ from typing import Callable, List, Optional, Tuple
 from typing_extensions import Self
 
 from uiwiz.element_types import ELEMENT_SIZE, ELEMENT_TYPES, VOID_ELEMENTS
-from uiwiz.event import TARGET_TYPE, Event
+from uiwiz.event import FUNC_TYPE, TARGET_TYPE, Event
 from uiwiz.frame import Frame
 from uiwiz.shared import register_resource
 
@@ -204,7 +204,7 @@ class Element:
         self.attributes["hx-target"] = self.get_target(self.event.get("target"))
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
-        self.attributes["hx-post"] = self.__get_endpoint__()
+        self.attributes["hx-post"] = self.__get_endpoint__(self.event["func"])
         self.attributes["hx-trigger"] = self.event.get("trigger")
 
         if vals := self.event.get("vals"):
@@ -216,9 +216,7 @@ class Element:
         else:
             self.attributes["hx-ext"] = "json-enc"
 
-    def __get_endpoint__(self) -> str:
-        func = self.event["func"]
-
+    def __get_endpoint__(self, func: FUNC_TYPE) -> str:
         if isinstance(func, str):
             return func
 

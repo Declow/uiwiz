@@ -8,6 +8,7 @@ from uiwiz.element import Element
 from uiwiz.element_types import ELEMENT_SIZE
 from uiwiz.elements.button import Button
 from uiwiz.elements.form import Form
+from uiwiz.event import FUNC_TYPE
 from uiwiz.models.model_handler import ModelForm
 
 
@@ -29,7 +30,7 @@ class Table(Element):
         Creates a table from a list of pydantic models
 
         :param data: A list of pydantic models
-
+        :param id_column_name: The name of the Pydantic attribute to be used with the path param endpoint. An endpoint like /path/{id} should have a attribute "id" on the class
         :return: The current instance of the element.
         """
         super().__init__()
@@ -41,26 +42,72 @@ class Table(Element):
 
         self.data = data
         self.did_render: bool = False
-        self.edit: Optional[Callable] = None
-        self.delete: Optional[Callable] = None
-        self.create: Optional[Callable] = None
+        self.edit: Optional[FUNC_TYPE] = None
+        self.delete: Optional[FUNC_TYPE] = None
+        self.create: Optional[FUNC_TYPE] = None
         self.id_column_name: Optional[str] = id_column_name
 
-    def edit_row(self, edit: Callable) -> "Table":
+    def edit_row(self, edit: FUNC_TYPE) -> "Table":
+        """
+        Enable editing functionality for a table row.
+
+        This method assigns the endpoint to handle the "Edit" action for rows
+        in the table. It requires that `id_column_name` be set to identify rows uniquely.
+
+        :param edit: The endpoint that is triggered when the "Edit" action is performed.
+            The callback should accept parameters required to handle the editing logic.
+        :type edit: FUNC_TYPE
+        :return: Returns the `Table` instance with the "Edit" functionality enabled.
+        :rtype: Table
+        :raises ValueError: If `id_column_name` is not set, as it is required to identify rows
+            for the "Edit" operation.
+
+        Example:
+            >>> table = Table(data, id_column_name="id").edit_row(edit=edit_callback)
+        """
         if self.id_column_name is None:
             raise ValueError("When using edit id_column_name is required")
         self.edit = edit
         return self
 
-    def delete_row(self, delete: Callable) -> "Table":
+    def delete_row(self, delete: FUNC_TYPE) -> "Table":
+        """
+        Enable deletion functionality for a table row.
+
+        This method assigns the endpoint to handle the "Delete" action for rows
+        in the table. It requires that `id_column_name` be set to identify rows uniquely.
+
+        :param delete: The endpoint that is triggered when the "Delete" action is performed.
+            The callback should accept parameters required to handle the deletion logic.
+        :type delete: FUNC_TYPE
+        :return: Returns the `Table` instance with the "Delete" functionality enabled.
+        :rtype: Table
+        :raises ValueError: If `id_column_name` is not set, as it is required to identify rows
+            for the "Delete" operation.
+
+        Example:
+            >>> table = Table(data, id_column_name="id").delete_row(delete=delete_endpoint)
+        """
         if self.id_column_name is None:
             raise ValueError("When using delete id_column_name is required")
         self.delete = delete
         return self
 
-    def create_row(self, create: Callable) -> "Table":
-        if self.id_column_name is None:
-            raise ValueError("When using create delete id_column_name is required")
+    def create_row(self, create: FUNC_TYPE) -> "Table":
+        """
+        Enable creation functionality for a table row.
+
+        This method assigns the endpoint to handle the "Create" action for a row
+        in the table.
+
+        :param create: The endpoint that is triggered when the "Delete" action is performed.
+        :type create: FUNC_TYPE
+        :return: Returns the `Table` instance with the "Delete" functionality enabled.
+        :rtype: Table
+
+        Example:
+            >>> table = Table(data).create_row(create=create_endpoint)
+        """
         self.create = create
         return self
 
@@ -69,11 +116,21 @@ class Table(Element):
         cls,
         model: BaseModel,
         id_column_name: str,
-        save: Callable,
-        cancel: Callable,
+        save: FUNC_TYPE,
+        cancel: FUNC_TYPE,
         size: ELEMENT_SIZE = "sm",
         **kwargs,
-    ):
+    ) -> Element:
+        """
+        Render a table row with inputs and cancel/save button
+
+        :param model: The Pydantic model to render
+        :param id_column_name: The column that should be used with edit or delete as path param
+        :param save: The endpoint to call when save button is clicked
+        :param cancel: The endpoint to call when cancel is clicked
+        :param size: The size of the inputs
+        :return: The tr element container
+        """
         with Element("tr") as container:
             rendere = ModelFormRender(model, size=size)
             hints = get_type_hints(model, include_extras=True)
@@ -102,9 +159,11 @@ class Table(Element):
                 container,
                 "outerHTML",
                 params={
-                    id_column_name: model.__getattribute__(id_column_name)
-                    if isinstance(model, BaseModel)
-                    else kwargs.get(id_column_name, {}).get("value")
+                    id_column_name: (
+                        model.__getattribute__(id_column_name)
+                        if isinstance(model, BaseModel)
+                        else kwargs.get(id_column_name, {}).get("value")
+                    )
                 },
             ).classes("btn-warning border border-base-content join-item flex-1 flex-initial").attributes[
                 "hx-include"
@@ -115,9 +174,11 @@ class Table(Element):
                 container,
                 "outerHTML",
                 params={
-                    id_column_name: model.__getattribute__(id_column_name)
-                    if isinstance(model, BaseModel)
-                    else kwargs.get(id_column_name, {}).get("value")
+                    id_column_name: (
+                        model.__getattribute__(id_column_name)
+                        if isinstance(model, BaseModel)
+                        else kwargs.get(id_column_name, {}).get("value")
+                    )
                 },
             ).classes("btn-success border border-base-content join-item flex-1 flex-initial").attributes[
                 "hx-include"
@@ -150,10 +211,19 @@ class Table(Element):
         cls,
         row: BaseModel,
         id_column_name: Optional[str] = None,
-        edit: Optional[Callable] = None,
-        delete: Optional[Callable] = None,
+        edit: Optional[FUNC_TYPE] = None,
+        delete: Optional[FUNC_TYPE] = None,
         size: ELEMENT_SIZE = "sm",
-    ) -> "Table":
+    ) -> Element:
+        """
+        Render a table row
+
+        :param row: The instance Pydantic model to render
+        :param id_column_name: The optional column that should be used with edit or delete
+        :param edit: The optional endpoint to call with the path param from id_column_name
+        :param delete: The optional endpoint to call with the parh param from id_column_name
+        :return: The tr element container
+        """
         with Element("tr") as container:
             for item in list(row.model_fields.keys()):
                 Element("td", content=row.__getattribute__(item))
@@ -197,6 +267,12 @@ class Table(Element):
 
     @classmethod
     def from_dataframe(cls, df: pd.DataFrame) -> Element:
+        """
+        Render a pandas.dataframe
+
+        :param df: The dataframe to render
+        :return: The container element
+        """
         df = df.replace({np.nan: "None"})
 
         with Element().classes(Table._classes_container) as container:
