@@ -19,9 +19,9 @@ class ModelFormRender(ModelForm):
 
 class Table(Element):
     root_size: str = "table-{size}"
-    _classes_container: str = "w-full overflow-x-auto uiwiz-container-border-radius"
+    _classes_container: str = "w-full overflow-x-auto rounded-lg"
     _classes_table: str = (
-        "table table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap uiwiz-td-padding"
+        "table table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap pr-4 pt-2 pb-2"
     )
 
     def __init__(self, data: List[BaseModel], id_column_name: Optional[str] = None) -> None:
