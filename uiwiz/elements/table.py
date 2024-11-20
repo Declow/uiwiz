@@ -63,7 +63,7 @@ class Table(Element):
             for the "Edit" operation.
 
         Example:
-            >>> table = Table(data, id_column_name="id").edit_row(edit=edit_callback)
+            >>> table = Table(data, id_column_name="id").edit_row(edit=edit_endpoint)
         """
         if self.id_column_name is None:
             raise ValueError("When using edit id_column_name is required")
@@ -268,9 +268,9 @@ class Table(Element):
     @classmethod
     def from_dataframe(cls, df: pd.DataFrame) -> Element:
         """
-        Render a pandas.dataframe
+        Render a pandas.DataFrame
 
-        :param df: The dataframe to render
+        :param df: The DataFrame to render
         :return: The container element
         """
         df = df.replace({np.nan: "None"})
