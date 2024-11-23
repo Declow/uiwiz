@@ -1,8 +1,6 @@
-from typing import Callable, Optional, Union
+from typing import Optional
 
-from uiwiz.element import Element
 from uiwiz.elements.extensions.on_event import OnEvent
-from uiwiz.event import ON_EVENTS
 
 
 class Range(OnEvent):

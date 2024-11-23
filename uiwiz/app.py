@@ -22,6 +22,7 @@ from uiwiz.frame import Frame
 from uiwiz.page_route import PageRouter, PathDefinition
 from uiwiz.shared import resources
 from uiwiz.static_middelware import AsgiTtlMiddelware
+from uiwiz.version import __version__
 
 logger = logging.getLogger("uiwiz")
 logger.addHandler(logging.NullHandler())
@@ -49,7 +50,7 @@ class UiwizApp(FastAPI):
         self.auth_header = auth_header
         self.title = title
         self.templates = Jinja2Templates(Path(__file__).parent / "templates")
-        self.add_static_files("/static", Path(__file__).parent / "static")
+        self.add_static_files(f"/_static/{__version__}/", Path(__file__).parent / "static")
 
         self.add_middleware(AsgiRequestMiddelware)
         self.add_middleware(GZipMiddleware)
@@ -57,7 +58,7 @@ class UiwizApp(FastAPI):
         self.extensions: dict[str, Path] = {}
         self.app_paths: dict[str, Path] = {}
 
-        @self.get("/_static/default.js", include_in_schema=False)
+        @self.get(f"/_uiwiz/{__version__}/default.js", include_in_schema=False)
         def return_default_js(request: Request, response: Response):
             response.headers["cache-control"] = f"max-age={cache_age}"
             response.headers["x-uiwiz-content"] = "assets"
@@ -82,7 +83,7 @@ class UiwizApp(FastAPI):
                 ),
             )
 
-        @self.get("/_static/extension/{extension}/{filename}", include_in_schema=False)
+        @self.get("/_static/extension/{__version__}/{extension}/{filename}", include_in_schema=False)
         def get_extension(extension: str, filename: str):
             resource_key = f"{extension}/{filename}"
             if resource_key not in resources:
@@ -145,6 +146,7 @@ class UiwizApp(FastAPI):
                     description_content=frame.meta_description_content,
                     overflow=root_overflow,
                     head=frame.head_ext,
+                    version=__version__,
                 ),
                 status_code=status_code,
                 headers=standard_headers,

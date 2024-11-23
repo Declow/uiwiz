@@ -1,6 +1,5 @@
 from typing import Optional
 
-from uiwiz.element_types import ELEMENT_SIZE
 from uiwiz.elements.extensions.on_event import OnEvent
 from uiwiz.event import FUNC_TYPE, SWAP_EVENTS, TARGET_TYPE
 

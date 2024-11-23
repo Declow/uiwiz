@@ -10,7 +10,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="/static/app.css" rel="stylesheet" type="text/css" />
+    <link href="/_static/{{ version }}/app.css" rel="stylesheet" type="text/css" />
     {{ ext_css | safe }}
 </head>
 
@@ -20,9 +20,9 @@
     </div>
     <div id="toast" class="toast toast-top toast-end z-50"></div>
 
-    <script src="/static/libs/htmx1.9.9.min.js"></script>
-    <script src="/static/libs/htmx-json-enc.js"></script>
-    <script src="/_static/default.js"></script>
+    <script src="/_static/{{ version }}/libs/htmx1.9.9.min.js"></script>
+    <script src="/_static/{{ version }}/libs/htmx-json-enc.js"></script>
+    <script src="/_uiwiz/{{ version }}/default.js"></script>
     {{ ext_js | safe }}
     <!-- A bit hacky but aggrid requires the css to load after the grid... -->
     {{ ext_css | safe }} 
