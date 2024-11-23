@@ -1,3 +1,3 @@
 import importlib.metadata
 
-__version__: str = importlib.metadata.version("uiwiz")
+__version__: str = importlib.metadata.version("uiwiz").replace("+", ".")

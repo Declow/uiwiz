@@ -50,7 +50,7 @@ class UiwizApp(FastAPI):
         self.auth_header = auth_header
         self.title = title
         self.templates = Jinja2Templates(Path(__file__).parent / "templates")
-        self.add_static_files(f"/_static/{__version__}", Path(__file__).parent / "static")
+        self.add_static_files(f"/_static/{__version__}/", Path(__file__).parent / "static")
 
         self.add_middleware(AsgiRequestMiddelware)
         self.add_middleware(GZipMiddleware)
@@ -83,7 +83,7 @@ class UiwizApp(FastAPI):
                 ),
             )
 
-        @self.get("/_static/extension/{extension}/{filename}", include_in_schema=False)
+        @self.get("/_static/extension/{__version__}/{extension}/{filename}", include_in_schema=False)
         def get_extension(extension: str, filename: str):
             resource_key = f"{extension}/{filename}"
             if resource_key not in resources:

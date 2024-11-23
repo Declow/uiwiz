@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 from uuid import uuid4
 
 from uiwiz.asgi_request_middelware import get_request
+from uiwiz.version import __version__
 
 if TYPE_CHECKING:
     from uiwiz.element import Element
@@ -84,7 +85,7 @@ class Frame:
 
         for extension in extensions:
             _, filename = os.path.split(extension)
-            prefix = f"/_static/extension/{cls.__name__}/"
+            prefix = f"/_static/extension/{__version__}/{cls.__name__}/"
             endpoint = prefix + filename
             if extension not in self.extensions:
                 self.extensions.append(endpoint)
