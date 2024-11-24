@@ -7,6 +7,7 @@ from fastapi import APIRouter, Request, Response
 from fastapi.responses import HTMLResponse
 from jinja2 import Template
 
+from uiwiz.asgi_request_middelware import get_request
 from uiwiz.element import Element
 from uiwiz.frame import Frame
 from uiwiz.shared import register_path, route_exists
@@ -54,9 +55,6 @@ class PageRouter:
 
 
 class PageRouterV2(APIRouter):
-    def __init__(self) -> None:
-        self.paths: dict[str, PathDefinition] = {}
-
     def render(
         self,
         request: Request,
@@ -69,14 +67,15 @@ class PageRouterV2(APIRouter):
     ):
         frame = Frame.get_stack()
         ext_js, ext_css = frame.render_ext()
+        app = get_request().app
 
-        theme = self.theme
+        theme = app.theme
         if cookie_theme := request.cookies.get("data-theme"):
             theme = f"data-theme={escape(cookie_theme)}"
 
         root_overflow = f'style="{root_overflow}"'
         standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "page"}
-        default_page: Template = self.templates.get_template(template_name)
+        default_page: Template = app.templates.get_template(template_name)
 
         if response:
             for key, value in response.headers.items():
@@ -87,13 +86,13 @@ class PageRouterV2(APIRouter):
                 content=default_page.render(
                     request=request,
                     root_element=[frame.render()],
-                    title=self.__get_title__(frame, title),
+                    title=app.__get_title__(frame, title),
                     theme=theme,
                     ext_js=ext_js,
                     ext_css=ext_css,
-                    toast_delay=self.toast_delay,
-                    error_classes=self.error_classes,
-                    auth_header_name=self.auth_header,
+                    toast_delay=app.toast_delay,
+                    error_classes=app.error_classes,
+                    auth_header_name=app.auth_header,
                     description_content=frame.meta_description_content,
                     overflow=root_overflow,
                     head=frame.head_ext,
@@ -105,13 +104,7 @@ class PageRouterV2(APIRouter):
             )
         )
 
-    def page(
-        self,
-        path: str,
-        *args,
-        title: Optional[str] = None,
-        favicon: Optional[str] = None,
-    ) -> Callable:
+    def page(self, path: str, *args, title: Optional[str] = None, favicon: Optional[str] = None, **kwargs) -> Callable:
         def decorator(func: Callable, *args, **kwargs) -> Callable:
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
 
@@ -140,7 +133,7 @@ class PageRouterV2(APIRouter):
             if not route_exists(path):
                 register_path(path, decorated)
 
-            return self.get(path, include_in_schema=False)(decorated)
+            return self.get(path, *args, include_in_schema=False, **kwargs)(decorated)
 
         return decorator
 
