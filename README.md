@@ -30,19 +30,21 @@ pip install uiwiz
 Create a main.py file
 
 ```python
-from uiwiz.app import UiwizApp
-from uiwiz import ui
 import uvicorn
+
+from uiwiz import ui
+from uiwiz.app import UiwizApp
 
 app = UiwizApp()
 
+
 @app.page("/")
-async def home_page(request: Request):
+async def home_page():
     ui.label("Hello world")
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True)
+    uvicorn.run(app)
 ```
 
 Run it
