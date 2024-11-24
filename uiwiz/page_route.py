@@ -1,11 +1,9 @@
 import functools
 import inspect
-from html import escape
-from typing import Any, Callable, Literal, Optional, TypedDict, Union
+from typing import Callable, Optional, Union
 
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import HTMLResponse
-from jinja2 import Template
 
 from uiwiz.asgi_request_middelware import get_request
 from uiwiz.element import Element
@@ -14,97 +12,16 @@ from uiwiz.shared import register_path, route_exists
 from uiwiz.version import __version__
 
 
-class PathDefinition(TypedDict):
-    func: Callable
-    type: Literal["page", "ui"]
-    args: Any
-    kwargs: Any
-    include_js: bool
-    include_css: bool
-
-
-class PageRouter:
-    def __init__(self) -> None:
-        self.paths: dict[str, PathDefinition] = {}
-
+class PageRouter(APIRouter):
     def page(
         self,
         path: str,
         *args,
+        title: Optional[str] = None,
+        favicon: Optional[str] = None,
+        api_router: Optional[APIRouter] = None,
         **kwargs,
     ) -> Callable:
-        def setup(func):
-            self.paths[path] = {"func": func, "type": "page", "args": args, "kwargs": kwargs}
-            return func
-
-        return setup
-
-    def ui(self, path: str, include_js: bool = True, include_css: bool = True, *args, **kwargs) -> Callable:
-        def setup(func):
-            self.paths[path] = {
-                "func": func,
-                "type": "ui",
-                "args": args,
-                "kwargs": kwargs,
-                "include_js": include_js,
-                "include_css": include_css,
-            }
-            return func
-
-        return setup
-
-
-class PageRouterV2(APIRouter):
-    def render(
-        self,
-        request: Request,
-        response: Response,
-        title: Optional[str] = None,
-        status_code: int = 200,
-        template_name: str = "default.html",
-        media_type: str = "text/html",
-        root_overflow: str = "overflow-y: scroll",
-    ):
-        frame = Frame.get_stack()
-        ext_js, ext_css = frame.render_ext()
-        app = get_request().app
-
-        theme = app.theme
-        if cookie_theme := request.cookies.get("data-theme"):
-            theme = f"data-theme={escape(cookie_theme)}"
-
-        root_overflow = f'style="{root_overflow}"'
-        standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "page"}
-        default_page: Template = app.templates.get_template(template_name)
-
-        if response:
-            for key, value in response.headers.items():
-                standard_headers[key] = value
-
-        return self.return_funtion_response(
-            HTMLResponse(
-                content=default_page.render(
-                    request=request,
-                    root_element=[frame.render()],
-                    title=app.__get_title__(frame, title),
-                    theme=theme,
-                    ext_js=ext_js,
-                    ext_css=ext_css,
-                    toast_delay=app.toast_delay,
-                    error_classes=app.error_classes,
-                    auth_header_name=app.auth_header,
-                    description_content=frame.meta_description_content,
-                    overflow=root_overflow,
-                    head=frame.head_ext,
-                    version=__version__,
-                ),
-                status_code=status_code,
-                headers=standard_headers,
-                media_type=media_type,
-            )
-        )
-
-    def page(self, path: str, *args, title: Optional[str] = None, favicon: Optional[str] = None, **kwargs) -> Callable:
         def decorator(func: Callable, *args, **kwargs) -> Callable:
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
 
@@ -126,18 +43,29 @@ class PageRouterV2(APIRouter):
                 if isinstance(result, Response):
                     return self.return_funtion_response(result)
 
-                return self.render(request, response, title)
+                _app = get_request().app
+                return _app.render(request, response, title)
 
             self.__ensure_request_response_signature__(decorated)
 
             if not route_exists(path):
                 register_path(path, decorated)
 
+            if api_router:
+                return api_router.get(path, *args, include_in_schema=False, **kwargs)(decorated)
+
             return self.get(path, *args, include_in_schema=False, **kwargs)(decorated)
 
         return decorator
 
-    def ui(self, path: str, include_js: bool = True, include_css: bool = True, **kwargs) -> Callable:
+    def ui(
+        self,
+        path: str,
+        include_js: bool = True,
+        include_css: bool = True,
+        api_router: Optional[APIRouter] = None,
+        **kwargs,
+    ) -> Callable:
         def decorator(func: Callable) -> Callable:
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
 
@@ -176,6 +104,8 @@ class PageRouterV2(APIRouter):
             if not route_exists(path):
                 register_path(path, decorated)
 
+            if api_router:
+                return api_router.post(path, include_in_schema=False, **kwargs)(decorated)
             return self.post(path, include_in_schema=False, **kwargs)(decorated)
 
         return decorator
