@@ -1,3 +1,4 @@
+import numbers
 from typing import Iterable, Union
 
 from uiwiz.element import Element
@@ -15,12 +16,13 @@ class Dict(Element):
     def generate(self, data):
         def format_json(obj):
             if isinstance(obj, dict):
-                with Element().classes("card w-96 bg-base-100 shadow-md w-full mb-5"):
+                with Element().classes("border border-base-content rounded-lg shadow-lg w-96 shadow-md w-full mb-5"):
+                    last_item = list(obj.values())[-1]
                     for key, value in obj.items():
                         with Element().classes("flex flex-row flex-wrap gap-2"):  # row
                             key_element = Element()
                             if isinstance(value, (dict, list)):
-                                with key_element.classes("collapse collapse-arrow pl-2"):
+                                with key_element.classes("collapse collapse-arrow pl-1"):
                                     ch = Element("input")
                                     ch.attributes["type"] = "checkbox"
                                     ch.attributes["checked"] = "checked"
@@ -28,9 +30,13 @@ class Dict(Element):
                                     with Element().classes("collapse-content"):
                                         format_json(value)
                             else:
-                                key_element.content = f"{key}:"
+                                key_element.content = f'"{key}":'
                                 key_element.classes("pl-2")
-                                Element("p", value).classes("text-primary pl-2")
+                                if not isinstance(value, numbers.Number):
+                                    value = f'"{value}"'
+                                if not (last_item == value):
+                                    value = str(value) + ","
+                                Element("p", value).classes("text-primary pl-1")
             elif isinstance(obj, list):
                 for item in obj:
                     if isinstance(item, dict):
