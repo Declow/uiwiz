@@ -1,7 +1,6 @@
 from contextvars import ContextVar
 from typing import Any
 
-from fastapi import FastAPI
 from starlette.requests import Request
 from starlette.types import ASGIApp, Receive, Scope, Send
 
