@@ -109,16 +109,10 @@ class UiwizApp(FastAPI):
     def page(
         self, path: str, *args, title: Optional[str] = None, favicon: Optional[str] = None, **kwargs
     ) -> PageRouter:
-        page = PageRouter()
-        func = page.page(path, *args, title=title, favicon=favicon, api_router=self.router, **kwargs)
-        return func
+        return PageRouter().page(path, *args, title=title, favicon=favicon, router=self.router, **kwargs)
 
     def ui(self, path: str, *args, include_js: bool = True, include_css: bool = True, **kwargs) -> PageRouter:
-        func = PageRouter().ui(
-            path=path, include_js=include_js, include_css=include_css, api_router=self.router, **kwargs
-        )
-
-        return func
+        return PageRouter().ui(path=path, include_js=include_js, include_css=include_css, router=self.router, **kwargs)
 
     def render(
         self,

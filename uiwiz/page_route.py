@@ -19,7 +19,7 @@ class PageRouter(APIRouter):
         *args,
         title: Optional[str] = None,
         favicon: Optional[str] = None,
-        api_router: Optional[APIRouter] = None,
+        router: Optional[APIRouter] = None,
         **kwargs,
     ) -> Callable:
         def decorator(func: Callable, *args, **kwargs) -> Callable:
@@ -51,8 +51,8 @@ class PageRouter(APIRouter):
             if not route_exists(path):
                 register_path(path, decorated)
 
-            if api_router:
-                return api_router.get(path, *args, include_in_schema=False, **kwargs)(decorated)
+            if router:
+                return router.get(path, *args, include_in_schema=False, **kwargs)(decorated)
 
             return self.get(path, *args, include_in_schema=False, **kwargs)(decorated)
 
@@ -63,7 +63,7 @@ class PageRouter(APIRouter):
         path: str,
         include_js: bool = True,
         include_css: bool = True,
-        api_router: Optional[APIRouter] = None,
+        router: Optional[APIRouter] = None,
         **kwargs,
     ) -> Callable:
         def decorator(func: Callable) -> Callable:
@@ -104,8 +104,8 @@ class PageRouter(APIRouter):
             if not route_exists(path):
                 register_path(path, decorated)
 
-            if api_router:
-                return api_router.post(path, include_in_schema=False, **kwargs)(decorated)
+            if router:
+                return router.post(path, include_in_schema=False, **kwargs)(decorated)
             return self.post(path, include_in_schema=False, **kwargs)(decorated)
 
         return decorator
