@@ -1,7 +1,7 @@
 from uiwiz import ui
-from uiwiz.page_route import PageRouterV2
+from uiwiz.page_route import PageRouter
 
-router = PageRouterV2()
+router = PageRouter()
 
 
 @router.page("/second_page", title="Second Page")
