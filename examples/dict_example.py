@@ -1,6 +1,7 @@
 import uvicorn
 
 from uiwiz import UiwizApp, ui
+from uiwiz.elements.dict import DictV2
 
 app = UiwizApp()
 
@@ -18,7 +19,7 @@ async def test():
         json_data = {
             "name": "John Doe",
             "age": 50,
-            "address": {"street": "123 Main St", "city": "Anytown", "country": "USA"},
+            "address": {"street": "123 Main St", "city": "Anytown", "country": "USA", "more": {"obj": "nesting"}},
             "hobbies": ["reading", "swimming", "coding"],
             "family": {
                 "spouse": "Jane Doe",
@@ -28,7 +29,7 @@ async def test():
                 ],
             },
         }
-        ui.dict(json_data)
+        DictV2(json_data)
 
 
 if __name__ == "__main__":
