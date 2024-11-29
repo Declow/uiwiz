@@ -51,10 +51,9 @@ class PageRouter(APIRouter):
             if not route_exists(path):
                 register_path(path, decorated)
 
-            if router:
-                return router.get(path, *args, include_in_schema=False, **kwargs)(decorated)
+            _router = router or self
 
-            return self.get(path, *args, include_in_schema=False, **kwargs)(decorated)
+            return _router.get(path, *args, include_in_schema=False, **kwargs)(decorated)
 
         return decorator
 
@@ -103,10 +102,10 @@ class PageRouter(APIRouter):
 
             if not route_exists(path):
                 register_path(path, decorated)
+            
+            _router = router or self
 
-            if router:
-                return router.post(path, include_in_schema=False, **kwargs)(decorated)
-            return self.post(path, include_in_schema=False, **kwargs)(decorated)
+            return _router.post(path, include_in_schema=False, **kwargs)(decorated)
 
         return decorator
 
