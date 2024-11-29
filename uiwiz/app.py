@@ -1,10 +1,8 @@
-import functools
-import inspect
 import logging
 from html import escape
 from mimetypes import guess_type
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Optional, Union
 
 from fastapi import FastAPI, Response
 from fastapi.encoders import jsonable_encoder
@@ -17,9 +15,8 @@ from jinja2 import Template
 from starlette.requests import Request
 
 from uiwiz.asgi_request_middelware import AsgiRequestMiddelware
-from uiwiz.element import Element
 from uiwiz.frame import Frame
-from uiwiz.page_route import PageRouter, PathDefinition
+from uiwiz.page_route import PageRouter
 from uiwiz.shared import resources
 from uiwiz.static_middelware import AsgiTtlMiddelware
 from uiwiz.version import __version__
@@ -106,6 +103,17 @@ class UiwizApp(FastAPI):
 
         return title
 
+    def add_static_files(self, url_path: str, local_directory: Union[str, Path]) -> None:
+        self.mount(url_path, StaticFiles(directory=str(local_directory)))
+
+    def page(
+        self, path: str, *args, title: Optional[str] = None, favicon: Optional[str] = None, **kwargs
+    ) -> PageRouter:
+        return PageRouter().page(path, *args, title=title, favicon=favicon, router=self.router, **kwargs)
+
+    def ui(self, path: str, *args, include_js: bool = True, include_css: bool = True, **kwargs) -> PageRouter:
+        return PageRouter().ui(path=path, include_js=include_js, include_css=include_css, router=self.router, **kwargs)
+
     def render(
         self,
         request: Request,
@@ -154,127 +162,6 @@ class UiwizApp(FastAPI):
             )
         )
 
-    def route_exists(self, path: str) -> None:
-        return path in list(self.app_paths.values())
-
-    def add_static_files(self, url_path: str, local_directory: Union[str, Path]) -> None:
-        self.mount(url_path, StaticFiles(directory=str(local_directory)))
-
-    def post(self, path: str, *args, **kwargs):
-        s = super()
-
-        @functools.wraps(s.post)
-        def decorator(func: Callable, *ags, **kvargs) -> Callable:
-            if not self.route_exists(path):
-                self.app_paths[func] = path
-            return s.post(path, *args, **kwargs)(func)
-
-        return decorator
-
-    def page(
-        self,
-        path: str,
-        *args,
-        title: Optional[str] = None,
-        favicon: Optional[str] = None,
-    ) -> Callable:
-        def decorator(func: Callable, *args, **kwargs) -> Callable:
-            parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
-
-            @functools.wraps(func)
-            async def decorated(*dec_args, **dec_kwargs) -> Response:
-                Frame.get_stack().del_stack()
-                # Create frame before function is called
-                Frame.get_stack()
-                Element().classes("flex flex-col min-h-screen h-full")
-                request = dec_kwargs["request"]
-                response = dec_kwargs["response"]
-
-                # NOTE Ensure the signature matches the parameters of the function
-                dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
-                result = func(*dec_args, **dec_kwargs)
-                if inspect.isawaitable(result):
-                    result = await result
-
-                if isinstance(result, Response):
-                    return self.return_funtion_response(result)
-
-                return self.render(request, response, title)
-
-            self.__ensure_request_response_signature__(decorated)
-
-            if not self.route_exists(path):
-                self.app_paths[decorated] = path
-
-            return self.get(path, include_in_schema=False)(decorated)
-
-        return decorator
-
-    def ui(self, path: str, include_js: bool = True, include_css: bool = True) -> Callable:
-        def decorator(func: Callable) -> Callable:
-            parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
-
-            @functools.wraps(func)
-            async def decorated(*dec_args, **dec_kwargs) -> Response:
-                Frame.get_stack().del_stack()
-                # Create frame before function is called
-                Frame.get_stack()
-                response = dec_kwargs["response"]
-
-                # NOTE Ensure the signature matches the parameters of the function
-                dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
-                result = func(*dec_args, **dec_kwargs)
-                if inspect.isawaitable(result):
-                    result = await result
-
-                if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
-                    return self.return_funtion_response(result)
-
-                standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "partial-ui"}
-                for key, value in response.headers.items():
-                    standard_headers[key] = value
-
-                render = [Frame.get_stack().render()]
-                js, css = Frame.get_stack().render_ext()
-                if include_css:
-                    render.append(css)
-                if include_js:
-                    render.append(js)
-                content = "".join(render)
-
-                return self.return_funtion_response(HTMLResponse(content=content, headers=standard_headers))
-
-            self.__ensure_request_response_signature__(decorated)
-
-            if not self.route_exists(path):
-                self.app_paths[decorated] = path
-
-            return self.post(path, include_in_schema=False)(decorated)
-
-        return decorator
-
-    def add_page_router(self, page_router: PageRouter):
-        value: PathDefinition
-        for key, value in page_router.paths.items():
-            if not self.route_exists(key):
-                self.app_paths[value.get("func")] = key
-            type = value.get("type")
-            if type == "page":
-                self.page(key, *value.get("args"), **value.get("kwargs"))(value.get("func"))
-            if type == "ui":
-                self.ui(key, value["include_js"], value["include_css"])(value.get("func"))
-
     def return_funtion_response(self, response: Union[str, Response]) -> Union[str, Response]:
         Frame.get_stack().del_stack()
         return response
-
-    def __ensure_request_response_signature__(self, func: Callable):
-        data = {"request": Request, "response": Response}
-
-        params = [p for p in inspect.signature(func).parameters.values()]
-        for key, value in data.items():
-            if key not in {p.name for p in params}:
-                parm = inspect.Parameter(key, inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=value)
-                params.insert(0, parm)
-
-        func.__signature__ = inspect.Signature(params)

@@ -9,7 +9,7 @@ from typing_extensions import Self
 from uiwiz.element_types import ELEMENT_SIZE, ELEMENT_TYPES, VOID_ELEMENTS
 from uiwiz.event import FUNC_TYPE, TARGET_TYPE, Event
 from uiwiz.frame import Frame
-from uiwiz.shared import register_resource
+from uiwiz.shared import page_map, register_resource, route_exists
 
 
 class Element:
@@ -220,14 +220,14 @@ class Element:
         if isinstance(func, str):
             return func
 
-        endpoint: Optional[str] = self.stack.app.app_paths.get(func)
+        endpoint: Optional[str] = page_map.get(func)
         if endpoint:
             if params := self.event.get("params"):
                 return endpoint.format(**params)
             return endpoint
 
         endpoint = f"/_uiwiz/hash/{func.__hash__()}"
-        if not self.stack.app.route_exists(endpoint):
+        if not route_exists(endpoint):
             self.stack.app.ui(endpoint)(func)
         return endpoint
 

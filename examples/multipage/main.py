@@ -2,9 +2,10 @@ import uvicorn
 
 from examples.multipage.second_page import router
 from uiwiz import UiwizApp, ui
+from uiwiz.shared import page_map
 
 app = UiwizApp()
-app.add_page_router(router)
+app.include_router(router)
 
 
 @app.page("/")
@@ -12,7 +13,7 @@ async def test():
     with ui.element().classes("col lg:px-80"):
         with ui.element().classes("w-full"):
             ui.element(content="Hello, world!")
-            for route in router.paths.keys():
+            for route in page_map.values():
                 ui.link(route, route)
 
 
