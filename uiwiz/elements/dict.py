@@ -83,7 +83,7 @@ class DictV2(Element):
                             else:
                                 key_element.content = f'{content}"{key}":'
                                 key_element.classes("pl-2")
-                                value = self.format_key(value, last_item)
+                                value = self.format_key(value, last_item == value)
                                 Element("pre", value).classes("text-primary pl-1")
             elif isinstance(obj, list):
                 for item in obj:
@@ -91,13 +91,13 @@ class DictV2(Element):
                         format_json(item, depth + 2)
                     else:
                         content = " " * (depth + 2)
-                        Element(tag="pre", content=content + str(item))
+                        Element(tag="pre", content=f'{content}{self.format_key(item, obj[-1] == item)}').classes("text-primary")
 
         format_json(data)
 
     def format_key(self, value: str, last_item: bool) -> str:
         if not isinstance(value, numbers.Number):
             value = f'"{value}"'
-        if not (last_item == value):
+        if not last_item:
             value = str(value) + ","
         return str(value)
