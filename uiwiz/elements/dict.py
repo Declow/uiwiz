@@ -120,7 +120,11 @@ class DictV2(Element):
 
     def generate(self, data):
         def format_data(
-            data: Union[dict, list], depth: int = 0, last_item: bool = False, do_indent: bool = False, obj: bool = False
+            data: Union[dict, list],
+            depth: int = 0,
+            is_last_item: bool = False,
+            do_indent: bool = False,
+            obj: bool = False,
         ):
             indent = " " * depth
 
@@ -129,7 +133,7 @@ class DictV2(Element):
                 for item in data:
                     is_last = item == last_item
                     with Element().classes("flex flex-col flex-wrap"):
-                        format_data(item, depth=depth + 2, last_item=is_last, do_indent=True)
+                        format_data(item, depth=depth + 2, is_last_item=is_last, do_indent=True)
                 return
             if isinstance(data, dict):
                 last_item = list(data.values())[-1]
@@ -140,21 +144,24 @@ class DictV2(Element):
                 for key, value in data.items():
                     is_last = last_item == value
                     key_content = indent + f'"{key}"' + ":"
+
                     if isinstance(value, list):
                         key_content += " ["
                         with Element(tag="pre", content=key_content).classes("flex flex-col flex-wrap"):
-                            format_data(value, depth=depth + 2, last_item=is_last)
+                            format_data(value, depth=depth + 2, is_last_item=is_last)
                         Element(tag="pre", content=indent + "]" + ("," if not is_last else ""))
+
                     elif isinstance(value, dict):
                         key_content += " {"
                         with Element(tag="pre", content=key_content).classes("flex flex-col flex-wrap"):
-                            format_data(value, depth=depth + 2, last_item=is_last, obj=True)
-                        Element(content=indent + "}" + ("," if not is_last else ""))
+                            format_data(value, depth=depth + 4, is_last_item=is_last, obj=True)
+                        Element(tag="pre", content=indent + "}" + ("," if not is_last else ""))
+
                     else:
                         with Element(tag="pre", content=key_content).classes("flex flex-row flex-wrap gap-2"):
-                            format_data(value, depth=depth + 2, last_item=is_last)
+                            format_data(value, depth=depth + 2, is_last_item=is_last)
                 if not obj:
-                    Element("pre", content=indent + "}")
+                    Element("pre", content=" " * depth + "}ddd" + ("," if not is_last_item else ""))
 
                 return
 
@@ -164,7 +171,7 @@ class DictV2(Element):
                     if do_indent:
                         out = indent + out
                     Element(tag="pre", content=out).classes("text-primary")
-                    Element(tag="pre", content="," if not last_item else "")
+                    Element(tag="pre", content="," if not is_last_item else "")
 
             if isinstance(data, numbers.Number):
                 with Element().classes("flex flex-row"):
@@ -172,6 +179,6 @@ class DictV2(Element):
                     if do_indent:
                         out = indent + out
                     Element(tag="pre", content=out).classes("text-primary")
-                    Element(tag="pre", content="," if not last_item else "")
+                    Element(tag="pre", content="," if not is_last_item else "")
 
         format_data(data)
