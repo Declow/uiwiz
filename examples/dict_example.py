@@ -40,6 +40,8 @@ async def test():
         }
         DictV2(json_data)
 
+        DictV2([json_data])
+
 
 if __name__ == "__main__":
     uvicorn.run("dict_example:app", reload=True)

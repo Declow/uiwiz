@@ -140,28 +140,26 @@ class DictV2(Element):
 
                 if not obj:
                     Element("pre", content=indent + "{")
-                    indent += " " * 2
-                for key, value in data.items():
-                    is_last = last_item == value
-                    key_content = indent + f'"{key}"' + ":"
-
-                    if isinstance(value, list):
-                        key_content += " ["
-                        with Element(tag="pre", content=key_content).classes("flex flex-col flex-wrap"):
-                            format_data(value, depth=depth + 2, is_last_item=is_last)
-                        Element(tag="pre", content=indent + "]" + ("," if not is_last else ""))
-
-                    elif isinstance(value, dict):
-                        key_content += " {"
-                        with Element(tag="pre", content=key_content).classes("flex flex-col flex-wrap"):
-                            format_data(value, depth=depth + 4, is_last_item=is_last, obj=True)
-                        Element(tag="pre", content=indent + "}" + ("," if not is_last else ""))
-
-                    else:
-                        with Element(tag="pre", content=key_content).classes("flex flex-row flex-wrap gap-2"):
-                            format_data(value, depth=depth + 2, is_last_item=is_last)
+                    format_data(data, depth=depth + 2, last_item=last_item, obj=True)
+                else:
+                    for key, value in data.items():
+                        is_last = last_item == value
+                        key_content = indent + f'"{key}"' + ":"
+                        if isinstance(value, list):
+                            key_content += " ["
+                            with Element(tag="pre", content=key_content).classes("flex flex-col flex-wrap"):
+                                format_data(value, depth=depth + 2, last_item=is_last)
+                            Element(tag="pre", content=indent + "]" + ("," if not is_last else ""))
+                        elif isinstance(value, dict):
+                            key_content += " {"
+                            with Element(tag="pre", content=key_content).classes("flex flex-col flex-wrap"):
+                                format_data(value, depth=depth + 4, last_item=is_last, obj=True)
+                            Element(tag="pre",content=indent + "}" + ("," if not is_last else ""))
+                        else:
+                            with Element(tag="pre", content=key_content).classes("flex flex-row flex-wrap gap-2"):
+                                format_data(value, depth=depth + 2, last_item=is_last)
                 if not obj:
-                    Element("pre", content=" " * depth + "}ddd" + ("," if not is_last_item else ""))
+                    Element("pre", content=indent + "}" + ("," if not last_item else ""))
 
                 return
 
