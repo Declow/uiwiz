@@ -57,8 +57,24 @@ class DictV2(Element):
         if not isinstance(data, (Iterable, dict)):
             raise ValueError("Data not of type list or dict")
         super().__init__()
-        with self.classes("border border-base-content rounded-lg shadow-lg w-96 shadow-md w-full mb-5"):
-            self.generate(data)
+        self.data = data
+        self.did_render = False
+        self.key_class = ""
+        self.value_class = "text-primary"
+
+    def key_classes(self, classes):
+        self.key_class = classes
+        return self
+
+    def value_classes(self, classes):
+        self.value_class = classes
+        return self
+
+    def before_render(self):
+        super().before_render()
+        if not self.did_render:
+            self.did_render = True
+            self.generate(self.data)
 
     def generate(self, data):
         def format_data(
@@ -114,7 +130,7 @@ class DictV2(Element):
                     out = f'"{data}"'
                     if do_indent:
                         out = indent + out
-                    Element(tag="pre", content=out).classes("text-primary")
+                    Element(tag="pre", content=out).classes(self.value_class)
                     Element(tag="pre", content="," if not is_last_item else "")
 
             if isinstance(data, numbers.Number):
@@ -122,7 +138,8 @@ class DictV2(Element):
                     out = str(data)
                     if do_indent:
                         out = indent + out
-                    Element(tag="pre", content=out).classes("text-primary")
+                    Element(tag="pre", content=out).classes(self.value_class)
                     Element(tag="pre", content="," if not is_last_item else "")
 
-        format_data(data)
+        with self.classes("border border-base-content rounded-lg shadow-lg w-96 shadow-md w-full mb-5"):
+            format_data(data, is_last_item=True)
