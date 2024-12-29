@@ -40,7 +40,7 @@ async def test():
         }
         DictV2(json_data)
 
-        DictV2([json_data])
+        DictV2([json_data, {"name": "Jane Doe", "age": 40}])
 
 
 if __name__ == "__main__":
