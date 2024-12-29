@@ -154,7 +154,7 @@ class DictV2(Element):
                             key_content += " {"
                             with Element(tag="pre", content=key_content).classes("flex flex-col flex-wrap"):
                                 format_data(value, depth=depth + 4, last_item=is_last, obj=True)
-                            Element(tag="pre",content=indent + "}" + ("," if not is_last else ""))
+                            Element(tag="pre", content=indent + "}" + ("," if not is_last else ""))
                         else:
                             with Element(tag="pre", content=key_content).classes("flex flex-row flex-wrap gap-2"):
                                 format_data(value, depth=depth + 2, last_item=is_last)
