@@ -39,7 +39,7 @@ async def test():
         }
         ui.dict(json_data)
 
-        ui.dict([json_data, {"name": "Jane Doe", "age": 40}])
+        ui.dict([json_data, {"name": "Jane Doe", "age": 40}]).border_classes("")
 
 
 if __name__ == "__main__":

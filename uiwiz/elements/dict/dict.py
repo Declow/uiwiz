@@ -1,10 +1,13 @@
 import numbers
+from pathlib import Path
 from typing import Iterable, Union
 
 from uiwiz.element import Element
 
+JS_PATH = Path(__file__).parent / "dict.js"
 
-class Dict(Element):
+
+class Dict(Element, extensions=[JS_PATH]):
     def __init__(self, data: Union[Iterable[dict], dict]) -> None:
         if not data:
             raise ValueError("Data cannot be None or empty")
@@ -15,6 +18,7 @@ class Dict(Element):
         self.did_render = False
         self.key_class = ""
         self.value_class = "text-primary"
+        self._border_classes = "border border-base-content rounded-lg shadow-lg w-96 shadow-md w-full mb-5"
 
     def key_classes(self, classes):
         self.key_class = classes
@@ -22,6 +26,10 @@ class Dict(Element):
 
     def value_classes(self, classes):
         self.value_class = classes
+        return self
+
+    def border_classes(self, classes: str):
+        self._border_classes = classes
         return self
 
     def before_render(self):
@@ -81,19 +89,17 @@ class Dict(Element):
 
             if isinstance(data, str):
                 with Element().classes("flex flex-row"):
-                    out = f'"{data}"'
                     if do_indent:
-                        out = indent + out
-                    Element(tag="pre", content=out).classes(self.value_class)
-                    Element(tag="pre", content="," if not is_last_item else "")
+                        Element(tag="pre", content=indent)
+                    Element(content=f'"{data}"').classes(self.value_class)
+                    Element(content="," if not is_last_item else "")
 
             if isinstance(data, numbers.Number):
                 with Element().classes("flex flex-row"):
-                    out = str(data)
                     if do_indent:
-                        out = indent + out
-                    Element(tag="pre", content=out).classes(self.value_class)
-                    Element(tag="pre", content="," if not is_last_item else "")
+                        Element(tag="pre", content=indent)
+                    Element(content=str(data)).classes(self.value_class)
+                    Element(tag="div", content="," if not is_last_item else "")
 
-        with self.classes("border border-base-content rounded-lg shadow-lg w-96 shadow-md w-full mb-5"):
+        with self.classes(self._border_classes):
             format_data(data, is_last_item=True)
