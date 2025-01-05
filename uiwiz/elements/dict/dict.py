@@ -4,10 +4,8 @@ from typing import Iterable, Union
 
 from uiwiz.element import Element
 
-JS_PATH = Path(__file__).parent / "dict.js"
 
-
-class Dict(Element, extensions=[JS_PATH]):
+class Dict(Element):
     def __init__(self, data: Union[Iterable[dict], dict]) -> None:
         if not data:
             raise ValueError("Data cannot be None or empty")
