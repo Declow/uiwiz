@@ -102,7 +102,7 @@ class PageRouter(APIRouter):
 
             if not route_exists(path):
                 register_path(path, decorated)
-            
+
             _router = router or self
 
             return _router.post(path, include_in_schema=False, **kwargs)(decorated)
