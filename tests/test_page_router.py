@@ -1,38 +1,6 @@
 from uiwiz.app import UiwizApp
-from uiwiz.page_route import PageRouter, PathDefinition
-
-
-def test_page_router_page():
-    pr = PageRouter()
-    route = "/path"
-
-    @pr.page(route)
-    def func():
-        ...  # pragma: no cover
-
-    expected_output: PathDefinition = {"args": (), "kwargs": {}, "func": func, "type": "page"}
-
-    assert expected_output == pr.paths.get(route)
-
-
-def test_page_router_ui():
-    pr = PageRouter()
-    route = "/path"
-
-    @pr.ui(route)
-    def func():
-        ...  # pragma: no cover
-
-    expected_output: PathDefinition = {
-        "args": (),
-        "kwargs": {},
-        "func": func,
-        "type": "ui",
-        "include_css": True,
-        "include_js": True,
-    }
-
-    assert expected_output == pr.paths.get(route)
+from uiwiz.page_route import PageRouter
+from uiwiz.shared import page_map
 
 
 def test_page_go_to_get_request():
@@ -44,19 +12,21 @@ def test_page_go_to_get_request():
         ...  # pragma: no cover
 
     app = UiwizApp()
-    app.add_page_router(pr)
+    app.include_router(pr)
 
     apis = {item.path: item for item in app.routes}
 
-    print(apis)
+    print(page_map)
 
-    assert route == app.app_paths[func]
+    assert route == page_map[func]
     assert route == apis.get(route).path
     assert "func" == apis.get(route).name
     assert {"GET"} == apis.get(route).methods
 
 
 def test_ui_go_to_post_request():
+    app = UiwizApp()
+
     pr = PageRouter()
     route = "/path"
 
@@ -64,14 +34,11 @@ def test_ui_go_to_post_request():
     def func():
         ...  # pragma: no cover
 
-    app = UiwizApp()
-    app.add_page_router(pr)
+    app.include_router(pr)
 
     apis = {item.path: item for item in app.routes}
 
-    print(apis)
-
-    assert route == app.app_paths[func]
+    assert route == page_map[func]
     assert route == apis.get(route).path
     assert "func" == apis.get(route).name
     assert {"POST"} == apis.get(route).methods

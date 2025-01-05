@@ -13,5 +13,10 @@ def register_path(key: str, func: Callable):
     page_map[func] = key
 
 
+def reset_resources():
+    resources.clear()
+    page_map.clear()
+
+
 def route_exists(path: str) -> bool:
     return path in list(page_map.values())
