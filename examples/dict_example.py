@@ -7,7 +7,6 @@ app = UiwizApp()
 
 def create_nav():
     with ui.nav():
-        ui.button("this is from a method")
         ui.themeSelector()
 
 
