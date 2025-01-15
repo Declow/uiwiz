@@ -1,6 +1,6 @@
 from uiwiz.app import UiwizApp
 from uiwiz.page_route import PageRouter
-from uiwiz.shared import page_map
+from uiwiz.shared import fetch_route
 
 
 def test_page_go_to_get_request():
@@ -16,9 +16,7 @@ def test_page_go_to_get_request():
 
     apis = {item.path: item for item in app.routes}
 
-    print(page_map)
-
-    assert route == page_map[func]
+    assert route == fetch_route(func)
     assert route == apis.get(route).path
     assert "func" == apis.get(route).name
     assert {"GET"} == apis.get(route).methods
@@ -38,7 +36,24 @@ def test_ui_go_to_post_request():
 
     apis = {item.path: item for item in app.routes}
 
-    assert route == page_map[func]
+    assert route == fetch_route(func)
+    assert route == apis.get(route).path
+    assert "func" == apis.get(route).name
+    assert {"POST"} == apis.get(route).methods
+
+
+def test_app_ui_go_to_post_request():
+    app = UiwizApp()
+
+    route = "/path"
+
+    @app.ui(route)
+    def func():
+        ...  # pragma: no cover
+
+    apis = {item.path: item for item in app.routes}
+
+    assert route == fetch_route(func)
     assert route == apis.get(route).path
     assert "func" == apis.get(route).name
     assert {"POST"} == apis.get(route).methods
