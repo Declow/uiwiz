@@ -48,10 +48,11 @@ class PageRouter(APIRouter):
 
             self.__ensure_request_response_signature__(decorated)
 
-            if not route_exists(path):
-                register_path(path, decorated)
-
             _router = router or self
+            full_path = _router.prefix + path
+
+            if not route_exists(full_path):
+                register_path(full_path, decorated)
 
             return _router.get(path, *args, include_in_schema=False, **kwargs)(decorated)
 
@@ -100,10 +101,11 @@ class PageRouter(APIRouter):
 
             self.__ensure_request_response_signature__(decorated)
 
-            if not route_exists(path):
-                register_path(path, decorated)
-
             _router = router or self
+            full_path = _router.prefix + path
+
+            if not route_exists(full_path):
+                register_path(full_path, decorated)
 
             return _router.post(path, include_in_schema=False, **kwargs)(decorated)
 

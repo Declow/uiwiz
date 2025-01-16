@@ -57,3 +57,63 @@ def test_app_ui_go_to_post_request():
     assert route == apis.get(route).path
     assert "func" == apis.get(route).name
     assert {"POST"} == apis.get(route).methods
+
+
+def test_router_ui_prefix():
+    app = UiwizApp()
+
+    pr = PageRouter(prefix="/api")
+    route = "/path"
+
+    @pr.ui(route)
+    def func():
+        ...  # pragma: no cover
+
+    app.include_router(pr)
+    apis = {item.path: item for item in app.routes}
+    full_route = pr.prefix + route
+
+    assert full_route == fetch_route(func)
+    assert full_route == apis.get(full_route).path
+    assert "func" == apis.get(full_route).name
+    assert {"POST"} == apis.get(full_route).methods
+
+
+def test_router_page_prefix():
+    app = UiwizApp()
+
+    pr = PageRouter(prefix="/page")
+    route = "/path"
+
+    @pr.page(route)
+    def func():
+        ...  # pragma: no cover
+
+    app.include_router(pr)
+    apis = {item.path: item for item in app.routes}
+    full_route = pr.prefix + route
+
+    assert full_route == fetch_route(func)
+    assert full_route == apis.get(full_route).path
+    assert "func" == apis.get(full_route).name
+    assert {"GET"} == apis.get(full_route).methods
+
+
+def test_router_page_without_prefix():
+    app = UiwizApp()
+
+    pr = PageRouter()
+    route = "/path"
+
+    @pr.page(route)
+    def func():
+        ...  # pragma: no cover
+
+    app.include_router(pr)
+    apis = {item.path: item for item in app.routes}
+    full_route = pr.prefix + route
+
+    assert full_route == fetch_route(func)
+    assert full_route == apis.get(full_route).path
+    assert "func" == apis.get(full_route).name
+    assert {"GET"} == apis.get(full_route).methods
