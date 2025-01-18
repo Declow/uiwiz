@@ -9,11 +9,11 @@ class Spinner(Element):
     root_class: str = "loading "
     _classes: str = "loading-{0} loading-{1}"
 
-    def __init__(self, spinner_for: Element = None) -> None:
+    def __init__(self, *args: Element) -> None:
         super().__init__("span")
         self._size = Spinner._size
         self.type = Spinner._type
-        self.spinner_for = spinner_for
+        self.spinner_for = args
         self.__self__format()
 
     @property
@@ -21,10 +21,11 @@ class Spinner(Element):
         return self._spinner_for
 
     @spinner_for.setter
-    def spinner_for(self, element: Element) -> "Spinner":
-        self._spinner_for = element
-        if element:
-            element.attributes["hx-indicator"] = f"#{self.id}"
+    def spinner_for(self, elements: tuple[Element]) -> "Spinner":
+        self._spinner_for = elements
+        if elements:
+            for element in elements:
+                element.attributes["hx-indicator"] = f"#{self.id}"
             self.__self__format()
 
     def __self__format(self) -> None:
