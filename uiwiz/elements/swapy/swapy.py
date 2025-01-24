@@ -14,6 +14,8 @@ class SwapyContainer(Element, extensions=[LIB_PATH, JS_PATH]):
         super().__init__()
         self.classes("space-y-4")
 
+        Element(content="test").classes("my-button")
+
     def slot(self) -> Element:
         slot = Element()
         SwapyContainer.counter += 1
