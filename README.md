@@ -8,7 +8,7 @@ UiWizard is a python-based ui-framework for the web. It was inspired by the grea
   - I wanted to try out HTMX
 - Limited control over the underlaying tech stack but mainly just learning
 
-Exmaple and docs
+Example and docs
 [UI-Wizard](https://ui-wizard.com/)
 
 ## Features
@@ -30,19 +30,21 @@ pip install uiwiz
 Create a main.py file
 
 ```python
-from uiwiz.app import UiwizApp
-from uiwiz import ui
 import uvicorn
+
+from uiwiz import ui
+from uiwiz.app import UiwizApp
 
 app = UiwizApp()
 
+
 @app.page("/")
-async def home_page(request: Request):
+async def home_page():
     ui.label("Hello world")
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True)
+    uvicorn.run(app)
 ```
 
 Run it

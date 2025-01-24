@@ -7,6 +7,7 @@ class Toast(Element):
     root_class: str = "alert w-full z-50 "
 
     def __init__(self, message: str = "", svg: _type = None) -> None:
+        self.inner_class = Toast.root_class
         super().__init__(tag="div", oob=True)
         self.attributes["id"] = "toast"
         self.attributes["hx-swap-oob"] = "afterbegin"
@@ -14,7 +15,6 @@ class Toast(Element):
         self.message = message
         self.context_manager_used = False
         self.inner_element = None
-        self.inner_class = Toast.root_class
 
     def before_render(self):
         with self:
@@ -36,7 +36,7 @@ class Toast(Element):
         self._svg = svg
         return self
 
-    def classes(self, input: str) -> "Toast":
+    def classes(self, input: str = "") -> "Toast":
         self.inner_class = self.inner_class + input
         return self
 

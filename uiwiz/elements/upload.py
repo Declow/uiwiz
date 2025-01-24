@@ -1,25 +1,29 @@
-from typing import Callable, Union
+from uiwiz.elements.extensions.on_event import OnEvent
+from uiwiz.event import FUNC_TYPE, ON_EVENTS, SWAP_EVENTS, TARGET_TYPE
 
-from uiwiz.element import Element
 
-
-class Upload(Element):
+class Upload(OnEvent):
     root_class: str = "file-input "
-    _classes: str = "file-input-bordered file-input-sm"
+    root_size: str = "file-input-{size}"
+    _classes: str = "file-input-bordered"
 
     def __init__(
         self,
         name: str,
-        on_upload: Callable,
-        target: Union[Callable, str, Element] = None,
-        trigger: str = "change",
-        swap: str = None,
     ) -> "Upload":
         super().__init__("input")
         self.attributes["type"] = "file"
         self.attributes["name"] = name
+        self._size = "sm"
         self.classes(Upload._classes)
 
+    def on_upload(
+        self,
+        on_upload: FUNC_TYPE,
+        target: TARGET_TYPE = None,
+        trigger: ON_EVENTS = "change",
+        swap: SWAP_EVENTS = None,
+    ) -> "Upload":
         self.event = {
             "func": on_upload,
             "trigger": trigger,
@@ -27,3 +31,5 @@ class Upload(Element):
             "swap": swap,
             "hx-encoding": "multipart/form-data",
         }
+
+        return self

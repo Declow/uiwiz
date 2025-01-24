@@ -1,8 +1,9 @@
-from uiwiz.element import Element
+from uiwiz.elements.extensions.on_event import OnEvent
 
 
-class Radio(Element):
+class Radio(OnEvent):
     root_class: str = "radio"
+    root_size: str = "radio-{size}"
 
     def __init__(self, name: str, checked: bool = False) -> None:
         super().__init__("input")
@@ -10,4 +11,3 @@ class Radio(Element):
         self.attributes["type"] = "radio"
         if checked:
             self.attributes["checked"] = "checked"
-        self.classes()

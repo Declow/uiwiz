@@ -1,3 +1,5 @@
+import pytest
+
 from uiwiz.svg.svg_handler import get_svg
 
 
@@ -9,3 +11,13 @@ def test_get_svg():
         d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
 </svg>"""
     assert svg_error == error
+
+
+def test_get_svg_empty_string():
+    with pytest.raises(ValueError):
+        get_svg("")
+
+
+def test_get_svg_none():
+    with pytest.raises(ValueError):
+        get_svg(None)

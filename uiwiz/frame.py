@@ -3,10 +3,11 @@ from __future__ import annotations
 import asyncio
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 from uuid import uuid4
 
 from uiwiz.asgi_request_middelware import get_request
+from uiwiz.version import __version__
 
 if TYPE_CHECKING:
     from uiwiz.element import Element
@@ -28,11 +29,12 @@ class Frame:
         self.oob_elements: list[Element] = []
         self.id_count: int = 0  # used for element id
         self.scripts: list[str] = []
-        self.extensions: list[str] = []
+        self.extensions: List[str] = []
         self.app = get_request().app
         self.last_id = None
         self.title: Optional[str] = None
         self.meta_description_content: str = ""
+        self.head_ext: str = ""
 
     def get_id(self) -> str:
         headers = get_request().headers
@@ -42,10 +44,10 @@ class Frame:
             return f"a-{self.id_count}"
 
         target_id = self.last_id if self.last_id else headers.get("hx-target")
-        self.last_id = str(uuid4())
-
-        if swap in ["outerHTML", "this"]:
+        if swap.lower() in ["outerhtml", "this"] and self.last_id != target_id:
             self.last_id = target_id
+        else:
+            self.last_id = "a" + str(uuid4())
 
         return self.last_id
 
@@ -70,10 +72,10 @@ class Frame:
             return output
         return ""
 
-    def render_ext(self) -> str:
+    def render_ext(self) -> Tuple[str, str]:
         if self.root_element:
-            return self.root_element.render_libs(self.extensions)
-        return ""
+            return self.root_element.render_ext(self.extensions)
+        return "", ""
 
     def add_extension(self, cls, extensions: Optional[Union[list[Path], Path]]) -> None:
         if extensions is None:
@@ -83,9 +85,9 @@ class Frame:
 
         for extension in extensions:
             _, filename = os.path.split(extension)
-            prefix = f"/_static/extension/{cls.__name__}/"
+            prefix = f"/_static/extension/{__version__}/{cls.__name__}/"
             endpoint = prefix + filename
-            if endpoint not in self.extensions:
+            if extension not in self.extensions:
                 self.extensions.append(endpoint)
 
     @classmethod

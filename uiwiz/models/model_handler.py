@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
 
 from uiwiz.element import Element
+from uiwiz.element_types import ELEMENT_SIZE
 from uiwiz.elements.button import Button
 from uiwiz.elements.checkbox import Checkbox
 from uiwiz.elements.datepicker import Datepicker
@@ -19,12 +20,12 @@ from uiwiz.elements.label import Label
 from uiwiz.elements.radio import Radio
 from uiwiz.elements.textarea import TextArea
 from uiwiz.elements.toggle import Toggle
-from uiwiz.show import __display_name__
+from uiwiz.models.display import display_name
 
 
 @dataclass
 class UiAnno:
-    type: Union[Input, TextArea, Checkbox] = None
+    type: Union[Input, HiddenInput, Toggle, Datepicker, Dropdown, TextArea, Checkbox] = None
     placeholder: Optional[str] = None
     classes: Optional[str] = None
 
@@ -52,8 +53,9 @@ class ModelForm:
         self,
         model: BaseModel,
         compact: bool = True,
-        card_classes: str = "card w-full bg-base-100 shadow-lg",
+        card_classes: str = "border border-base-content rounded-lg shadow-lg w-full",
         label_classes: str = "flex-auto w-52",
+        size: ELEMENT_SIZE = "md",
         **kwargs,  # override fields with custom ui
     ):
         self.model = model
@@ -65,6 +67,7 @@ class ModelForm:
         self.compact = compact
         self.label_classes = label_classes
         self.card_classes = card_classes
+        self._size = size
         self.render_model(**kwargs)
         self.button.render_html = False
 
@@ -80,17 +83,20 @@ class ModelForm:
         with Form().classes(self.card_classes) as form:
             hints = get_type_hints(self.model, include_extras=True)
             for key, field_type in hints.items():
-                args = get_args(field_type)
-                annotated = Annotated == get_origin(field_type)
-                if key in kwargs:
-                    self.render_key_override(args, key, field_type, **kwargs)
-                else:
-                    self.render_type_hint_without_args(args, annotated, field_type, key)
-                    self.render_with_args_annotated(args, annotated, field_type, key)
+                self.render_model_attributes(key, field_type, **kwargs)
             self.button = Button("Save")
         self.form = form
 
-    def render_key_override(self, args: Tuple, key: str, field_type: type, **kwargs) -> None:
+    def render_model_attributes(self, key, field_type, **kwargs) -> "ModelForm":
+        args = get_args(field_type)
+        annotated = Annotated == get_origin(field_type)
+        if key in kwargs:
+            self.render_key_override(args, key, **kwargs)
+        else:
+            self.render_type_hint_without_args(args, annotated, field_type, key)
+            self.render_with_args_annotated(args, annotated, field_type, key)
+
+    def render_key_override(self, args: Tuple, key: str, **kwargs) -> None:
         if key in kwargs:
             model_args: dict = kwargs[key]
             model = model_args.pop("ui")
@@ -149,7 +155,7 @@ class ModelForm:
     ) -> None:
         kwargs = {**{"name": key}, **kwargs}
         placeholder = "placeholder"
-        kwargs[placeholder] = __display_name__(kwargs[placeholder])
+        kwargs[placeholder] = display_name(kwargs[placeholder])
         compact = self.compact
         with Element().classes("flex flex-nowrap w-full"):
             ele_args = [item[0] for item in inspect.signature(ele.__init__).parameters.items()]
@@ -157,7 +163,7 @@ class ModelForm:
 
             label: Optional[Label] = None
             if ele is not HiddenInput:
-                label = Label(kwargs[placeholder])
+                label = Label(display_name(key))
 
                 if compact and inspect.signature(ele).parameters.get(placeholder):
                     label.render_html = False
@@ -168,8 +174,9 @@ class ModelForm:
                 kwargs.pop(placeholder)
 
             if self.instance and "placeholder" in ele_args:
-                kwargs["placeholder"] = getattr(self.instance, key)
+                kwargs["placeholder"] = key
             el: Element = ele(**kwargs)
+            el.size(self._size)
             if classes:
                 el.classes(classes)
             if label:
@@ -179,13 +186,12 @@ class ModelForm:
         compact = self.compact
         if self.instance and "value" in ele_args:
             kwargs["value"] = getattr(self.instance, key)
-            compact = False
 
         # radio button
-        if self.instance and getattr(self.instance, key) == field_arg:
+        if self.instance and isinstance(ele, Radio):
             kwargs["checked"] = "checked"
             compact = False
-        elif self.instance and ele == Toggle:
+        elif self.instance and isinstance(ele, Toggle):
             kwargs["checked"] = "checked"
             compact = False
         return compact

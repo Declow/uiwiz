@@ -7,7 +7,6 @@ class Avatar(Element):
 
     def __init__(self, path: str, size: int = 12) -> None:
         super().__init__()
-        self.classes()
         with self:
             with Element("div").classes(Avatar._classes_inner.format(size=size)) as container:
                 self.container = container
