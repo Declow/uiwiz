@@ -1,6 +1,6 @@
 import functools
 import inspect
-from typing import Callable, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import HTMLResponse
@@ -10,6 +10,31 @@ from uiwiz.element import Element
 from uiwiz.frame import Frame
 from uiwiz.shared import register_path, route_exists
 from uiwiz.version import __version__
+
+
+def hook_method(method_name, method):
+    @functools.wraps(method)
+    def wrapped_method(self, *args, **kwargs):
+        print(f"Method {method_name} called on {self}.")
+        # Custom logic before the original method
+        result = method(self, *args, **kwargs)
+        # Custom logic after the original method
+        return result
+
+    return wrapped_method
+
+
+def hook_thing(cls: Any):
+    for attr_name in dir(cls):
+        if callable(getattr(cls, attr_name)) and not attr_name.startswith("__"):
+            # Wrap the method
+            original_method = getattr(cls, attr_name)
+            wrapped_method = hook_method(attr_name, original_method)
+            setattr(cls, attr_name, wrapped_method)
+    return cls
+
+
+hook_thing(APIRouter)
 
 
 class PageRouter(APIRouter):
@@ -50,9 +75,7 @@ class PageRouter(APIRouter):
 
             _router = router or self
             full_path = _router.prefix + path
-
-            if not route_exists(full_path):
-                register_path(full_path, decorated)
+            register_path(full_path, decorated)
 
             return _router.get(path, *args, include_in_schema=False, **kwargs)(decorated)
 
