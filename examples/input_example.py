@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 from typing import Optional
 
@@ -116,14 +115,6 @@ async def test():
 
             ui.button("get log").on_click(get_log, target=lambda: log.id, swap="beforeend")
             log = ui.element().classes("col")
-
-            d = {"asd": {"gg": 0}, "gg": True, "dd": "text"}
-
-            print(json.dumps(d, indent=4))
-            v = v = json.dumps(d, indent=2)
-            out = "\n".join(["      " + e for e in v.split("\n")])
-            print(out)
-            ui.code(out)
 
     with ui.footer():
         ui.label("some footer text")
