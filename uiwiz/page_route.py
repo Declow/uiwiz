@@ -41,7 +41,7 @@ class PageRouter(APIRouter):
                     result = await result
 
                 if isinstance(result, Response):
-                    return self.return_funtion_response(result)
+                    return self.return_function_response(result)
 
                 _app = get_request().app
                 return _app.render(request, response, title)
@@ -79,7 +79,7 @@ class PageRouter(APIRouter):
                     result = await result
 
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
-                    return self.return_funtion_response(result)
+                    return self.return_function_response(result)
 
                 standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "partial-ui"}
                 for key, value in response.headers.items():
@@ -93,7 +93,7 @@ class PageRouter(APIRouter):
                     render.append(js)
                 content = "".join(render)
 
-                return self.return_funtion_response(HTMLResponse(content=content, headers=standard_headers))
+                return self.return_function_response(HTMLResponse(content=content, headers=standard_headers))
 
             self.__ensure_request_response_signature__(decorated)
 
@@ -103,7 +103,7 @@ class PageRouter(APIRouter):
 
         return decorator
 
-    def return_funtion_response(self, response: Union[str, Response]) -> Union[str, Response]:
+    def return_function_response(self, response: Union[str, Response]) -> Union[str, Response]:
         Frame.get_stack().del_stack()
         return response
 
