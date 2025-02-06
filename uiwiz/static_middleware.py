@@ -5,7 +5,7 @@ from starlette.requests import Request
 from starlette.types import Receive, Scope, Send
 
 
-class AsgiTtlMiddelware:
+class AsgiTtlMiddleware:
     def __init__(self, app, cache_age: int) -> None:
         self.app = app
         self.cache_age = cache_age
