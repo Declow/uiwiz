@@ -5,7 +5,7 @@ from typing import Callable, Optional, Union
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import HTMLResponse
 
-from uiwiz.asgi_request_middelware import get_request
+from uiwiz.asgi_request_middleware import get_request
 from uiwiz.element import Element
 from uiwiz.frame import Frame
 from uiwiz.shared import register_path, route_exists
