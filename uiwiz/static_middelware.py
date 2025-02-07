@@ -1,7 +1,6 @@
 from typing import Any
 
 from starlette.datastructures import MutableHeaders
-from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.types import Receive, Scope, Send
 

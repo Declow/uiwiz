@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from uiwiz.element import Element
 
@@ -6,7 +6,11 @@ from uiwiz.element import Element
 class HiddenInput(Element):
     _classes: str = ""
 
-    def __init__(self, name: str = None, value: Any = None) -> None:
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        value: Any = None,
+    ) -> None:
         """HiddenInput
 
         This element is used for hidden input data
@@ -16,5 +20,5 @@ class HiddenInput(Element):
         """
         super().__init__("input")
         self.attributes["name"] = name
-        self.attributes["type"] = "hidden"
         self.attributes["value"] = value
+        self.attributes["type"] = "hidden"

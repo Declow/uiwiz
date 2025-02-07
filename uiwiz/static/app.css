@@ -1,23 +1,5 @@
-.col {
-    display: flex;
-    /* flex-wrap: wrap; */
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem;
-}
-
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 1rem;
-}
-
 .htmx-indicator {
     opacity: 0;
-    /* transition: opacity 200ms ease-in; */
 }
 
 .htmx-request .htmx-indicator {
@@ -29,26 +11,8 @@
     border-radius: 5px;
 }
 
-.uiwiz-td-padding td {
-    padding: 0.5rem;
-}
-.uiwiz-td-padding th {
-    padding-right: 1rem;
-}
-.uiwiz-container-border-radius {
-    border-radius: 0.6rem;
-}
-
 .remove {
     visibility: hidden;
     opacity: 0;
     transition: visibility 0s var(--delay), opacity 0.5s ease-out;
-}
-
-.collapse-title, :where(.collapse > input[type="checkbox"]), :where(.collapse > input[type="radio"]) {
-    width: 100%;
-    padding: 1rem;
-    padding-inline-end: 3rem;
-    min-height: 2.4rem;
-    transition: background-color .2s ease-out;
 }

@@ -1,17 +1,15 @@
 
 htmx.defineExtension("hx-aggrid", {
     onEvent: function (name, evt) {
-        if (name === "htmx:afterProcessNode") {
-            console.log(evt);
-            const element = evt.detail.elt;
-            gridHandler(element, null, null);
-        }
-
         if (name === "htmx:afterSettle") {
+            if (!hasAttribute(element, "hx-aggrid"))
+                return; // Not an aggrid element target
+            
             const response = JSON.parse(evt.detail.xhr.response);
             const cols = response["cols"];
             const rows = response["rows"];
-            gridHandler(evt.target, cols, rows);
+            const element = evt.target;
+            _uiWizardGrids[element.id].updateGrid(cols, rows);
         }
     }
 });
@@ -25,31 +23,39 @@ function gridHandler(element, cols, rows) {
 
 var _uiWizardGrids = {}
 
-function getGridOptions(cols, rows) {
-    const gridOptions = {
-        defaultColDef: {
-            resizable: true,
-        },
-        columnDefs: cols,
-        rowData: rows,
-        domLayout: 'autoHeight',
-        onFirstDataRendered: "autoSizeAll",
-    };
-    return gridOptions;
-}
 
-function createOrGetCurrentGrid(element, cols, rows) {
-    gridApi = null;
-    if (element.id in _uiWizardGrids) {
-        gridApi = _uiWizardGrids[element.id]
-        gridApi.setGridOption('columnDefs', cols);
-        gridApi.setGridOption('rowData', rows);
-    } else {
-        const cols = JSON.parse(getAttributeFromElement(element, "hx-aggrid-cols"));
-        const rows = JSON.parse(getAttributeFromElement(element, "hx-aggrid-rows"));
 
-        gridApi = agGrid.createGrid(element, getGridOptions(cols, rows));
-        _uiWizardGrids[element.id] = gridApi;
+
+
+class WizGrid {
+    constructor(element) {
+        this.element = element;
+        this.cols = JSON.parse(getAttributeFromElement(element, "hx-aggrid-cols"));
+        this.rows = JSON.parse(getAttributeFromElement(element, "hx-aggrid-rows"));
+
+        this.createGrid();
     }
-    return gridApi;
+
+    createGrid() {
+        const gridOptions = {
+            defaultColDef: {
+                resizable: true,
+            },
+            columnDefs: this.cols,
+            rowData: this.rows,
+            domLayout: 'autoHeight',
+            onFirstDataRendered: "autoSizeAll",
+        };
+
+        this.gridApi = agGrid.createGrid(this.element, gridOptions);
+    }
+
+    updateGrid(cols, rows) {
+        this.gridApi.setGridOption('columnDefs', cols);
+        this.gridApi.setGridOption('rowData', rows);
+    }
 }
+
+elements = document.querySelectorAll("[hx-aggrid]").forEach((element) => {
+    _uiWizardGrids[element.id] = new WizGrid(element);
+});

@@ -62,25 +62,14 @@ if True:
         def replace(request: Request, input: DataInput):
             create_label(f"{message} {input.input}")
 
-        ui.input(
-            "This is a placeholder",
-            name="input",
-            on_change=replace,
-            target=lambda: res3.id,
-        )
+        ui.input(placeholder="This is a placeholder", name="input").on("change", replace, target=lambda: res3.id)
         with element() as res3:
             create_label(message)
 
-        ui.textarea(
-            "Placeholder",
-            name="input",
-            on_change=replace,
-            target=lambda: res2.id,
-            trigger="input, keyup[(ctrlKey||metaKey)&&keyCode==13]",
-        )
+        ui.textarea(placeholder="Placeholder", name="input").on("change", replace, target=lambda: res2.id)
         res2 = ui.label(message)
 
-        ui.table(df)
+        ui.table.from_dataframe(df)
         ui.aggrid(df)
 
         ui.button("Date").on_click(
@@ -89,12 +78,22 @@ if True:
 
         with ui.SwapyContainer() as container:
             container.attributes["id"] = "swapy"
+            with ui.col().classes("col w-full"):
+                with container.slot():
+                    with container.item():
+                        ui.markdown("*this is some text* - Hayoo")
+                with container.slot():
+                    with container.item():
+                        ui.input("test", "some_name")
+
+        with ui.SwapyContainer() as container:
+            container.attributes["id"] = "swapy"
             with container.slot():
                 with container.item():
-                    ui.element(content="test")
+                    ui.element(content="test2")
             with container.slot():
                 with container.item():
-                    ui.element(content="test")
+                    ui.element(content="test3")
 
     with ui.footer():
         ui.label("some footer text")

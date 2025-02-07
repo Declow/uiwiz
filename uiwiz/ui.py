@@ -6,7 +6,7 @@ from uiwiz.elements.checkbox import Checkbox as checkbox
 from uiwiz.elements.code import Code as code
 from uiwiz.elements.col import Col as col
 from uiwiz.elements.datepicker import Datepicker as datepicker
-from uiwiz.elements.dict import Dict as dict
+from uiwiz.elements.dict.dict import Dict as dict
 from uiwiz.elements.divider import Divider as divider
 from uiwiz.elements.drawer import Drawer as drawer
 from uiwiz.elements.dropdown import Dropdown as dropdown
@@ -17,7 +17,7 @@ from uiwiz.elements.html import Html as html
 from uiwiz.elements.input import Input as input
 from uiwiz.elements.label import Label as label
 from uiwiz.elements.link import Link as link
-from uiwiz.elements.markdown import Markdown as markdown
+from uiwiz.elements.markdown.markdown import Markdown as markdown
 from uiwiz.elements.nav import Nav as nav
 from uiwiz.elements.radio import Radio as radio
 from uiwiz.elements.range import Range as range
@@ -32,5 +32,5 @@ from uiwiz.elements.theme_selector import ThemeSelector as themeSelector
 from uiwiz.elements.toast import Toast as toast
 from uiwiz.elements.toggle import Toggle as toggle
 from uiwiz.elements.upload import Upload as upload
-from uiwiz.model_handler import ModelForm as modelForm
-from uiwiz.show import show
+from uiwiz.models.model_handler import ModelForm as modelForm
+from uiwiz.models.show import show

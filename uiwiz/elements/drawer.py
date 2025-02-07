@@ -1,6 +1,10 @@
+from typing import Optional
+
 from uiwiz.element import Element
 from uiwiz.elements.checkbox import Checkbox
+from uiwiz.elements.html import Html
 from uiwiz.elements.label import Label
+from uiwiz.svg.svg_handler import get_svg
 
 
 class DrawerSetup(Element):
@@ -45,6 +49,7 @@ class Drawer(Element):
     def __init__(self, always_open: bool = False, right: bool = False) -> None:
         super().__init__()
         self.classes(Drawer._classes)
+        self.__drawer_button_menu__: Optional[Element] = None
 
         if always_open:
             self.classes(self.attributes["class"] + " lg:drawer-open")
@@ -61,3 +66,9 @@ class Drawer(Element):
     def drawer_side(self) -> Element:
         self.side = DrawerSide(self.drawer_toggle)
         return self.side
+
+    def drawer_button(self) -> Element:
+        self.__drawer_button_menu__ = Element("label").classes("btn drawer-button")
+        self.__drawer_button_menu__.attributes["for"] = self.drawer_toggle.id
+        with self.__drawer_button_menu__:
+            Html(get_svg("menu"))

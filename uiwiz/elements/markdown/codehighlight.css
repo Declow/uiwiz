@@ -3,7 +3,7 @@
 }
 
 .codehilite {
-    background: oklch(var(--b3)/1);
+    background: oklch(var(--b2)/1);
     border-radius: 0.6rem;
 }
 
@@ -18,7 +18,7 @@
 
 /* Error */
 .k {
-    color: var(--color-prettylights-syntax-markup-heading)
+    color: oklch(var(--p))
 }
 
 /* Keyword */
@@ -78,7 +78,7 @@
 
 /* Generic.Subheading */
 .kc {
-    color: var(--color-prettylights-syntax-markup-heading)
+    color: oklch(var(--bc))
 }
 
 /* Keyword.Constant */
@@ -148,7 +148,7 @@
 
 /* Literal.String.Doc */
 .s2 {
-    color: var(--color-prettylights-syntax-keyword)
+    color: oklch(var(--er));
 }
 
 /* Literal.String.Double */

@@ -12,6 +12,9 @@ class SwapyContainer(Element, extensions=[LIB_PATH, JS_PATH]):
 
     def __init__(self) -> None:
         super().__init__()
+        self.classes("space-y-4")
+
+        Element(content="test").classes("my-button")
 
     def slot(self, slot_name=None) -> Element:
         slot = Element()
@@ -23,6 +26,6 @@ class SwapyContainer(Element, extensions=[LIB_PATH, JS_PATH]):
     def item(self) -> Element:
         item = Element()
         SwapyContainer.item_counter += 1
-        item.classes(f"content-a")
+        item.classes(f"content-a bg-secondary")
         item.attributes["data-swapy-item"] = f"item-{SwapyContainer.item_counter}"
         return item

@@ -30,11 +30,29 @@ function handleInvalidInputs(evt) {
         res = JSON.parse(evt.detail.xhr.response);
 
         res.fieldErrors.forEach(key => {
-            evt.target.querySelector(`[name='${key}']`).classList.add("invalid")
+            var tar = evt.target.querySelector(`[name='${key}']`);
+            if (tar != null) {
+                tar.classList.add("invalid");
+            } else {
+                var tar = evt.target.closest("tr");
+                var inputElement = tar ? tar.querySelector(`[name='${key}']`) : null;
+                if (inputElement != null) {
+                    inputElement.classList.add("invalid");
+                }
+            }
         });
 
         res.fieldOk.forEach(key => {
-            evt.target.querySelector(`[name='${key}']`).classList.remove("invalid")
+            var tar = evt.target.querySelector(`[name='${key}']`)
+            if (tar != null) {
+                tar.classList.remove("invalid")
+            } else {
+                var tar = evt.target.closest("tr");
+                var inputElement = tar ? tar.querySelector(`[name='${key}']`) : null;
+                if (inputElement != null) {
+                    inputElement.classList.remove("invalid");
+                }
+            }
         });
     }
 }
@@ -44,7 +62,7 @@ document.body.addEventListener('htmx:responseError', function (evt) {
         var container = document.getElementById("toast");
         var error = document.createElement('div');
         error.className = "{{ error_classes }}";
-        error.innerHTML = `<span id="a-1">${evt.detail.error}</span>`;
+        error.innerHTML = `<span>${JSON.parse(evt.detail.xhr.response).message}</span>`;
         container.prepend(error);
 
         handleInvalidInputs(evt);
@@ -81,21 +99,6 @@ htmx.defineExtension('swap-header', {
         }
     }
 });
-
-{% if auth_header_name %}
-htmx.on("htmx:afterRequest", (evt) => {
-    xhr = evt.detail.xhr;
-
-    if (xhr.getResponseHeader("{{ auth_header_name }}")) {
-        let authToken = xhr.getResponseHeader("{{ auth_header_name }}");
-        localStorage.setItem("{{ auth_header_name }}", authToken);
-    }
-});
-
-htmx.on("htmx:configRequest", (evt)=> {
-    evt.detail.headers["{{ auth_header_name }}"] = localStorage.getItem("{{ auth_header_name }}");
-});
-{% endif %}
 
 htmx.on("htmx:configRequest", (evt)=> {
     const urlParams = new URLSearchParams(window.location.search);

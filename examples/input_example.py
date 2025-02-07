@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 from typing import Optional
 
@@ -55,7 +54,7 @@ async def test():
         with ui.element().classes("w-full"):
             with ui.form().on_submit(handle_input):
                 ui.input("input name", "first_name")
-                la_name = ui.input("input last name", name="last_name")
+                la_name = ui.input(name="last_name", placeholder="input last name")
                 ui.label().bind_text_from(la_name)
 
                 text = ui.textarea(name="asd")
@@ -65,10 +64,6 @@ async def test():
                 with ui.row():
                     c = ui.checkbox("box_to_checl")
                     ui.label("message", c)
-                    # with ui.label():
-                    #     ui.checkbox("box_to_check")
-                    #     e = ui.element("span", content="message").classes("label-text")
-                    #     e.attributes["style"] = "margin-left: 1em;"
 
                 with ui.row():
                     r = ui.radio("test_radio", "htmx")
@@ -115,19 +110,11 @@ async def test():
                 gg = ui.aggrid(None)
 
                 ui.button("update grid 2").on_click(get_data, target=gg, swap="none")
-                range = ui.range(0, 100, 0, "value2")
+                range = ui.range(name="some_data", value=0, min=0, max=100)
                 ui.label(range.value).bind_text_from(range, swap="innerHTML")
 
             ui.button("get log").on_click(get_log, target=lambda: log.id, swap="beforeend")
             log = ui.element().classes("col")
-
-            d = {"asd": {"gg": 0}, "gg": True, "dd": "text"}
-
-            print(json.dumps(d, indent=4))
-            v = v = json.dumps(d, indent=2)
-            out = "\n".join(["      " + e for e in v.split("\n")])
-            print(out)
-            ui.code(out)
 
     with ui.footer():
         ui.label("some footer text")

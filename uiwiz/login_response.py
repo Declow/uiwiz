@@ -20,10 +20,4 @@ class LoginResponse(Response):
         session_token: str,
         expires: typing.Union[datetime, str, int],
     ):
-        self.set_cookie(
-            session_id,
-            session_token,
-            expires=expires,
-            secure=True,
-            samesite="strict",
-        )
+        self.set_cookie(session_id, session_token, expires=expires, secure=True, samesite="strict", httponly=True)

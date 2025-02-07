@@ -8,7 +8,6 @@ class Divider(Element):
     def __init__(self, text: str = "") -> None:
         super().__init__("div")
         self.content = text
-        self.classes()
 
     def horizontal(self) -> "Divider":
         self.classes(Divider._classes_hor)

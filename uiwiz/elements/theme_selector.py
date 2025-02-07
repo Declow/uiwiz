@@ -56,16 +56,14 @@ class ThemeSelector(Element):
 
     def setup_listener(self):
         self.script = f"""
-
 function selectTheme(value) {{
     console.log(value);
     element = document.getElementById("html");
     element.setAttribute("data-theme", value);
-    document.cookie = `data-theme=${{value}}`; 
+    document.cookie = `data-theme=${{value}}; Path=/`; 
 }}
 
 document.getElementById("{self.theme_selector.id}").addEventListener('change', function() {{
     selectTheme(this.value);
 }});
-
 """

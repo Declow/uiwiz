@@ -20,15 +20,13 @@ class Aggrid(Element, extensions=[CSS_PATH, LIB_PATH, JS_PATH]):
         autoSizeColumn = "autoSizeAll"
         fitColumnContent = "sizeToFit"
 
-    _classes: str = "ag-theme-quartz ag-theme-uiwiz"
+    _classes: str = "ag-theme-quartz ag-theme-uiwiz w-full"
 
     def __init__(self, df: pd.DataFrame, column_option: OPTIONS = OPTIONS.autoSizeColumn) -> None:
         super().__init__("div")
         self.classes(Aggrid._classes)
 
         cols, rows = Aggrid.create_cols_and_rows(df)
-
-        self.attributes["style"] = "width: 100%;"
 
         self.attributes["hx-ext"] = "hx-aggrid"
         self.attributes["hx-aggrid-cols"] = cols

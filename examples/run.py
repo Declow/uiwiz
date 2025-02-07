@@ -47,7 +47,7 @@ def run_with_path_param(date: date):
 @app.page("/")
 async def test(request: Request):
     create_nav()
-    with ui.element().classes("col mx-auto"):
+    with ui.col().classes("mx-auto"):
         with ui.row():
             ui.button("test").on_click(lambda: create_from_htmx(b))
             b = ui.button("asd").on_click(e)
@@ -70,24 +70,19 @@ if True:
             create_label(f"{message} {input.input}")
 
         ui.input(
-            "This is a placeholder",
             name="input",
-            on_change=replace,
-            target=lambda: res3.id,
-        )
+            placeholder="This is a placeholder",
+        ).on("input", replace, lambda: res3.id, "outerHTML")
         with element() as res3:
             create_label(message)
 
         ui.textarea(
-            "Placeholder",
             name="input",
-            on_change=replace,
-            target=lambda: res2.id,
-            trigger="input, keyup[(ctrlKey||metaKey)&&keyCode==13]",
-        )
+            placeholder="Placeholder",
+        ).on("input, keyup[(ctrlKey||metaKey)&&keyCode==13]", replace, lambda: res2.id)
         res2 = ui.label(message)
 
-        ui.table(df)
+        ui.table.from_dataframe(df)
         ui.aggrid(df)
 
         ui.button("Date").on_click(

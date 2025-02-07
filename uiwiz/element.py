@@ -2,37 +2,22 @@ from __future__ import annotations
 
 import html
 from pathlib import Path
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple
 
-from uiwiz.event import Event
+from typing_extensions import Self
+
+from uiwiz.element_types import ELEMENT_SIZE, ELEMENT_TYPES, VOID_ELEMENTS
+from uiwiz.event import FUNC_TYPE, TARGET_TYPE, Event
 from uiwiz.frame import Frame
-from uiwiz.shared import register_resource
-
-# https://developer.mozilla.org/en-US/docs/Glossary/Void_element
-VOID_ELEMENTS = [
-    "area",
-    "base",
-    "br",
-    "col",
-    "embed",
-    "hr",
-    "img",
-    "input",
-    "link",
-    "meta",
-    "param",
-    "source",
-    "track",
-    "wbr",
-]
+from uiwiz.shared import fetch_route, register_resource, route_exists
 
 
 class Element:
     def __init__(
         self,
-        tag="div",
-        content="",
-        render_html=True,
+        tag: ELEMENT_TYPES = "div",
+        content: str = "",
+        render_html: bool = True,
         oob: bool = False,
     ) -> None:
         self.stack = Frame.get_stack()
@@ -43,6 +28,7 @@ class Element:
         self.attributes["id"] = self.stack.get_id()
         self.stack.id_count += 1
         self.tag: str = tag
+        self._size: str = "md"
 
         self.event: Event = {}
         self.parent_element: Element = None
@@ -54,6 +40,8 @@ class Element:
         self.__content__: str = ""
         self.content: str = content
         self.oob: bool = oob
+
+        self.classes()
 
         if self.oob:
             self.attributes["hx-swap-oob"] = "true"
@@ -113,8 +101,44 @@ class Element:
     def get_classes(self) -> str:
         return self.attributes["class"]
 
-    def classes(self, input: str = ""):
-        self.attributes["class"] = getattr(self.__class__, "root_class", "") + input
+    def classes(self, input: str = "") -> Self:
+        """
+        Set tailwind classes for the element.
+
+        :param input: The tailwind classes to apply to the element.
+        :return: The current instance of the element.
+        """
+        clazz = getattr(self.__class__, "root_class", "")
+        if clazz == "":
+            clazz = input
+        elif input:
+            clazz += f" {input}"
+        if clazz:
+            self.attributes["class"] = clazz
+            self.size(self._size)
+        return self
+
+    def size(self, size: ELEMENT_SIZE) -> Self:
+        """
+        Set the size of the element.
+
+        :param size: The size of the element.
+        :return: The current instance of the element.
+        """
+        format = getattr(self.__class__, "root_size", "")
+        if format:
+            old_size = format.format(size=self._size)
+            if old_size in self.attributes["class"]:
+                self.attributes["class"] = self.attributes["class"].replace(
+                    f"{old_size}", f"{format.format(size=size)}"
+                )
+            else:
+                clazz = self.attributes["class"]
+                if clazz == "":
+                    self.attributes["class"] = format.format(size=size)
+                else:
+                    self.attributes["class"] = f"{self.attributes['class']} {format.format(size=size)}"
+            self._size = size
         return self
 
     def render(self, render_script: bool = True) -> str:
@@ -150,7 +174,7 @@ class Element:
         if self.render_html:
             self.add_event_to_attributes()
 
-            lst.append("<%s %s>" % (self.tag, self.dict_to_attrs()))
+            lst.append("<%s %s>" % (self.tag, self.__dict_to_attrs__()))
             lst.append(self.content)
             lst.extend([child.render_self() if child.oob is False else "" for child in self.children])
 
@@ -170,7 +194,7 @@ class Element:
     def before_render(self):
         pass
 
-    def after_render(self, html: str):
+    def after_render(self, html: str) -> str:
         return html
 
     def add_event_to_attributes(self) -> None:
@@ -180,7 +204,7 @@ class Element:
         self.attributes["hx-target"] = self.get_target(self.event.get("target"))
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
-        self.attributes["hx-post"] = self.get_endpoint()
+        self.attributes["hx-post"] = self.__get_endpoint__(self.event["func"])
         self.attributes["hx-trigger"] = self.event.get("trigger")
 
         if vals := self.event.get("vals"):
@@ -192,20 +216,22 @@ class Element:
         else:
             self.attributes["hx-ext"] = "json-enc"
 
-    def get_endpoint(self) -> str:
-        func = self.event["func"]
-        endpoint: Optional[str] = self.stack.app.app_paths.get(func)
+    def __get_endpoint__(self, func: FUNC_TYPE) -> str:
+        if isinstance(func, str):
+            return func
+
+        endpoint: Optional[str] = fetch_route(func)
         if endpoint:
             if params := self.event.get("params"):
                 return endpoint.format(**params)
             return endpoint
 
         endpoint = f"/_uiwiz/hash/{func.__hash__()}"
-        if not self.stack.app.route_exists(endpoint):
+        if not route_exists(endpoint):
             self.stack.app.ui(endpoint)(func)
         return endpoint
 
-    def get_target(self, target: Union[Callable, str, "Element", None]) -> str:
+    def get_target(self, target: TARGET_TYPE) -> str:
         _target = "this"
         if target is None:
             return _target
@@ -221,16 +247,21 @@ class Element:
 
         return target
 
-    def render_libs(self, lst_libs: list[str]) -> str:
-        lst = []
-        for lib in lst_libs:
+    def render_ext(self, lst_ext: list[str]) -> Tuple[str, str]:
+        lst_js = []
+        lst_css = []
+        for lib in lst_ext:
             if lib.endswith("css"):
-                lst.append('<link href="%s" rel="stylesheet" type="text/css" />' % lib)
+                css = '<link href="%s" rel="stylesheet" type="text/css" />' % lib
+                if css not in lst_css:
+                    lst_css.insert(0, css)
             elif lib.endswith("js"):
-                lst.append('<script src="%s"></script>' % lib)
+                js = '<script src="%s"></script>' % lib
+                if js not in lst_js:
+                    lst_js.append(js)
             else:
                 raise Exception("lib type not supported, supported types css, js")
-        return "".join(lst)
+        return "".join(lst_js), "".join(lst_css)
 
     def __str__(self) -> str:
         return self.render()
@@ -244,7 +275,7 @@ class Element:
         self.set_frame(Frame.get_stack())
         self.stack.root_element = self
 
-    def dict_to_attrs(self):
+    def __dict_to_attrs__(self):
         ATTR_NO_VALUE = object()
         return " ".join(
             (key if value is ATTR_NO_VALUE else '%s="%s"' % (key, value)) for key, value in self.attributes.items()

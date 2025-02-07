@@ -4,6 +4,7 @@ import pytest
 
 from uiwiz import UiwizApp, element
 from uiwiz.asgi_request_middelware import get_request
+from uiwiz.shared import reset_resources
 
 
 @pytest.fixture(autouse=True, scope="function")
@@ -16,5 +17,7 @@ def setup_app():
         mo.app = app
         mo.headers = {"hx-target": "a-1"}
         element.Frame.del_stack()
-        yield api_mock
+        reset_resources()
+        yield app
         element.Frame.del_stack()
+        reset_resources()
