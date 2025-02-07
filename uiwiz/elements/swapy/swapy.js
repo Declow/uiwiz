@@ -6,6 +6,22 @@ containers.forEach((container) => {
     swapies.push(swapy)
 });
 
+class CusSwapy {
+    constructor(element) {
+        this._element = element;
+        this.swapy = Swapy.createSwapy(element);
+        this.init();
+    }
+
+    init() {
+
+    }
+
+    destroy() {
+        this.swapy.destroy();
+    }
+}
+
 class MyButton {
     constructor(element) {
         this.element = element;
