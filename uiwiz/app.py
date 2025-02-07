@@ -9,20 +9,28 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from jinja2 import Template
 from starlette.requests import Request
 
-from uiwiz.asgi_request_middelware import AsgiRequestMiddelware
+from uiwiz.asgi_request_middleware import AsgiRequestMiddleware
 from uiwiz.frame import Frame
 from uiwiz.page_route import PageRouter
-from uiwiz.shared import resources
-from uiwiz.static_middelware import AsgiTtlMiddelware
+from uiwiz.shared import register_path, resources
+from uiwiz.static_middleware import AsgiTtlMiddleware
 from uiwiz.version import __version__
 
 logger = logging.getLogger("uiwiz")
 logger.addHandler(logging.NullHandler())
+
+
+class CustomList(list):
+    def append(self, route: APIRoute):
+        if getattr(route, "endpoint", None):
+            register_path(route.path, route.endpoint)
+        return super().append(route)
 
 
 class UiwizApp(FastAPI):
@@ -38,6 +46,7 @@ class UiwizApp(FastAPI):
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
+        self.router.routes = CustomList()
         self.toast_delay = toast_delay
         self.error_classes = error_classes
         if theme:
@@ -49,9 +58,9 @@ class UiwizApp(FastAPI):
         self.templates = Jinja2Templates(Path(__file__).parent / "templates")
         self.add_static_files(f"/_static/{__version__}/", Path(__file__).parent / "static")
 
-        self.add_middleware(AsgiRequestMiddelware)
+        self.add_middleware(AsgiRequestMiddleware)
         self.add_middleware(GZipMiddleware)
-        self.add_middleware(AsgiTtlMiddelware, cache_age=cache_age)
+        self.add_middleware(AsgiTtlMiddleware, cache_age=cache_age)
         self.extensions: dict[str, Path] = {}
         self.app_paths: dict[str, Path] = {}
 

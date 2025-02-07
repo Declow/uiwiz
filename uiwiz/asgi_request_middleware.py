@@ -13,7 +13,7 @@ def get_request() -> Request:
     return _request_ctx_var.get()
 
 
-class AsgiRequestMiddelware:
+class AsgiRequestMiddleware:
     def __init__(self, app: ASGIApp) -> None:
         self.app = app
 

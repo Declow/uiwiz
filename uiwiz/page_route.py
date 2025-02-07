@@ -5,7 +5,7 @@ from typing import Any, Callable, Optional, Union
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import HTMLResponse
 
-from uiwiz.asgi_request_middelware import get_request
+from uiwiz.asgi_request_middleware import get_request
 from uiwiz.element import Element
 from uiwiz.frame import Frame
 from uiwiz.shared import register_path, route_exists
@@ -66,7 +66,7 @@ class PageRouter(APIRouter):
                     result = await result
 
                 if isinstance(result, Response):
-                    return self.return_funtion_response(result)
+                    return self.return_function_response(result)
 
                 _app = get_request().app
                 return _app.render(request, response, title)
@@ -74,8 +74,6 @@ class PageRouter(APIRouter):
             self.__ensure_request_response_signature__(decorated)
 
             _router = router or self
-            full_path = _router.prefix + path
-            register_path(full_path, decorated)
 
             return _router.get(path, *args, include_in_schema=False, **kwargs)(decorated)
 
@@ -106,7 +104,7 @@ class PageRouter(APIRouter):
                     result = await result
 
                 if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
-                    return self.return_funtion_response(result)
+                    return self.return_function_response(result)
 
                 standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "partial-ui"}
                 for key, value in response.headers.items():
@@ -120,21 +118,17 @@ class PageRouter(APIRouter):
                     render.append(js)
                 content = "".join(render)
 
-                return self.return_funtion_response(HTMLResponse(content=content, headers=standard_headers))
+                return self.return_function_response(HTMLResponse(content=content, headers=standard_headers))
 
             self.__ensure_request_response_signature__(decorated)
 
             _router = router or self
-            full_path = _router.prefix + path
-
-            if not route_exists(full_path):
-                register_path(full_path, decorated)
 
             return _router.post(path, include_in_schema=False, **kwargs)(decorated)
 
         return decorator
 
-    def return_funtion_response(self, response: Union[str, Response]) -> Union[str, Response]:
+    def return_function_response(self, response: Union[str, Response]) -> Union[str, Response]:
         Frame.get_stack().del_stack()
         return response
 

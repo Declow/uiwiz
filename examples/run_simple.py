@@ -51,14 +51,12 @@ async def test(request: Request):
 
         ui.upload(name="file").on_upload(on_upload=handle_upload, target=lambda: table.id)
         ui.checkbox("check")
-        table = ui.table(pd.DataFrame())
+        table = ui.table.from_dataframe(pd.DataFrame())
         ui.dropdown("select", ["item 1", "item 2"], "Pick item")
         ui.toggle("val")
         ui.toggle("val2", True)
 
         ui.divider()
-
-        ui.code(code)
 
     with ui.footer():
         ui.label("some footer text")
