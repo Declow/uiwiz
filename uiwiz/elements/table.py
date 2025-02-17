@@ -20,7 +20,7 @@ class ModelFormRender(ModelForm):
 
 class Table(Element):
     root_size: str = "table-{size}"
-    _classes_container: str = "w-full overflow-x-auto rounded-lg"
+    _classes_container: str = "w-full overflow-x-auto rounded-box "
     _classes_table: str = (
         "table table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap pr-4 pt-2 pb-2"
     )
@@ -46,6 +46,16 @@ class Table(Element):
         self.delete: Optional[FUNC_TYPE] = None
         self.create: Optional[FUNC_TYPE] = None
         self.id_column_name: Optional[str] = id_column_name
+
+    def set_border(self, border_classes: str = "border border-base-content") -> "Table":
+        """
+        Set the border classes for the table
+
+        :param border_classes: The border classes to set
+        :return: The current instance of the element.
+        """
+        self.classes(Table._classes_container + border_classes)
+        return self
 
     def edit_row(self, edit: FUNC_TYPE) -> "Table":
         """
