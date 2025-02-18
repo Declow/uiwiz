@@ -1,9 +1,20 @@
-const containers = document.querySelectorAll('#swapy')
-var swapies = [];
+class Swaper {
+    constructor(element) {
+        // this.element = element;
+        this.swapy = Swapy.createSwapy(element);
+        this.init();
+    }
+    
+    init() {
+        this.swapy.onSwap((event) => {
+            console.log(event)
+          });
+    }
+}
 
+const containers = document.querySelectorAll('#swapy')
 containers.forEach((container) => {
-    const swapy = Swapy.createSwapy(container)
-    swapies.push(swapy)
+    new Swaper(container)
 });
 
 class MyButton {
@@ -27,6 +38,6 @@ class MyButton {
 }
 
 // init buttons
-document.querySelectorAll(".my-button").forEach((button) => {
-    new MyButton(button);
-});
+// document.querySelectorAll(".my-button").forEach((button) => {
+//     new MyButton(button);
+// });
