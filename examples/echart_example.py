@@ -2,6 +2,7 @@ import uvicorn
 
 from uiwiz import UiwizApp, ui
 from uiwiz.elements.echart.echart import EChart
+
 app = UiwizApp()
 
 
@@ -14,6 +15,11 @@ def create_nav():
 async def test():
     create_nav()
     with ui.element().classes("col lg:px-80"):
+        ui.markdown(
+            """# EChart Example
+This is an example of EChart component.
+        """
+        )
         EChart()
 
 
