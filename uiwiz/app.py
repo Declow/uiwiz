@@ -95,7 +95,7 @@ class UiwizApp(FastAPI):
             if resource_key not in resources:
                 return Response(status_code=404)
 
-            with open(resources[resource_key]) as f:
+            with open(resources[resource_key], encoding="utf-8") as f:
                 content = f.read()
 
             content_type, _ = guess_type(resource_key)
