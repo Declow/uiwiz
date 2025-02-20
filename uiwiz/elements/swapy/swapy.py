@@ -5,6 +5,7 @@ from uiwiz.element import Element
 
 LIB_PATH = Path(__file__).parent / "swapy.min.js"
 JS_PATH = Path(__file__).parent / "swapy.js"
+CSS_PATH = Path(__file__).parent / "swapy.css"
 
 
 class Config(TypedDict):
@@ -16,7 +17,7 @@ class Config(TypedDict):
     enabled: bool
 
 
-class SwapyContainer(Element, extensions=[LIB_PATH, JS_PATH]):
+class SwapyContainer(Element, extensions=[LIB_PATH, JS_PATH, CSS_PATH]):
     counter: int = 0
     item_counter: int = 0
 
@@ -43,7 +44,7 @@ class SwapyContainer(Element, extensions=[LIB_PATH, JS_PATH]):
     def slot(self, slot_name=None) -> Element:
         slot = Element()
         SwapyContainer.counter += 1
-        slot.classes(f"section-{SwapyContainer.counter}")
+        slot.classes(f"slot")
         slot.attributes["data-swapy-slot"] = f"slot-{SwapyContainer.counter}" if slot_name is None else slot_name
         return slot
 

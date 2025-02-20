@@ -1,0 +1,38 @@
+.slot[data-swapy-highlighted] {
+    background: rgba(255, 11, 11, 0.2);
+}
+
+.item[data-swapy-dragging] {
+    opacity: 0.6;
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.item {
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+.slot.middle-left {
+    height: 100%;
+    flex: 1;
+}
+
+.slot.middle-right {
+    height: 100%;
+    flex: 2;
+}
+
+.slot.bottom {
+    height: 150px;
+}
+
+.slot {
+    border-radius: 10px;
+}
