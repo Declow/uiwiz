@@ -20,7 +20,23 @@ async def test():
 This is an example of EChart component.
         """
         )
-        EChart()
+        EChart(
+            {
+                "tooltip": {"trigger": "axis", "axisPointer": {"type": "line"}},
+                "xAxis": {
+                    "type": "category",
+                    "data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                },
+                "yAxis": {"type": "value"},
+                "series": [
+                    {
+                        "name": "Sales",
+                        "type": "line",
+                        "data": [150, 230, 224, 218, 135, 147, 260],
+                    }
+                ],
+            }
+        )
 
 
 if __name__ == "__main__":
