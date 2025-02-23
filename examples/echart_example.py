@@ -11,6 +11,27 @@ def create_nav():
         ui.themeSelector()
 
 
+@app.post("/update/chart")
+async def update_chart():
+    return EChart.response(
+        {
+            "tooltip": {"trigger": "axis", "axisPointer": {"type": "line"}},
+            "xAxis": {
+                "type": "category",
+                "data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            },
+            "yAxis": {"type": "value"},
+            "series": [
+                {
+                    "name": "Sales",
+                    "type": "line",
+                    "data": [1, 5, 50, 150, 0, 200, 75],
+                }
+            ],
+        }
+    )
+
+
 @app.page("/")
 async def test():
     create_nav()
@@ -20,7 +41,8 @@ async def test():
 This is an example of EChart component.
         """
         )
-        EChart(
+        ui.button("Update Chart").on_click(update_chart, lambda: chart.id, swap="none")
+        chart = EChart(
             {
                 "tooltip": {"trigger": "axis", "axisPointer": {"type": "line"}},
                 "xAxis": {

@@ -10,6 +10,10 @@ htmx.defineExtension(dataEChartName, {
     }
 });
 
+document.body.addEventListener("uiwizUpdateEChart", function(evt){
+    console.log(evt)
+})
+
 function eChartHandler(element) {
     console.log(element);
     if (!hasAttribute(element, dataEChartName))
@@ -26,40 +30,12 @@ function updateEChart(element) {
     _uiWizardECharts[element.id].setOption(chartOptions);
 }
 
-
-// var chartDom = document.getElementById('echart');
-// var myChart = echarts.init(chartDom);
-// var option;
-
-// var option = {
-//     tooltip: {
-//         trigger: "axis",  // Shows tooltip when hovering over points along the axis
-//         axisPointer: {
-//             type: "line", // Use "line" for a vertical tooltip guide
-//         }
-//     },
-//     xAxis: {
-//         type: "category",
-//         data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-//     },
-//     yAxis: {
-//         type: "value"
-//     },
-//     series: [{
-//         name: "Sales",
-//         type: "line",
-//         data: [150, 230, 224, 218, 135, 147, 260]
-//     }]
-// };
-
-// myChart.setOption(option);
-
 dataEChartElements = document.querySelectorAll(`[${dataEChartName}]`);
 console.log(dataEChartElements);
 
 dataEChartElements.forEach((element) => {
+    eChartHandler(element);
     window.addEventListener("resize", function () {
         element.resize();
     });
-    eChartHandler(element);
 });
