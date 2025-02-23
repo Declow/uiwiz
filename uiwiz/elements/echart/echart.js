@@ -4,34 +4,24 @@ var _uiWizardECharts = {};
 htmx.defineExtension(dataEChartName, {
     onEvent: function (name, evt) {
         if (name === "htmx:afterSettle") {
-            console.log(JSON.parse(evt.detail.xhr.response));
-            //gridHandler(evt.target, cols, rows);
+            updateEChart(evt.target, JSON.parse(evt.detail.xhr.response));
         }
     }
 });
 
-document.body.addEventListener("uiwizUpdateEChart", function(evt){
-    console.log(evt)
-})
-
 function eChartHandler(element) {
-    console.log(element);
     if (!hasAttribute(element, dataEChartName))
         return;
-
-    updateEChart(element);
+    const chartOptions = JSON.parse(getAttributeFromElement(element, `${dataEChartName}-options`));
+    _uiWizardECharts[element.id] = echarts.init(element);
+    updateEChart(element, chartOptions);
 }
 
-function updateEChart(element) {
-    console.log(element);
-    _uiWizardECharts[element.id] = echarts.init(element);
-    const chartOptions = JSON.parse(getAttributeFromElement(element, `${dataEChartName}-options`));
-    console.log(chartOptions);
+function updateEChart(element, chartOptions) {
     _uiWizardECharts[element.id].setOption(chartOptions);
 }
 
 dataEChartElements = document.querySelectorAll(`[${dataEChartName}]`);
-console.log(dataEChartElements);
 
 dataEChartElements.forEach((element) => {
     eChartHandler(element);

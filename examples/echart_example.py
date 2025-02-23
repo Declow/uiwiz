@@ -1,7 +1,8 @@
+from random import randint
+
 import uvicorn
 
 from uiwiz import UiwizApp, ui
-from uiwiz.elements.echart.echart import EChart
 
 app = UiwizApp()
 
@@ -13,7 +14,7 @@ def create_nav():
 
 @app.post("/update/chart")
 async def update_chart():
-    return EChart.response(
+    return ui.echart.response(
         {
             "tooltip": {"trigger": "axis", "axisPointer": {"type": "line"}},
             "xAxis": {
@@ -25,7 +26,7 @@ async def update_chart():
                 {
                     "name": "Sales",
                     "type": "line",
-                    "data": [1, 5, 50, 150, 0, 200, 75],
+                    "data": [randint(0, 300) for _ in range(7)],
                 }
             ],
         }
@@ -42,7 +43,7 @@ This is an example of EChart component.
         """
         )
         ui.button("Update Chart").on_click(update_chart, lambda: chart.id, swap="none")
-        chart = EChart(
+        chart = ui.echart(
             {
                 "tooltip": {"trigger": "axis", "axisPointer": {"type": "line"}},
                 "xAxis": {
@@ -57,6 +58,33 @@ This is an example of EChart component.
                         "data": [150, 230, 224, 218, 135, 147, 260],
                     }
                 ],
+            }
+        )
+
+        ui.markdown("## Sankey Chart")
+        ui.echart(
+            {
+                "series": {
+                    "type": "sankey",
+                    "layout": "none",
+                    "emphasis": {"focus": "adjacency"},
+                    "data": [
+                        {"name": "a"},
+                        {"name": "b"},
+                        {"name": "a1"},
+                        {"name": "a2"},
+                        {"name": "b1"},
+                        {"name": "c"},
+                    ],
+                    "links": [
+                        {"source": "a", "target": "a1", "value": 5},
+                        {"source": "a", "target": "a2", "value": 3},
+                        {"source": "b", "target": "b1", "value": 8},
+                        {"source": "a", "target": "b1", "value": 3},
+                        {"source": "b1", "target": "a1", "value": 1},
+                        {"source": "b1", "target": "c", "value": 2},
+                    ],
+                }
             }
         )
 

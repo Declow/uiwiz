@@ -278,6 +278,5 @@ class Element:
     def __dict_to_attrs__(self):
         ATTR_NO_VALUE = object()
         return " ".join(
-            (key if value is ATTR_NO_VALUE else '%s="%s"' % (key, html.escape(value)))
-            for key, value in self.attributes.items()
+            (key if value is ATTR_NO_VALUE else '%s="%s"' % (key, value)) for key, value in self.attributes.items()
         )
