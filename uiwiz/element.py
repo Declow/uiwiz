@@ -14,9 +14,7 @@ from uiwiz.shared import fetch_route, register_resource, route_exists
 
 class _Attributes(dict):
     def __setitem__(self, key: Any, value: Any) -> None:
-        if isinstance(value, str):
-            value = html.escape(value)
-        super().__setitem__(key, value)
+        super().__setitem__(key, html.escape(str(value)))
 
 
 class Element:
