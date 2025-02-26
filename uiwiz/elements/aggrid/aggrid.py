@@ -2,7 +2,7 @@ import html
 import json
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional, Tuple
+from typing import Any, Tuple
 
 import numpy as np
 import pandas as pd
