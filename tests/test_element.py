@@ -107,3 +107,30 @@ def test_add_script():
 def test_oob_no_render():
     el = ui.element(oob=True)
     assert el.render_self(False) == ""
+
+
+def test_str_html_escape():
+    el = ui.element()
+    el.attributes["value"] = "<script>alert('test')</script>"
+    assert (
+        str(el)
+        == '<div id="a-0" value="&lt;script&gt;alert(&#x27;test&#x27;)&lt;/script&gt;"></div>'
+    )
+
+
+def test_bool_html_escape():
+    el = ui.element()
+    el.attributes["value"] = True
+    assert str(el) == '<div id="a-0" value="true"></div>'
+
+
+def test_number_html_escape():
+    el = ui.element()
+    el.attributes["value"] = 123
+    assert str(el) == '<div id="a-0" value="123"></div>'
+
+
+def test_none_html_escape():
+    el = ui.element()
+    el.attributes["value"] = None
+    assert str(el) == '<div id="a-0" value="None"></div>'
