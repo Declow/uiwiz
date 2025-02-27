@@ -10,6 +10,7 @@ from uiwiz.elements.dict.dict import Dict as dict
 from uiwiz.elements.divider import Divider as divider
 from uiwiz.elements.drawer import Drawer as drawer
 from uiwiz.elements.dropdown import Dropdown as dropdown
+from uiwiz.elements.echart.echart import EChart as echart
 from uiwiz.elements.footer import Footer as footer
 from uiwiz.elements.form import Form as form
 from uiwiz.elements.hidden_input import HiddenInput as hiddenInput

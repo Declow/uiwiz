@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import html
 from pathlib import Path
-from typing import Callable, List, Optional, Tuple
+from typing import Any, Callable, List, Optional, Tuple
 
 from typing_extensions import Self
 
@@ -10,6 +10,15 @@ from uiwiz.element_types import ELEMENT_SIZE, ELEMENT_TYPES, VOID_ELEMENTS
 from uiwiz.event import FUNC_TYPE, TARGET_TYPE, Event
 from uiwiz.frame import Frame
 from uiwiz.shared import fetch_route, register_resource, route_exists
+
+
+class _Attributes(dict):
+    def __setitem__(self, key: Any, value: Any) -> None:
+        if isinstance(value, str):
+            value = html.escape(value)
+        elif isinstance(value, bool):
+            value = str(value).lower()
+        super().__setitem__(key, value)
 
 
 class Element:
@@ -24,7 +33,7 @@ class Element:
         if hasattr(self.__class__, "extensions") and self.__class__.extensions:
             for extension in self.__class__.extensions:
                 self.stack.add_extension(self.__class__, extension)
-        self.attributes: dict[str, str] = {}
+        self.attributes: dict[str, str] = _Attributes()
         self.attributes["id"] = self.stack.get_id()
         self.stack.id_count += 1
         self.tag: str = tag

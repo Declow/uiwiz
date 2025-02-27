@@ -3,7 +3,7 @@ from uiwiz import ui
 
 def test_button():
     output = str(ui.button("Click me"))
-    assert f'<button id="a-0" class="btn btn-md">Click me</button>' == output
+    assert '<button id="a-0" class="btn btn-md">Click me</button>' == output
 
 
 def test_button_submit():
@@ -17,6 +17,6 @@ def test_button_submit():
     output = str(btn)
     print(output)
     assert (
-        f'<button id="a-0" class="btn btn-md" hx-target="this" hx-swap="outerHTML" hx-post="/submit" hx-trigger="click" hx-ext="json-enc">Click me</button>'
+        '<button id="a-0" class="btn btn-md" hx-target="this" hx-swap="outerHTML" hx-post="/submit" hx-trigger="click" hx-ext="json-enc">Click me</button>'
         == output
     )
