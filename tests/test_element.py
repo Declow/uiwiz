@@ -6,7 +6,7 @@ from uiwiz.frame import Frame
 
 def test_element_html():
     output = str(ui.element())
-    assert f'<div id="a-0"></div>' == output
+    assert '<div id="a-0"></div>' == output
 
 
 def test_element_html_nested_random():
@@ -14,12 +14,12 @@ def test_element_html_nested_random():
     with ui.element() as root:
         ui.element()
         output = str(root)
-    assert f'<div id="a-0"><div id="a-1"></div></div>' == output
+    assert '<div id="a-0"><div id="a-1"></div></div>' == output
 
 
 def test_element_void():
     output = str(ui.element("img"))
-    assert f'<img id="a-0">' == output
+    assert '<img id="a-0">' == output
 
 
 def test_get_target_none():
