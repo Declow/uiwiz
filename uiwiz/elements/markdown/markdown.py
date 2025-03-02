@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import markdown2
+
 from uiwiz.element import Element
 from uiwiz.elements.html import Html
 
@@ -9,9 +10,7 @@ CODE_HIGHLIGHT = Path(__file__).parent / "codehighlight.css"
 
 
 class Markdown(Element, extensions=[MARKDOWN, CODE_HIGHLIGHT]):
-    def __init__(
-        self, content="", extras=["fenced-code-blocks", "markdown-in-html"]
-    ) -> None:
+    def __init__(self, content="", extras=["fenced-code-blocks", "markdown-in-html"]) -> None:
         super().__init__()
         self.classes("markdown-body")
         self.extras = extras

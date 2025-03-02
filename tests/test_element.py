@@ -112,10 +112,7 @@ def test_oob_no_render():
 def test_str_html_escape():
     el = ui.element()
     el.attributes["value"] = "<script>alert('test')</script>"
-    assert (
-        str(el)
-        == '<div id="a-0" value="&lt;script&gt;alert(&#x27;test&#x27;)&lt;/script&gt;"></div>'
-    )
+    assert str(el) == '<div id="a-0" value="&lt;script&gt;alert(&#x27;test&#x27;)&lt;/script&gt;"></div>'
 
 
 def test_bool_html_escape():
