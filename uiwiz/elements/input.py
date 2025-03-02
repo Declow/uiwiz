@@ -1,8 +1,7 @@
-from typing import Callable, Optional, Union
+from typing import Optional
 
 from uiwiz.element import Element
 from uiwiz.elements.extensions.on_event import OnEvent
-from uiwiz.event import FUNC_TYPE, ON_EVENTS, SWAP_EVENTS, TARGET_TYPE
 
 
 class Input(OnEvent):
@@ -27,17 +26,33 @@ class Input(OnEvent):
         super().__init__("input")
         self.classes(Input._classes)
         self.attributes["name"] = name
-        if placeholder:
-            self.placeholder = placeholder
+        self.placeholder = placeholder
         if value:
             self.value = value
         self.attributes["autocomplete"] = "off"
 
     @property
     def placeholder(self) -> Optional[str]:
-        return self.attributes["placeholder"]
+        return self.attributes.get("placeholder")
 
     @placeholder.setter
-    def placeholder(self, value: str):
-        self.attributes["placeholder"] = value
+    def placeholder(self, value: Optional[str]):
+        if value:
+            self.attributes["placeholder"] = value
+        return self
+
+    def set_placeholder(self, value: str) -> "Input":
+        self.placeholder = value
+        return self
+
+    def set_floating_label(self, label: str) -> "Input":
+        if self.placeholder is None:
+            raise ValueError("Placeholder must be set before floating label")
+
+        self.parent_element.children.remove(self)
+        with Element("label").classes("floating-label") as container:
+            self.label_text = Element("span", content=label)
+            container.children.append(self)
+            self.parent_element = container
+
         return self

@@ -72,7 +72,12 @@ async def test():
                 with ui.row():
                     r1 = ui.radio("test_radio", "javascript")
                     ui.label("javascript", r1)
-                range2 = ui.range(0, 100, 0, "value")
+                range2 = ui.range(
+                    "value",
+                    0,
+                    0,
+                    100,
+                )
                 ui.label(range2.value).bind_text_from(range2)
 
                 ui.toggle("toggle_name")
@@ -118,12 +123,15 @@ async def test():
             log = ui.element().classes("col")
 
             d = {"asd": {"gg": 0}, "gg": True, "dd": "text"}
-
             print(json.dumps(d, indent=4))
             v = v = json.dumps(d, indent=2)
             out = "\n".join(["      " + e for e in v.split("\n")])
             print(out)
-            ui.code(out)
+            ui.dict(d)
+
+            ui.input("text").set_placeholder("Floating label").set_floating_label(
+                "Floating label"
+            ).parent_element.classes("floating-label")
 
     with ui.footer():
         ui.label("some footer text")
