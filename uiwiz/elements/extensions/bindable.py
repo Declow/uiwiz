@@ -18,7 +18,7 @@ class Bindable(Element):
 
             self.content = str(input_data)
 
-        bind_value.__hash__ = lambda: hash(element.id)
+        bind_value.__name__ = f"bind_value_{element.id}"
 
         element.event = {"target": f"#{self.id}", "func": bind_value, "trigger": trigger, "swap": swap}
 
