@@ -5,6 +5,7 @@ from uiwiz.elements.button import Button as button
 from uiwiz.elements.checkbox import Checkbox as checkbox
 from uiwiz.elements.code import Code as code
 from uiwiz.elements.col import Col as col
+from uiwiz.elements.container import Container as container
 from uiwiz.elements.datepicker import Datepicker as datepicker
 from uiwiz.elements.dict.dict import Dict as dict
 from uiwiz.elements.divider import Divider as divider
@@ -34,3 +35,5 @@ from uiwiz.elements.toggle import Toggle as toggle
 from uiwiz.elements.upload import Upload as upload
 from uiwiz.models.model_handler import ModelForm as modelForm
 from uiwiz.models.show import show
+
+full = type("Full", (element,), {"root_class": "w-full"})
