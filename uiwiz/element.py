@@ -13,11 +13,12 @@ from uiwiz.shared import fetch_route, register_resource, route_exists
 
 
 class _Attributes(dict):
-    def __setitem__(self, key: Any, value: Any) -> None:
-        if isinstance(value, str):
-            value = html.escape(value)
-        elif isinstance(value, bool):
-            value = str(value).lower()
+    def __setitem__(self, key: Any, value: Any, escape: bool = True) -> None:
+        if escape:
+            if isinstance(value, str):
+                value = html.escape(value)
+            elif isinstance(value, bool):
+                value = str(value).lower()
         super().__setitem__(key, value)
 
 

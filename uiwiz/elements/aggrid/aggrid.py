@@ -29,8 +29,8 @@ class Aggrid(Element, extensions=[CSS_PATH, LIB_PATH, JS_PATH]):
         cols, rows = Aggrid.create_cols_and_rows(df)
 
         self.attributes["hx-ext"] = "hx-aggrid"
-        self.attributes["hx-aggrid-cols"] = cols
-        self.attributes["hx-aggrid-rows"] = rows
+        self.attributes.__setitem__("hx-aggrid-cols", cols, False)
+        self.attributes.__setitem__("hx-aggrid-rows", rows, False)
         self.attributes["hx-aggrid"] = "/data"
 
     @staticmethod
