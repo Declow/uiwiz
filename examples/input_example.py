@@ -51,8 +51,8 @@ def get_data():
 @app.page("/")
 async def test():
     create_nav()
-    with ui.element().classes("col lg:px-80"):
-        with ui.element().classes("w-full"):
+    with ui.container():
+        with ui.full():
             with ui.form().on_submit(handle_input):
                 ui.input("input name", "first_name")
                 la_name = ui.input(name="last_name", placeholder="input last name")
