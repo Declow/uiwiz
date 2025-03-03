@@ -3,7 +3,7 @@
 }
 
 .codehilite {
-    background: oklch(var(--color-base-200)/1);
+    background: var(--color-base-200);
     border-radius: 0.6rem;
 }
 
@@ -18,7 +18,7 @@
 
 /* Error */
 .k {
-    color: oklch(var(--color-primary))
+    color: var(--color-primary)
 }
 
 /* Keyword */
@@ -78,7 +78,7 @@
 
 /* Generic.Subheading */
 .kc {
-    color: oklch(var(--color-base-content))
+    color: var(--color-base-content)
 }
 
 /* Keyword.Constant */
@@ -148,7 +148,7 @@
 
 /* Literal.String.Doc */
 .s2 {
-    color: oklch(var(--color-error));
+    color: var(--color-error);
 }
 
 /* Literal.String.Double */
