@@ -52,7 +52,7 @@ def get_data():
 async def test():
     create_nav()
     with ui.container():
-        with ui.full():
+        with ui.fullWidth():
             with ui.form().on_submit(handle_input):
                 ui.input("input name", "first_name")
                 la_name = ui.input(name="last_name", placeholder="input last name")
@@ -119,8 +119,8 @@ async def test():
                 range = ui.range(name="some_data", value=0, min=0, max=100)
                 ui.label(range.value).bind_text_from(range, swap="innerHTML")
 
-            ui.button("get log").on_click(get_log, target=lambda: log.id, swap="beforeend")
-            log = ui.element().classes("col")
+            ui.button("get log").on_click(get_log, target=lambda: log.id, swap="afterbegin")
+            log = ui.element().classes("flex flex-col items-start pt-1")
 
             d = {"asd": {"gg": 0}, "gg": True, "dd": "text"}
             print(json.dumps(d, indent=4))

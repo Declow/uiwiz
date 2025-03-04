@@ -1,3 +1,5 @@
+from typing import Type, TypeVar
+
 from uiwiz.element import Element as element
 from uiwiz.elements.aggrid.aggrid import Aggrid as aggrid
 from uiwiz.elements.avatar import Avatar as avatar
@@ -14,6 +16,7 @@ from uiwiz.elements.dropdown import Dropdown as dropdown
 from uiwiz.elements.echart.echart import EChart as echart
 from uiwiz.elements.footer import Footer as footer
 from uiwiz.elements.form import Form as form
+from uiwiz.elements.full_width import FullWidth as fullWidth
 from uiwiz.elements.hidden_input import HiddenInput as hiddenInput
 from uiwiz.elements.html import Html as html
 from uiwiz.elements.input import Input as input
@@ -35,5 +38,3 @@ from uiwiz.elements.toggle import Toggle as toggle
 from uiwiz.elements.upload import Upload as upload
 from uiwiz.models.model_handler import ModelForm as modelForm
 from uiwiz.models.show import show
-
-full = type("Full", (element,), {"root_class": "w-full"})
