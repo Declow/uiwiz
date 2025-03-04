@@ -51,8 +51,8 @@ def get_data():
 @app.page("/")
 async def test():
     create_nav()
-    with ui.element().classes("col lg:px-80"):
-        with ui.element().classes("w-full"):
+    with ui.container():
+        with ui.fullWidth():
             with ui.form().on_submit(handle_input):
                 ui.input("input name", "first_name")
                 la_name = ui.input(name="last_name", placeholder="input last name")
@@ -72,7 +72,12 @@ async def test():
                 with ui.row():
                     r1 = ui.radio("test_radio", "javascript")
                     ui.label("javascript", r1)
-                range2 = ui.range(0, 100, 0, "value")
+                range2 = ui.range(
+                    "value",
+                    0,
+                    0,
+                    100,
+                )
                 ui.label(range2.value).bind_text_from(range2)
 
                 ui.toggle("toggle_name")
@@ -114,16 +119,19 @@ async def test():
                 range = ui.range(name="some_data", value=0, min=0, max=100)
                 ui.label(range.value).bind_text_from(range, swap="innerHTML")
 
-            ui.button("get log").on_click(get_log, target=lambda: log.id, swap="beforeend")
-            log = ui.element().classes("col")
+            ui.button("get log").on_click(get_log, target=lambda: log.id, swap="afterbegin")
+            log = ui.element().classes("flex flex-col items-start pt-1")
 
             d = {"asd": {"gg": 0}, "gg": True, "dd": "text"}
-
             print(json.dumps(d, indent=4))
             v = v = json.dumps(d, indent=2)
             out = "\n".join(["      " + e for e in v.split("\n")])
             print(out)
-            ui.code(out)
+            ui.dict(d)
+
+            ui.input("text").set_placeholder("Floating label").set_floating_label(
+                "Floating label"
+            ).parent_element.classes("floating-label")
 
     with ui.footer():
         ui.label("some footer text")
