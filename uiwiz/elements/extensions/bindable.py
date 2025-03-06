@@ -1,12 +1,21 @@
 from fastapi import Request
 
 from uiwiz.element import Element
+from uiwiz.event import ON_EVENTS, SWAP_EVENTS
 
 
 class Bindable(Element):
-    def bind_text_from(self, element: Element, trigger: str = "input delay:20ms", swap: str = "outerHTML"):
+    def bind_text_from(
+        self,
+        element: Element,
+        trigger: ON_EVENTS = "input delay:20ms",
+        swap: SWAP_EVENTS = "outerHTML",
+    ):
         """
-        Remove attribute as it is not used but breaks bind for reasons
+        Bind the text of this element to data of another element.
+        Requires the other element to have a name attribute.
+        :param element: Element to bind to
+        :param trigger: Event trigger to bind to
         """
         assert element.attributes.get("name") is not None
 
@@ -20,6 +29,11 @@ class Bindable(Element):
 
         bind_value.__name__ = f"{bind_value.__name__}_{element.id}"
 
-        element.event = {"target": f"#{self.id}", "func": bind_value, "trigger": trigger, "swap": swap}
+        element.event = {
+            "target": f"#{self.id}",
+            "func": bind_value,
+            "trigger": trigger,
+            "swap": swap,
+        }
 
         return self
