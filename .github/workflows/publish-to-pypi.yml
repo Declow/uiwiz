@@ -27,5 +27,5 @@ jobs:
       run: |
         git fetch --unshallow --tags
         poetry version $(git describe --tags --abbrev=0)
-        poetry build
-        poetry publish -u __token__ -p ${{ secrets.PYPI_TOKEN }}   
+        
+        poetry publish --build -u __token__ -p ${{ secrets.PYPI_TOKEN }}
