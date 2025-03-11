@@ -57,7 +57,8 @@ class Drawer(Element):
             self.classes(self.attributes["class"] + " drawer-end")
 
         with self:
-            self.drawer_toggle = Checkbox("").classes("drawer-toggle")
+            self.drawer_toggle = Checkbox("")
+            self.drawer_toggle.attributes["class"] = "drawer-toggle"
 
     def drawer_content(self) -> Element:
         self.drawer_content = DrawerContent()
