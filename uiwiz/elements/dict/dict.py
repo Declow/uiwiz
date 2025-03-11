@@ -3,9 +3,13 @@ from pathlib import Path
 from typing import Iterable, Union
 
 from uiwiz.element import Element
+from uiwiz.elements.button import Button
+from uiwiz.elements.html import Html
+from uiwiz.svg.svg_handler import get_svg
 
+JS_PATH = Path(__file__).parent / "copy.js"
 
-class Dict(Element):
+class Dict(Element, extensions=[JS_PATH]):
     def __init__(self, data: Union[Iterable[dict], dict]) -> None:
         if not data:
             raise ValueError("Data cannot be None or empty")
@@ -17,6 +21,7 @@ class Dict(Element):
         self.key_class = ""
         self.value_class = "text-primary"
         self._border_classes = "border border-base-content rounded-lg shadow-lg w-96 shadow-md w-full mb-5"
+        self.copy_to_clipboard = False
 
     def key_classes(self, classes):
         self.key_class = classes
@@ -100,4 +105,7 @@ class Dict(Element):
                     Element(tag="div", content="," if not is_last_item else "")
 
         with self.classes(self._border_classes):
+            with Button("").classes("absolute top-2 right-2"):
+                # with tailwind classes resize to fit container
+                Html(content=get_svg("copy")).classes("w-6 h-6")
             format_data(data, is_last_item=True)
