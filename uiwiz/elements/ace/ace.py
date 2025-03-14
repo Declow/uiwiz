@@ -31,6 +31,16 @@ class Ace(
         JS_PATH,
     ],
 ):
+    default_options = AceOptions(
+        enable_basic_autocompletion=True,
+        enable_live_autocompletion=True,
+        enable_snippets=True,
+        selection_style="text",
+        highlight_active_line=False,
+        highlight_gutter_line=False,
+        print_margin_column=False,
+    )
+
     def __init__(
         self,
         name: Optional[str] = None,
@@ -53,20 +63,7 @@ class Ace(
         self.attributes["hx-ace-editor-content"] = content
 
         self.attributes["hx-ace-editor-options"] = (
-            json.dumps(humps.camelize(ace_options))
-            if ace_options
-            else json.dumps(
-                humps.camelize(
-                    AceOptions(
-                        enable_basic_autocompletion=True,
-                        enable_live_autocompletion=True,
-                        enable_snippets=True,
-                        selection_style="text",
-                        highlight_active_line=False,
-                        highlight_gutter_line=False,
-                    )
-                )
-            )
+            json.dumps(humps.camelize(ace_options)) if ace_options else json.dumps(humps.camelize(Ace.default_options))
         )
         self.attributes["hx-ace-editor-sql-options"] = json.dumps(sql_options) if sql_options else "{}"
 
