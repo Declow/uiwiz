@@ -19,23 +19,20 @@ def data(input: DataInput):
 @app.page("/")
 async def home_page():
     ui.label("Hello world")
+    ui.themeSelector()
 
-    with ui.form().on_submit(data) as form:
-        ui.ace(
-            name="ace_data",
-            form=form,
-            lang="sql",
-            content="SELECT * FROM table",
-            sql_options={
-                "tables": ["cars"],
-                "columns": ["reg", "vin", "make", "model", "year"],
-            },
-        )
-    ui.ace(
-        name="ace_data",
-        lang="sql",
-        content="SELECT * FROM table"
-    )
+    with ui.form().on_submit(data):
+        with ui.element("div").classes("flex w-full h-96"):
+            ui.ace(
+                name="ace_data",
+                lang="sql",
+                content="SELECT * FROM table",
+                sql_options={
+                    "tables": ["cars"],
+                    "columns": ["reg", "vin", "make", "model", "year"],
+                },
+            )
+    ui.ace(name="ace_data", lang="sql", content="SELECT * FROM table")
 
 
 if __name__ == "__main__":

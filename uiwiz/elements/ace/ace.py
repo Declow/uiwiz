@@ -1,23 +1,12 @@
 import json
 from pathlib import Path
-from typing import Optional, TypedDict
+from typing import Optional
 
 import humps
 
 from uiwiz.element import Element
+from uiwiz.elements.ace import AceOptions, SqlOptions
 from uiwiz.elements.form import Form
-
-
-class SqlOptions(TypedDict):
-    tables: list[str]
-    columns: list[str]
-
-
-class AceOptions(TypedDict):
-    enable_basic_autocompletion: bool
-    enable_live_autocompletion: bool
-    enable_snippets: bool
-
 
 LIB_PATH = Path(__file__).parent / "ace.min.js"
 MODE_PYTHON = Path(__file__).parent / "mode-python.js"
@@ -42,7 +31,6 @@ class Ace(
         JS_PATH,
     ],
 ):
-
     def __init__(
         self,
         name: Optional[str] = None,
@@ -73,14 +61,15 @@ class Ace(
                         enable_basic_autocompletion=True,
                         enable_live_autocompletion=True,
                         enable_snippets=True,
+                        selection_style="text",
+                        highlight_active_line=False,
+                        highlight_gutter_line=False,
                     )
                 )
             )
         )
-        self.attributes["hx-ace-editor-sql-options"] = (
-            json.dumps(sql_options) if sql_options else "{}"
-        )
-    
+        self.attributes["hx-ace-editor-sql-options"] = json.dumps(sql_options) if sql_options else "{}"
+
     def find_parent_form(self) -> Optional[str]:
         parent = self.parent_element
         while parent:

@@ -10,6 +10,8 @@ ace.require("ace/ext/language_tools");
 class AceEditor {
     constructor(element) {
         this.element = element;
+        this.element.style.visibility = "hidden";
+
         this.lang = getAttributeFromElement(element, "hx-ace-editor-lang");
         this.hidden_input = document.getElementById(getAttributeFromElement(element, "hx-ace-editor-hidden-input"));
         this.form = document.getElementById(getAttributeFromElement(element, "hx-ace-editor-form"));
@@ -18,11 +20,13 @@ class AceEditor {
         this.sqlOptions = JSON.parse(getAttributeFromElement(element, "hx-ace-editor-sql-options"));
         this.aceOptions = JSON.parse(getAttributeFromElement(element, "hx-ace-editor-options"));
 
-        this.editor = ace.edit(this.element);
-
-        this.editor.setOptions(
-            this.aceOptions
-        );
+        this.editor = ace.edit(this.element, this.aceOptions);
+        this.editor.clearSelection();
+        setTimeout(() => {
+            this.editor.selection.clearSelection(); // Deselect text
+            this.editor.moveCursorTo(this.editor.session.getLength(), 0); // Move cursor to end
+            this.element.style.visibility = "visible";
+        }, 0);
 
         this.init();
     }

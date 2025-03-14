@@ -1,7 +1,7 @@
 from typing import Type, TypeVar
 
 from uiwiz.element import Element as element
-from uiwiz.elements.ace.ace import Ace as ace
+from uiwiz.elements.ace import Ace as ace
 from uiwiz.elements.aggrid.aggrid import Aggrid as aggrid
 from uiwiz.elements.avatar import Avatar as avatar
 from uiwiz.elements.button import Button as button
