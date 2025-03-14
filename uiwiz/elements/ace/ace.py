@@ -46,7 +46,6 @@ class Ace(
     def __init__(
         self,
         name: Optional[str] = None,
-        form: Optional[Form] = None,
         content: str = None,
         lang: str = "python",
         sql_options: Optional[SqlOptions] = None,
@@ -62,7 +61,7 @@ class Ace(
         self.classes("ace-editor w-full h-96")
         self.attributes["hx-ace-editor-lang"] = lang
         self.attributes["hx-ace-editor-hidden-input"] = hidden_text.id
-        self.attributes["hx-ace-editor-form"] = form.id if form else None
+        self.attributes["hx-ace-editor-form"] = self.find_parent_form()
         self.attributes["hx-ace-editor-content"] = content
 
         self.attributes["hx-ace-editor-options"] = (
@@ -81,3 +80,11 @@ class Ace(
         self.attributes["hx-ace-editor-sql-options"] = (
             json.dumps(sql_options) if sql_options else "{}"
         )
+    
+    def find_parent_form(self) -> Optional[str]:
+        parent = self.parent_element
+        while parent:
+            if isinstance(parent, Form):
+                return parent.id
+            parent = parent.parent_element
+        return None
