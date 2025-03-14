@@ -22,16 +22,15 @@ async def home_page():
     ui.themeSelector()
 
     with ui.form().on_submit(data):
-        with ui.element("div").classes("flex w-full h-96"):
-            ui.ace(
-                name="ace_data",
-                lang="sql",
-                content="SELECT * FROM table",
-                sql_options={
-                    "tables": ["cars"],
-                    "columns": ["reg", "vin", "make", "model", "year"],
-                },
-            )
+        ui.ace(
+            name="ace_data",
+            lang="sql",
+            content="SELECT * FROM table",
+            sql_options={
+                "tables": ["cars"],
+                "columns": ["reg", "vin", "make", "model", "year"],
+            },
+        )
     ui.ace(name="ace_data", lang="sql", content="SELECT * FROM table")
 
 
