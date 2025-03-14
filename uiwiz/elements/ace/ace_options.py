@@ -75,4 +75,4 @@ class AceOptions(TypedDict):
     value: Optional[str]
     wrap: Optional[Union[int, float, bool, Literal["off", "free", "printmargin"]]]
     wrap_behaviours_enabled: Optional[bool]
-    wrap_method: Optional[Literal["code", "text", "auto"]]  # noqa: F821
+    wrap_method: Optional[Literal["code", "text", "auto"]]
