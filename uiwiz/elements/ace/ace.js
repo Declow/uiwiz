@@ -14,13 +14,15 @@ class AceEditor {
         this.hidden_input = document.getElementById(getAttributeFromElement(element, "hx-ace-editor-hidden-input"));
         this.form = document.getElementById(getAttributeFromElement(element, "hx-ace-editor-form"));
         this.content = getAttributeFromElement(element, "hx-ace-editor-content");
+        
+        this.sqlOptions = JSON.parse(getAttributeFromElement(element, "hx-ace-editor-sql-options"));
+        this.aceOptions = JSON.parse(getAttributeFromElement(element, "hx-ace-editor-options"));
+
         this.editor = ace.edit(this.element);
 
-        this.editor.setOptions({
-            enableBasicAutocompletion: true,  // Ctrl+Space triggers suggestions
-            enableLiveAutocompletion: true,   // Live suggestions while typing
-            enableSnippets: true              // Enable code snippets
-        });
+        this.editor.setOptions(
+            this.aceOptions
+        );
 
         this.init();
     }
@@ -35,9 +37,11 @@ class AceEditor {
         });
 
         this.editor.container.addEventListener("keydown", (event) => {
-            if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+            if (this.editor.isFocused() && (event.metaKey || event.ctrlKey) && event.key === "Enter") {
                 this.hidden_input.value = this.editor.getValue();
-                htmx.trigger(this.form, "submit");
+                if (this.form) {
+                    htmx.trigger(this.form, "submit");
+                }
             }
         });
     }
@@ -47,41 +51,44 @@ class AceEditor {
     }
 
     custom_auto_complete() {
-        // // Define custom SQL tables and columns
-        // var sqlKeywords = [
-        //     { name: "SELECT", value: "SELECT", score: 1000, meta: "Keyword" },
-        //     { name: "FROM", value: "FROM", score: 1000, meta: "Keyword" },
-        //     { name: "WHERE", value: "WHERE", score: 1000, meta: "Keyword" },
-        //     { name: "INSERT", value: "INSERT", score: 1000, meta: "Keyword" },
-        //     { name: "UPDATE", value: "UPDATE", score: 1000, meta: "Keyword" },
-        //     { name: "DELETE", value: "DELETE", score: 1000, meta: "Keyword" }
-        // ];
+        this.sqlCompleter();
+    }
 
-        // var sqlTables = [
-        //     { name: "cars", value: "cars", score: 900, meta: "Table" }
-        // ];
+    sqlCompleter() {
+        if (this.lang !== "sql" || Object.keys(this.sqlOptions).length === 0) {
+            return;
+        }
 
-        // var sqlColumns = [
-        //     { name: "reg", value: "reg", score: 800, meta: "Column" },
-        //     { name: "vin", value: "vin", score: 800, meta: "Column" },
-        //     { name: "make", value: "make", score: 800, meta: "Column" },
-        //     { name: "model", value: "model", score: 800, meta: "Column" },
-        //     { name: "created_at", value: "created_at", score: 800, meta: "Column" }
-        // ];
+        // Define custom SQL tables and columns
+        var sqlKeywords = [
+            { name: "SELECT", value: "SELECT", score: 1000, meta: "Keyword" },
+            { name: "FROM", value: "FROM", score: 1000, meta: "Keyword" },
+            { name: "WHERE", value: "WHERE", score: 1000, meta: "Keyword" },
+            { name: "INSERT", value: "INSERT", score: 1000, meta: "Keyword" },
+            { name: "UPDATE", value: "UPDATE", score: 1000, meta: "Keyword" },
+            { name: "DELETE", value: "DELETE", score: 1000, meta: "Keyword" }
+        ];
 
-        // // Custom Autocomplete Completer
-        // var sqlCompleter = {
-        //     getCompletions: function (editor, session, pos, prefix, callback) {
-        //         if (prefix.length === 0) {
-        //             return callback(null, []);
-        //         }
-        //         var suggestions = [...sqlKeywords, ...sqlTables, ...sqlColumns];
-        //         callback(null, suggestions);
-        //     }
-        // };
+        this.sqlOptions.tables.forEach(option => {
+            sqlKeywords.push({ name: option, value: option, score: 900, meta: "Keyword" });
+        });
+        this.sqlOptions.columns.forEach(option => {
+            sqlKeywords.push({ name: option, value: option, score: 800, meta: "Keyword" });
+        });
 
-        // // Register the Completer
-        // // editor.completers = [sqlCompleter];
+        // Custom Autocomplete Completer
+        var sqlCompleter = {
+            getCompletions: function (editor, session, pos, prefix, callback) {
+                if (prefix.length === 0) {
+                    return callback(null, []);
+                }
+                var suggestions = sqlKeywords;
+                callback(null, suggestions);
+            }
+        };
+
+        // Register the Completer
+        this.editor.completers = [sqlCompleter];
     }
 }
 

@@ -1,8 +1,23 @@
+import json
 from pathlib import Path
-from typing import Optional
+from typing import Optional, TypedDict
+
+import humps
 
 from uiwiz.element import Element
 from uiwiz.elements.form import Form
+
+
+class SqlOptions(TypedDict):
+    tables: list[str]
+    columns: list[str]
+
+
+class AceOptions(TypedDict):
+    enable_basic_autocompletion: bool
+    enable_live_autocompletion: bool
+    enable_snippets: bool
+
 
 LIB_PATH = Path(__file__).parent / "ace.min.js"
 MODE_PYTHON = Path(__file__).parent / "mode-python.js"
@@ -13,12 +28,34 @@ LIB_LANG_TOOL_PATH = Path(__file__).parent / "ace-lang-tool.min.js"
 CSS_PATH = Path(__file__).parent / "acetheme.css"
 JS_PATH = Path(__file__).parent / "ace.js"
 
-class Ace(Element, extensions=[CSS_PATH, LIB_PATH, LIB_LANG_TOOL_PATH, MODE_PYTHON, SNIPPETS_PYTHON, SNIPPETS_SQL, MODE_SQL, JS_PATH]):
 
-    def __init__(self, name: str, form: Optional[Form], content:str = None, lang:str = "python") -> None:
+class Ace(
+    Element,
+    extensions=[
+        CSS_PATH,
+        LIB_PATH,
+        LIB_LANG_TOOL_PATH,
+        MODE_PYTHON,
+        SNIPPETS_PYTHON,
+        SNIPPETS_SQL,
+        MODE_SQL,
+        JS_PATH,
+    ],
+):
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        form: Optional[Form] = None,
+        content: str = None,
+        lang: str = "python",
+        sql_options: Optional[SqlOptions] = None,
+        ace_options: Optional[AceOptions] = None,
+    ) -> None:
         hidden_text = Element("textarea")
         hidden_text.attributes["hidden"] = "true"
         hidden_text.attributes["name"] = name
+
         super().__init__()
         hidden_text.attributes["hx-ace-editor-id"] = self.id
 
@@ -27,3 +64,20 @@ class Ace(Element, extensions=[CSS_PATH, LIB_PATH, LIB_LANG_TOOL_PATH, MODE_PYTH
         self.attributes["hx-ace-editor-hidden-input"] = hidden_text.id
         self.attributes["hx-ace-editor-form"] = form.id if form else None
         self.attributes["hx-ace-editor-content"] = content
+
+        self.attributes["hx-ace-editor-options"] = (
+            json.dumps(humps.camelize(ace_options))
+            if ace_options
+            else json.dumps(
+                humps.camelize(
+                    AceOptions(
+                        enable_basic_autocompletion=True,
+                        enable_live_autocompletion=True,
+                        enable_snippets=True,
+                    )
+                )
+            )
+        )
+        self.attributes["hx-ace-editor-sql-options"] = (
+            json.dumps(sql_options) if sql_options else "{}"
+        )
