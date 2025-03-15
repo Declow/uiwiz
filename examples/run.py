@@ -31,7 +31,7 @@ def create_label(message):
 
 async def update_res(request: Request, message: str):
     data = await request.json()
-    create_label(f'{message} {data.get("input")}')
+    create_label(f"{message} {data.get('input')}")
 
 
 class DataInput(BaseModel):

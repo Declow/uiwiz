@@ -1,0 +1,51 @@
+/* Custom Theme */
+.ace_editor {
+    font-family: "Fira Code", monospace;
+    background-color: var(--color-base-200) !important;
+    /* Dark background */
+    color: var(--text-base-content) !important;
+    /* White text */
+    /* border: 2px solid #4CAF50; Green border */
+}
+
+/* Custom Gutter (Line Numbers) */
+.ace_gutter {
+    border-right: none !important;
+    background: var(--color-base-300) !important;
+    color: #888 !important;
+}
+
+/* Custom Cursor */
+.ace_cursor {
+    color: var(--text-base-300) !important;
+}
+
+/* Custom Syntax Colors */
+.ace_keyword {
+    color: var(--color-error) !important;
+}
+
+.ace-cobalt .ace_storage {
+    color: var(--color-primary) !important;
+}
+
+.ace_string {
+    color: var(--color-success) !important;
+    /* Green for strings */
+}
+
+.ace_variable {
+    color: var(--color-primary) !important;
+    /* Yellow for variables */
+}
+
+.ace_comment {
+    color: #5c6370 !important;
+    /* Gray for comments */
+    font-style: italic;
+}
+
+.ace_marker-layer .ace_active-line {
+    background: var(--color-base-200) !important;
+    /* Highlight active line */
+}

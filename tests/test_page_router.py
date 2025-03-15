@@ -8,8 +8,7 @@ def test_page_go_to_get_request():
     route = "/path"
 
     @pr.page(route)
-    def func():
-        ...  # pragma: no cover
+    def func(): ...  # pragma: no cover
 
     app = UiwizApp()
     app.include_router(pr)
@@ -29,8 +28,7 @@ def test_ui_go_to_post_request():
     route = "/path"
 
     @pr.ui(route)
-    def func():
-        ...  # pragma: no cover
+    def func(): ...  # pragma: no cover
 
     app.include_router(pr)
 
@@ -48,8 +46,7 @@ def test_app_ui_go_to_post_request():
     route = "/path"
 
     @app.ui(route)
-    def func():
-        ...  # pragma: no cover
+    def func(): ...  # pragma: no cover
 
     apis = {item.path: item for item in app.routes}
 
@@ -66,8 +63,7 @@ def test_router_ui_prefix():
     route = "/path"
 
     @pr.ui(route)
-    def func():
-        ...  # pragma: no cover
+    def func(): ...  # pragma: no cover
 
     app.include_router(pr)
     apis = {item.path: item for item in app.routes}
@@ -86,8 +82,7 @@ def test_router_page_prefix():
     route = "/path"
 
     @pr.page(route)
-    def func():
-        ...  # pragma: no cover
+    def func(): ...  # pragma: no cover
 
     app.include_router(pr)
     apis = {item.path: item for item in app.routes}
@@ -106,8 +101,7 @@ def test_router_page_without_prefix():
     route = "/path"
 
     @pr.page(route)
-    def func():
-        ...  # pragma: no cover
+    def func(): ...  # pragma: no cover
 
     app.include_router(pr)
     apis = {item.path: item for item in app.routes}
