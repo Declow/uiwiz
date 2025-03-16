@@ -17,6 +17,17 @@ observer.observe(container, config);
 
 function remove(evt) {
     console.log(evt);
+    if (hasAttribute(evt, "hx-toast-data")) {
+        hxToastData = getAttributeFromElement(evt, "hx-toast-data");
+        window.setTimeout(() => {
+            evt.classList.add('remove');
+            evt.style = "--delay: {{ toast_delay - 500 }}ms;";
+        }, {{ toast_delay - 500 }});
+        window.setTimeout(() => {
+            evt.remove();
+        }, {{ toast_delay }});
+    }
+    hxToastData = evt.getAttribute("data-hx-toast");
     window.setTimeout(() => {
         evt.classList.add('remove');
         evt.style = "--delay: {{ toast_delay - 500 }}ms;";
@@ -61,6 +72,8 @@ function handleInvalidInputs(evt) {
 document.body.addEventListener('htmx:responseError', function (evt) {
     (function () {
         var container = document.getElementById("toast");
+        console.log(evt.detail.xhr.response);
+        console.log(evt);
         var error = document.createElement('div');
         error.className = "{{ error_classes }}";
         error.innerHTML = `<span>${JSON.parse(evt.detail.xhr.response).message}</span>`;

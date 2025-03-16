@@ -1,3 +1,4 @@
+import json
 import logging
 from html import escape
 from mimetypes import guess_type
@@ -16,6 +17,8 @@ from jinja2 import Template
 from starlette.requests import Request
 
 from uiwiz.asgi_request_middleware import AsgiRequestMiddleware
+from uiwiz.element import Element
+from uiwiz.elements.html import Html
 from uiwiz.frame import Frame
 from uiwiz.page_route import PageRouter
 from uiwiz.shared import register_path, resources
@@ -77,16 +80,32 @@ class UiwizApp(FastAPI):
             message = " <br> ".join(
                 [f"{item.get('loc')[1]}: {item.get('msg')}" for item in exc.errors() if item.get("loc")[1] in exc.body]
             )
-            return JSONResponse(
-                status_code=422,
-                content=jsonable_encoder(
+
+            Frame.get_stack().del_stack()
+            Frame.get_stack()
+            
+            with Element().classes(self.error_classes) as toast:
+                toast.attributes["id"] = "toast"
+                toast.attributes["hx-swap-oob"] = "afterbegin"
+                html = Html(message)
+                html.tag = "span"
+                html.attributes["hx-toast-data"] = json.dumps(jsonable_encoder(
                     {
                         "detail": exc.errors(),
                         "fieldErrors": fields_with_errors,
                         "fieldOk": ok_fields,
                         "message": message,
                     }
-                ),
+                ))
+
+
+            html_content = Frame.get_stack().render()
+
+
+            return HTMLResponse(
+                content=html_content,
+                status_code=200,
+                headers={"cache-control": "no-store", "x-uiwiz-content": "page"},
             )
 
         @self.get("/_static/extension/{__version__}/{extension}/{filename}", include_in_schema=False)
