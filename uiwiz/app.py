@@ -45,6 +45,7 @@ class UiwizApp(FastAPI):
         theme: Optional[str] = None,
         auth_header: Optional[str] = None,
         title: Optional[str] = "UiWiz",
+        auto_close_toast_error: bool = True,
         *args,
         **kwargs,
     ) -> None:
@@ -52,6 +53,7 @@ class UiwizApp(FastAPI):
         self.router.routes = CustomList()
         self.toast_delay = toast_delay
         self.error_classes = error_classes
+        self.auto_close_toast_error = auto_close_toast_error
         if theme:
             self.theme = f"data-theme={theme}"
         else:
@@ -185,6 +187,7 @@ class UiwizApp(FastAPI):
             ))
             html = Html(message).classes("alert alert-error")
             html.tag = "span"
+            html.attributes["hx-toast-data"] = json.dumps({"autoClose": self.auto_close_toast_error})
 
         html_content = Frame.get_stack().render()
 

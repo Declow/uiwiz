@@ -8,7 +8,7 @@ import uiwiz.ui as ui
 from uiwiz.app import UiwizApp
 from uiwiz.models.model_handler import UiAnno
 
-app = UiwizApp()
+app = UiwizApp(auto_close_toast_error=False)
 
 
 def create_nav():

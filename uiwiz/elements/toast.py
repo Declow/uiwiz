@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 
 from uiwiz import ui
@@ -36,7 +37,8 @@ class Toast(Element):
                     svg = ui.html(get_svg(self._svg))
                     self.inner_element.children.remove(svg)
                     self.inner_element.children.insert(0, svg)
-                Element("span", content=self.message).inline = True
+                message = Element("span", content=self.message)
+                message.attributes["hx-toast-data"] = json.dumps({"autoClose": self._auto_close})
 
     def __enter__(self):
         super().__enter__()

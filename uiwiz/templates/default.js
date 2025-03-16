@@ -24,30 +24,23 @@ function createElementFromHTML(htmlString) {
   }
 
 function remove(evt) {
-    // console.log(evt);
-    // if (hasAttribute(evt, "hx-toast-data")) {
-    //     hxToastData = getAttributeFromElement(evt, "hx-toast-data");
-    //     window.setTimeout(() => {
-    //         evt.classList.add('remove');
-    //         evt.style = "--delay: {{ toast_delay - 500 }}ms;";
-    //     }, {{ toast_delay - 500 }});
-    //     window.setTimeout(() => {
-    //         evt.remove();
-    //     }, {{ toast_delay }});
-    // }
-    // hxToastData = evt.getAttribute("data-hx-toast");
-    window.setTimeout(() => {
-        evt.classList.add('remove');
-        evt.style = "--delay: {{ toast_delay - 500 }}ms;";
-    }, {{ toast_delay - 500 }});
-    window.setTimeout(() => {
-        evt.remove();
-    }, {{ toast_delay }});
+    hxToastData = JSON.parse(evt.getAttribute("hx-toast-data"));
+    
+    if (hxToastData.autoClose) {
+        window.setTimeout(() => {
+            evt.classList.add('remove');
+            evt.style = "--delay: {{ toast_delay - 500 }}ms;";
+        }, {{ toast_delay - 500 }});
+        window.setTimeout(() => {
+            evt.remove();
+        }, {{ toast_delay }});
+    }
 }
 
 function handleInvalidInputs(evt) {
     if (evt.detail.xhr.getResponseHeader("x-uiwiz-validation-error") === "true") {
         console.log("Validation error");
+        console.log(evt);
 
         var response = createElementFromHTML(evt.detail.xhr.response);
         var res = JSON.parse(getAttributeFromElement(response, "hx-toast-data"));
