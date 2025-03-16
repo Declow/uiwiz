@@ -209,6 +209,6 @@ class ModelForm:
 
     def render_element_dropdown(self, field_class: type, key: str, placeholder: Optional[str]) -> None:
         if isinstance(placeholder, PydanticUndefinedType):
-            placeholder = __display_name__(key)
+            placeholder = display_name(key)
 
         self.render_element(Dropdown, key, placeholder=placeholder, items=get_args(field_class))
