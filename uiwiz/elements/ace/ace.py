@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional
 
 import humps
 
@@ -46,7 +46,7 @@ class Ace(
         self,
         name: Optional[str] = None,
         content: str = None,
-        lang: str = "python",
+        lang: Literal["sql", "python"] = "python",
         sql_options: Optional[SqlOptions] = None,
         ace_options: Optional[AceOptions] = None,
     ) -> None:
