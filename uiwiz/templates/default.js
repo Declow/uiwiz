@@ -16,6 +16,7 @@ var config = {
 observer.observe(container, config);
 
 function remove(evt) {
+    console.log(evt);
     window.setTimeout(() => {
         evt.classList.add('remove');
         evt.style = "--delay: {{ toast_delay - 500 }}ms;";

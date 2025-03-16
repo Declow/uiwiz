@@ -1,3 +1,5 @@
+from typing import Optional
+
 from uiwiz import ui
 from uiwiz.element import Element
 from uiwiz.svg.svg_handler import _type, get_svg
@@ -11,10 +13,21 @@ class Toast(Element):
         super().__init__(tag="div", oob=True)
         self.attributes["id"] = "toast"
         self.attributes["hx-swap-oob"] = "afterbegin"
-        self._svg = svg
-        self.message = message
-        self.context_manager_used = False
-        self.inner_element = None
+        self.attributes["hx-toast-auto-close"] = "true"
+        self._svg: _type = svg
+        self.message: str = message
+        self.context_manager_used: bool = False
+        self.inner_element: Optional[Element] = None
+        self._auto_close: bool = True
+
+    @property
+    def auto_close(self) -> bool:
+        return self._auto_close
+    
+    @auto_close.setter
+    def auto_close(self, auto_close: bool) -> None:
+        self._auto_close = auto_close
+        self.attributes["hx-toast-auto-close"] = str(auto_close).lower()
 
     def before_render(self):
         with self:
@@ -58,4 +71,5 @@ class Toast(Element):
     def error(self) -> "Toast":
         self.classes("alert-error")
         self.svg("error")
+        self.auto_close = False
         return self
