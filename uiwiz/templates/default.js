@@ -15,19 +15,27 @@ var config = {
 // Pass in the target node, as well as the observer options
 observer.observe(container, config);
 
+function createElementFromHTML(htmlString) {
+    var div = document.createElement('div');
+    div.innerHTML = htmlString.trim();
+  
+    // Change this to div.childNodes to support multiple top-level nodes.
+    return div.firstChild;
+  }
+
 function remove(evt) {
-    console.log(evt);
-    if (hasAttribute(evt, "hx-toast-data")) {
-        hxToastData = getAttributeFromElement(evt, "hx-toast-data");
-        window.setTimeout(() => {
-            evt.classList.add('remove');
-            evt.style = "--delay: {{ toast_delay - 500 }}ms;";
-        }, {{ toast_delay - 500 }});
-        window.setTimeout(() => {
-            evt.remove();
-        }, {{ toast_delay }});
-    }
-    hxToastData = evt.getAttribute("data-hx-toast");
+    // console.log(evt);
+    // if (hasAttribute(evt, "hx-toast-data")) {
+    //     hxToastData = getAttributeFromElement(evt, "hx-toast-data");
+    //     window.setTimeout(() => {
+    //         evt.classList.add('remove');
+    //         evt.style = "--delay: {{ toast_delay - 500 }}ms;";
+    //     }, {{ toast_delay - 500 }});
+    //     window.setTimeout(() => {
+    //         evt.remove();
+    //     }, {{ toast_delay }});
+    // }
+    // hxToastData = evt.getAttribute("data-hx-toast");
     window.setTimeout(() => {
         evt.classList.add('remove');
         evt.style = "--delay: {{ toast_delay - 500 }}ms;";
@@ -38,8 +46,11 @@ function remove(evt) {
 }
 
 function handleInvalidInputs(evt) {
-    if (evt.detail.xhr.status == 422) {
-        res = JSON.parse(evt.detail.xhr.response);
+    if (evt.detail.xhr.getResponseHeader("x-uiwiz-validation-error") === "true") {
+        console.log("Validation error");
+
+        var response = createElementFromHTML(evt.detail.xhr.response);
+        var res = JSON.parse(getAttributeFromElement(response, "hx-toast-data"));
 
         res.fieldErrors.forEach(key => {
             var tar = evt.target.querySelector(`[name='${key}']`);
@@ -69,22 +80,8 @@ function handleInvalidInputs(evt) {
     }
 }
 
-document.body.addEventListener('htmx:responseError', function (evt) {
-    (function () {
-        var container = document.getElementById("toast");
-        console.log(evt.detail.xhr.response);
-        console.log(evt);
-        var error = document.createElement('div');
-        error.className = "{{ error_classes }}";
-        error.innerHTML = `<span>${JSON.parse(evt.detail.xhr.response).message}</span>`;
-        container.prepend(error);
-
-        handleInvalidInputs(evt);
-    }());
-});
-
 function handlePreviousInvalidInputsNowValid(evt) {
-    if (evt.detail.successful && evt.target.tagName == "FORM") {
+    if (evt.detail.successful && evt.target.tagName == "FORM" && evt.detail.xhr.getResponseHeader("x-uiwiz-validation-error") === null) {
         var all = [...evt.target.getElementsByTagName('*')];
         all.forEach(val => {
             if (val.classList.contains("invalid")) {
@@ -95,6 +92,7 @@ function handlePreviousInvalidInputsNowValid(evt) {
 }
 
 document.body.addEventListener("htmx:afterRequest", function (evt) {
+    handleInvalidInputs(evt);
     handlePreviousInvalidInputsNowValid(evt);
 });
 

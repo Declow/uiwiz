@@ -73,40 +73,8 @@ class UiwizApp(FastAPI):
             response.headers["x-uiwiz-content"] = "assets"
             return self.render(request, response, template_name="default.js", media_type="application/javascript")
 
-        @self.exception_handler(RequestValidationError)
-        async def handle_validation_error(request: Request, exc: RequestValidationError):
-            fields_with_errors = [item.get("loc")[1] for item in exc.errors() if item.get("loc")[1] in exc.body]
-            ok_fields = [item for item in exc.body.keys() if item not in fields_with_errors]
-            message = " <br> ".join(
-                [f"{item.get('loc')[1]}: {item.get('msg')}" for item in exc.errors() if item.get("loc")[1] in exc.body]
-            )
-
-            Frame.get_stack().del_stack()
-            Frame.get_stack()
-            
-            with Element().classes(self.error_classes) as toast:
-                toast.attributes["id"] = "toast"
-                toast.attributes["hx-swap-oob"] = "afterbegin"
-                html = Html(message)
-                html.tag = "span"
-                html.attributes["hx-toast-data"] = json.dumps(jsonable_encoder(
-                    {
-                        "detail": exc.errors(),
-                        "fieldErrors": fields_with_errors,
-                        "fieldOk": ok_fields,
-                        "message": message,
-                    }
-                ))
-
-
-            html_content = Frame.get_stack().render()
-
-
-            return HTMLResponse(
-                content=html_content,
-                status_code=200,
-                headers={"cache-control": "no-store", "x-uiwiz-content": "page"},
-            )
+        self.exception_handler(RequestValidationError)(self.handle_validation_error)
+        
 
         @self.get("/_static/extension/{__version__}/{extension}/{filename}", include_in_schema=False)
         def get_extension(extension: str, filename: str):
@@ -193,3 +161,36 @@ class UiwizApp(FastAPI):
     def return_funtion_response(self, response: Union[str, Response]) -> Union[str, Response]:
         Frame.get_stack().del_stack()
         return response
+
+    async def handle_validation_error(self, request: Request, exc: RequestValidationError):
+        fields_with_errors = [item.get("loc")[1] for item in exc.errors() if item.get("loc")[1] in exc.body]
+        ok_fields = [item for item in exc.body.keys() if item not in fields_with_errors]
+        message = " <br> ".join(
+            [f"{item.get('loc')[1]}: {item.get('msg')}" for item in exc.errors() if item.get("loc")[1] in exc.body]
+        )
+
+        Frame.get_stack().del_stack()
+        Frame.get_stack()
+        
+        with Element().classes(self.error_classes) as toast:
+            toast.attributes["id"] = "toast"
+            toast.attributes["hx-swap-oob"] = "afterbegin"
+            toast.attributes["hx-toast-data"] = json.dumps(jsonable_encoder(
+                {
+                    "detail": exc.errors(),
+                    "fieldErrors": fields_with_errors,
+                    "fieldOk": ok_fields,
+                    "message": message,
+                }
+            ))
+            html = Html(message).classes("alert alert-error")
+            html.tag = "span"
+
+        html_content = Frame.get_stack().render()
+
+
+        return HTMLResponse(
+            content=html_content,
+            status_code=200,
+            headers={"cache-control": "no-store", "x-uiwiz-content": "page", "x-uiwiz-validation-error": "true"},
+        )
