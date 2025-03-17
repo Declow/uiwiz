@@ -25,7 +25,7 @@ function createElementFromHTML(htmlString) {
 
 function remove(evt) {
     hxToastData = JSON.parse(evt.getAttribute("hx-toast-data"));
-
+    console.log(evt);
     
     if (hxToastData.autoClose) {
         window.setTimeout(() => {

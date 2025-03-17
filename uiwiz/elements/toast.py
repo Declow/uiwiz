@@ -32,17 +32,17 @@ class Toast(Element):
 
     def before_render(self):
         with self:
-            with self.inner_element.classes(self.inner_class):
+            with self.inner_element.classes(self.inner_class + " relative pr-16"):
                 if self._svg:
                     svg = ui.html(get_svg(self._svg))
                     self.inner_element.children.remove(svg)
                     self.inner_element.children.insert(0, svg)
-                message = Element("span", content=self.message)
-                message.attributes["hx-toast-data"] = json.dumps({"autoClose": self._auto_close})
+                Element("span", content=self.message)
+                self.inner_element.attributes["hx-toast-data"] = json.dumps({"autoClose": self._auto_close})
                 btn = None
-                message.attributes["hx-toast-delete-button"] = lambda: btn.id if btn else ""
+                self.inner_element.attributes["hx-toast-delete-button"] = lambda: btn.id if btn else ""
                 if not self._auto_close:
-                    btn = ui.button("✕").classes("btn btn-sm btn-circle btn-ghost absolute right-2 top-2")
+                    btn = ui.button("✕").classes("btn btn-sm btn-circle btn-ghost absolute right-2 top")
 
     def __enter__(self):
         super().__enter__()
