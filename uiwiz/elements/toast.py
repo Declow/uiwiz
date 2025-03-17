@@ -10,6 +10,27 @@ class Toast(Element):
     root_class: str = "alert w-full z-50 "
 
     def __init__(self, message: str = "", svg: _type = None) -> None:
+        """Toast
+
+        Display a toast message on the client side.
+        Can be used anywhere in a @page_router.ui("<path>") or @app.ui("<path>")
+
+        .. code-block:: python
+            @app.ui("/some/path")
+            async def some_path():
+                ui.toast("This is a toast message").info()
+
+        To persist the toast message, set auto_close to False
+
+        .. code-block:: python
+            @app.ui("/some/path")
+            async def some_path():
+                ui.toast("This is a toast message").info().set_auto_close(False)
+
+        :param message: The message to display
+        :param svg: The svg to display. One of "info", "warning", "success", "error", "menu"
+        
+        """
         self.inner_class = Toast.root_class
         super().__init__(tag="div", oob=True)
         self.attributes["id"] = "toast"
@@ -29,6 +50,14 @@ class Toast(Element):
     def auto_close(self, auto_close: bool) -> None:
         self._auto_close = auto_close
         self.attributes["hx-toast-auto-close"] = str(auto_close).lower()
+    
+    def set_auto_close(self, auto_close: bool) -> "Toast":
+        """Set auto close
+        
+        :param auto_close: True or False. Auto close False will keep the toast open until the user closes it
+        """
+        self.auto_close = auto_close
+        return self
 
     def before_render(self):
         with self:

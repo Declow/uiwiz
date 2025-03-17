@@ -76,8 +76,8 @@ def create_form():
 
 @app.ui("/handle/submit")
 def handle_submit(data: DataInput):
+    ui.toast("test close").set_auto_close(False)
     ui.toast("Data saved").success()
-    ui.toast("test close").auto_close = False
     print(data)
 
 
