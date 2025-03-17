@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import html
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Tuple
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 from typing_extensions import Self
 
@@ -30,11 +30,48 @@ class Element:
         render_html: bool = True,
         oob: bool = False,
     ) -> None:
+        """Element
+
+        Represents an HTML element. This class is used to create HTML elements.
+
+        It is possible to create a custom element by subclassing this class.
+
+        Content of any element will be escaped by default. If you want to render
+        the content as HTML, you can use the ui.html(content="&lt;div&gt;html content&lt;/div&gt;") element.
+
+        The rendering of the element is done by calling the render method.
+        If some work needs to be done before or after rendering, the before_render
+        and after_render methods can be overridden.
+
+        The element attributes can be accessed and modified through the attributes property.
+        The content of an attribute can either be a string or a callable that returns a string.
+
+        Example:
+        .. code-block:: python
+            from uiwiz import ui, UiwizApp
+
+            app = UiwizApp()
+
+            @app.ui("/")
+            async def home():
+                ui.element().classes("flex")
+                with ui.element().classes("relative") as container:
+                    ui.element("h1", "Hello World")
+
+                ui.element().attributes["id"] = "my-id"
+                ui.element().attributes["id"] = lambda: "my-id" # <- This is also possible
+
+        
+        :param tag: The tag of the element type
+        :param content: The content of the element
+        :param render_html: If the element should be rendered
+        :param oob: If the element should be out of band swap
+        """
         self.stack = Frame.get_stack()
         if hasattr(self.__class__, "extensions") and self.__class__.extensions:
             for extension in self.__class__.extensions:
                 self.stack.add_extension(self.__class__, extension)
-        self.attributes: dict[str, str] = _Attributes()
+        self.attributes: dict[str, Union[str, Callable[[], str]]] = _Attributes()
         self.attributes["id"] = self.stack.get_id()
         self.stack.id_count += 1
         self.tag: str = tag
