@@ -25,6 +25,7 @@ function createElementFromHTML(htmlString) {
 
 function remove(evt) {
     hxToastData = JSON.parse(evt.getAttribute("hx-toast-data"));
+
     
     if (hxToastData.autoClose) {
         window.setTimeout(() => {
@@ -34,6 +35,15 @@ function remove(evt) {
         window.setTimeout(() => {
             evt.remove();
         }, {{ toast_delay }});
+    } else if (evt.getAttribute("hx-toast-delete-button")) {
+        document.getElementById(evt.getAttribute("hx-toast-delete-button")).addEventListener("click", () => {
+            evt.classList.add('remove');
+            evt.style = "--delay: 500ms;";
+
+            window.setTimeout(() => {
+                evt.remove();
+            }, 500);
+        });
     }
 }
 

@@ -9,7 +9,7 @@ from fastapi import FastAPI, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse
 from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -18,6 +18,8 @@ from starlette.requests import Request
 
 from uiwiz.asgi_request_middleware import AsgiRequestMiddleware
 from uiwiz.element import Element
+from uiwiz.elements.button import Button
+from uiwiz.elements.col import Col
 from uiwiz.elements.html import Html
 from uiwiz.frame import Frame
 from uiwiz.page_route import PageRouter
@@ -167,9 +169,6 @@ class UiwizApp(FastAPI):
     async def handle_validation_error(self, request: Request, exc: RequestValidationError):
         fields_with_errors = [item.get("loc")[1] for item in exc.errors() if item.get("loc")[1] in exc.body]
         ok_fields = [item for item in exc.body.keys() if item not in fields_with_errors]
-        message = " <br> ".join(
-            [f"{item.get('loc')[1]}: {item.get('msg')}" for item in exc.errors() if item.get("loc")[1] in exc.body]
-        )
 
         Frame.get_stack().del_stack()
         Frame.get_stack()
@@ -182,13 +181,19 @@ class UiwizApp(FastAPI):
                     "detail": exc.errors(),
                     "fieldErrors": fields_with_errors,
                     "fieldOk": ok_fields,
-                    "message": message,
                 }
             ))
-            html = Html(message).classes("alert alert-error")
+            html = Html("").classes("alert alert-error relative")
             html.tag = "span"
             html.attributes["hx-toast-data"] = json.dumps({"autoClose": self.auto_close_toast_error})
-
+            html.attributes["hx-toast-delete-button"] = lambda: btn.id
+            with html:
+                with Col(gap="").classes("relative"):
+                    for item in exc.errors():
+                        Element(content=f"{item.get('loc')[1]}: {item.get('msg')}")
+                if not self.auto_close_toast_error:
+                    btn = Button("✕").classes("btn btn-sm btn-circle btn-ghost absolute right-2 top-2")
+                    
         html_content = Frame.get_stack().render()
 
 

@@ -39,6 +39,10 @@ class Toast(Element):
                     self.inner_element.children.insert(0, svg)
                 message = Element("span", content=self.message)
                 message.attributes["hx-toast-data"] = json.dumps({"autoClose": self._auto_close})
+                btn = None
+                message.attributes["hx-toast-delete-button"] = lambda: btn.id if btn else ""
+                if not self._auto_close:
+                    btn = ui.button("✕").classes("btn btn-sm btn-circle btn-ghost absolute right-2 top-2")
 
     def __enter__(self):
         super().__enter__()
