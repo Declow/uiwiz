@@ -1,3 +1,4 @@
+# ruff: noqa
 import uiwiz.ui as ui
 from uiwiz.app import UiwizApp
 from uiwiz.element import Element
