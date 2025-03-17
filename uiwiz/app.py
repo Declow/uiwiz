@@ -45,12 +45,24 @@ class UiwizApp(FastAPI):
         error_classes: str = "alert alert-error",
         cache_age: int = 14400,
         theme: Optional[str] = None,
-        auth_header: Optional[str] = None,
         title: Optional[str] = "UiWiz",
-        auto_close_toast_error: bool = True,
+        auto_close_toast_error: bool = False,
         *args,
         **kwargs,
     ) -> None:
+        """App used for asgi applications
+
+        See fastapi documentation for more *args and **kwargs
+        
+        :param toast_delay: The time in milliseconds before the toast is removed
+        :param error_classes: The classes to apply to the toast error for default validation errors
+        :param cache_age: The time in seconds to cache the static files
+        :param theme: The default theme to use
+        :param title: The default title for the app
+        :param auto_close_toast_error: If the toast error should auto close
+        :param args: FastAPI args
+        :param kwargs: FastAPI kwargs
+        """
         super().__init__(*args, **kwargs)
         self.router.routes = CustomList()
         self.toast_delay = toast_delay
@@ -60,7 +72,6 @@ class UiwizApp(FastAPI):
             self.theme = f"data-theme={theme}"
         else:
             self.theme = theme
-        self.auth_header = auth_header
         self.title = title
         self.templates = Jinja2Templates(Path(__file__).parent / "templates")
         self.add_static_files(f"/_static/{__version__}/", Path(__file__).parent / "static")
@@ -149,8 +160,6 @@ class UiwizApp(FastAPI):
                     ext_js=ext_js,
                     ext_css=ext_css,
                     toast_delay=self.toast_delay,
-                    error_classes=self.error_classes,
-                    auth_header_name=self.auth_header,
                     description_content=frame.meta_description_content,
                     overflow=root_overflow,
                     head=frame.head_ext,
