@@ -50,6 +50,16 @@ class Ace(
         sql_options: Optional[SqlOptions] = None,
         ace_options: Optional[AceOptions] = None,
     ) -> None:
+        """Ace Editor
+
+        Use the Ace Editor to edit code in a textarea element.
+
+        :param name: The name of the textarea element to be submitted with a form
+        :param content: The initial content of the editor
+        :param lang: The language mode to use. One of "sql" or "python"
+        :param sql_options: Options for the SQL language mode. Tables and columns to be used for autocompletion
+        :param ace_options: Options for the Ace Editor        
+        """
         hidden_text = Element("textarea")
         hidden_text.attributes["hidden"] = "true"
         hidden_text.attributes["name"] = name
