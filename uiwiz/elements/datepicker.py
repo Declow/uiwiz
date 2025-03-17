@@ -1,9 +1,7 @@
 from datetime import date, datetime
-from typing import Callable, Optional, Union
+from typing import Optional, Union
 
-from uiwiz.element import Element
 from uiwiz.elements.extensions.on_event import OnEvent
-from uiwiz.event import ON_EVENTS
 
 
 class Datepicker(OnEvent):

@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Union
+from typing import Optional
 
 from uiwiz.element import Element
 from uiwiz.event import FUNC_TYPE, SWAP_EVENTS, TARGET_TYPE
