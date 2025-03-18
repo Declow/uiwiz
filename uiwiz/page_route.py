@@ -9,6 +9,7 @@ from uiwiz.asgi_request_middleware import get_request
 from uiwiz.element import Element
 from uiwiz.frame import Frame
 
+
 class PageRouter(APIRouter):
     def page(
         self,

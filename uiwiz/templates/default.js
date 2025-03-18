@@ -18,23 +18,25 @@ observer.observe(container, config);
 function createElementFromHTML(htmlString) {
     var div = document.createElement('div');
     div.innerHTML = htmlString.trim();
-  
+
     // Change this to div.childNodes to support multiple top-level nodes.
     return div.firstChild;
-  }
+}
 
 function remove(evt) {
+    toastDelay = JSON.parse(document.getElementById("toast").getAttribute("hx-toast-delay")).delay;
+    shortToastDelay = toastDelay - 500;
     hxToastData = JSON.parse(evt.getAttribute("hx-toast-data"));
     console.log(evt);
-    
+
     if (hxToastData.autoClose) {
         window.setTimeout(() => {
             evt.classList.add('remove');
-            evt.style = "--delay: {{ toast_delay - 500 }}ms;";
-        }, {{ toast_delay - 500 }});
+            evt.style = `--delay: ${shortToastDelay}ms;`;
+        }, shortToastDelay);
         window.setTimeout(() => {
             evt.remove();
-        }, {{ toast_delay }});
+        }, toastDelay);
     } else if (evt.getAttribute("hx-toast-delete-button")) {
         document.getElementById(evt.getAttribute("hx-toast-delete-button")).addEventListener("click", () => {
             evt.classList.add('remove');
@@ -115,7 +117,7 @@ htmx.defineExtension('swap-header', {
     }
 });
 
-htmx.on("htmx:configRequest", (evt)=> {
+htmx.on("htmx:configRequest", (evt) => {
     const urlParams = new URLSearchParams(window.location.search);
     const next = urlParams.get('next');
     if (next) {

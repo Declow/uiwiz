@@ -40,6 +40,9 @@ class DataInputWithId(DataInput):
 
 
 def create_form():
+
+    ui.button("submit").on_click(lambda: ui.toast("test").set_auto_close(False), swap="none")
+
     ui.modelForm(DataInput, compact=False).on_submit(handle_submit)
     ui.modelForm(DataInput, compact=True)  # Missing on submit. No button is created
 

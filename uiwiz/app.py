@@ -159,7 +159,7 @@ class UiwizApp(FastAPI):
                     theme=theme,
                     ext_js=ext_js,
                     ext_css=ext_css,
-                    toast_delay=self.toast_delay,
+                    toast_delay=json.dumps({"delay": self.toast_delay}),
                     description_content=frame.meta_description_content,
                     overflow=root_overflow,
                     head=frame.head_ext,
