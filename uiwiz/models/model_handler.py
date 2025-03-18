@@ -41,10 +41,9 @@ switch = {
 }
 
 
-class ModelForm:
+class ModelForm(Form):
     model: BaseModel
     compact: bool
-    form: Form
     button: Button
     label_classes: str
     instance: Optional[BaseModel]
@@ -89,7 +88,7 @@ class ModelForm:
         :param size: The size of the input elements
         :param kwargs: Override the fields with custom ui elements
         """
-
+        super().__init__()
         self.model = model
         self.instance = None
 
@@ -105,19 +104,18 @@ class ModelForm:
 
     def on_submit(self, *args, **kwargs) -> "ModelForm":
         self.button.render_html = True
-        self.form.on_submit(*args, **kwargs)
+        super().on_submit(*args, **kwargs)
         return self
 
     def render_model(self, **kwargs) -> Form:
         if not issubclass(self.model, BaseModel):
             raise ValueError("type must be a pydantic model")
 
-        with Form().classes(self.card_classes) as form:
+        with self.classes(self.card_classes) as form:
             hints = get_type_hints(self.model, include_extras=True)
             for key, field_type in hints.items():
                 self.render_model_attributes(key, field_type, **kwargs)
             self.button = Button("Save")
-        self.form = form
 
     def render_model_attributes(self, key, field_type, **kwargs) -> "ModelForm":
         args = get_args(field_type)
