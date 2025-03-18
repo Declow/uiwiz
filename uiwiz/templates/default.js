@@ -27,7 +27,6 @@ function remove(evt) {
     toastDelay = JSON.parse(document.getElementById("toast").getAttribute("hx-toast-delay")).delay;
     shortToastDelay = toastDelay - 500;
     hxToastData = JSON.parse(evt.getAttribute("hx-toast-data"));
-    console.log(evt);
 
     if (hxToastData.autoClose) {
         window.setTimeout(() => {
