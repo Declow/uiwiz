@@ -35,7 +35,6 @@ class Toast(Element):
         super().__init__(tag="div", oob=True)
         self.attributes["id"] = "toast"
         self.attributes["hx-swap-oob"] = "afterbegin"
-        self.attributes["hx-toast-auto-close"] = "true"
         self._svg: _type = svg
         self.message: str = message
         self.context_manager_used: bool = False
@@ -49,7 +48,6 @@ class Toast(Element):
     @auto_close.setter
     def auto_close(self, auto_close: bool) -> None:
         self._auto_close = auto_close
-        self.attributes["hx-toast-auto-close"] = str(auto_close).lower()
     
     def set_auto_close(self, auto_close: bool) -> "Toast":
         """Set auto close
