@@ -56,11 +56,8 @@ class Drawer(Element):
 
             with ui.drawer() as drawer:
                 with drawer.drawer_content():
-                    with ui.element().classes(
-                        "sticky top-0 flex h-16 justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm"
-                    ):
-                        with ui.nav():
-                            drawer.drawer_button()
+                    with ui.nav():
+                        drawer.drawer_button()
 
                     with ui.col():
                         ui.label("test1")
