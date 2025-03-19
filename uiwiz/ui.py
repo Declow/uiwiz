@@ -1,3 +1,4 @@
+# ruff: noqa
 from typing import Type, TypeVar
 
 from uiwiz.element import Element as element

@@ -9,6 +9,12 @@ class Button(OnEvent):
     root_size: str = "btn-{size}"
 
     def __init__(self, title: str) -> None:
+        """
+        Create a button element, with the given title.
+        Can be used to trigger events.
+        
+        :param title: The title of the button.
+        """
         super().__init__(tag="button")
         self.content = title
 

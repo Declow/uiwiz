@@ -8,6 +8,21 @@ class Range(OnEvent):
     root_size: str = "range-{size}"
 
     def __init__(self, name: str, value: int, min: int, max: int, step: Optional[int] = None) -> None:
+        """Range
+        
+        This element is used for range inputs
+
+        .. code-block:: python
+            from uiwiz import ui
+
+            ui.Range("range", 50, 0, 100, 1):
+
+        :param name: name of the range input
+        :param value: default value of the range input
+        :param min: minimum value of the range input
+        :param max: maximum value of the range input
+        :param step: step value of the range input
+        """
         super().__init__("input")
         self.attributes["type"] = "range"
         self.attributes["name"] = name

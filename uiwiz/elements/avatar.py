@@ -6,6 +6,12 @@ class Avatar(Element):
     _classes_inner: str = "w-{size} rounded-full"
 
     def __init__(self, path: str, size: int = 12) -> None:
+        """
+        Display an avatar image.
+
+        :param path: The path to the image to display.
+        :param size: The size of the avatar.
+        """
         super().__init__()
         with self:
             with Element("div").classes(Avatar._classes_inner.format(size=size)) as container:

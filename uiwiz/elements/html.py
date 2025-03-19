@@ -3,6 +3,12 @@ from uiwiz.element import Element
 
 class Html(Element):
     def __init__(self, content) -> None:
+        """Html element
+
+        Will render a raw htlm string
+
+        :param content: html content as string
+        """
         super().__init__()
         self.__content__ = content
 

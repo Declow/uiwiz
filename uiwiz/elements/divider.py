@@ -6,6 +6,12 @@ class Divider(Element):
     _classes_hor = "divider-horizontal"
 
     def __init__(self, text: str = "") -> None:
+        """Divider
+
+        Display a divider line between elements.
+
+        :param text: The text to display in the divider.
+        """
         super().__init__("div")
         self.content = text
 

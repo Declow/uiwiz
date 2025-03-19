@@ -11,6 +11,21 @@ class Upload(OnEvent):
         self,
         name: str,
     ) -> "Upload":
+        """Upload
+
+        This element is used for file uploads
+
+        .. code-block:: python
+            from uiwiz import ui
+            from fastapi import UploadFile
+
+            @app.ui("/upload/endpoint")
+            async def handle_upload(file: UploadFile):
+                file_output = await file.read()
+
+            ui.upload("file").on_upload(on_upload=handle_upload, swap="none")
+        
+        """
         super().__init__("input")
         self.attributes["type"] = "file"
         self.attributes["name"] = name
@@ -24,6 +39,12 @@ class Upload(OnEvent):
         trigger: ON_EVENTS = "change",
         swap: SWAP_EVENTS = None,
     ) -> "Upload":
+        """
+        :param on_upload: The function to call when the upload event is triggered or the endpoint to call
+        :param target: The target to swap the response to
+        :param trigger: The event to trigger the function
+        :param swap: The swap event to use
+        """
         self.event = {
             "func": on_upload,
             "trigger": trigger,

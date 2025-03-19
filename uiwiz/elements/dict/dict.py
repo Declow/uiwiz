@@ -7,6 +7,17 @@ from uiwiz.element import Element
 
 class Dict(Element):
     def __init__(self, data: Union[Iterable[dict], dict]) -> None:
+        """Dict element
+
+        Will render a dict or list data as a formatted json in the browser
+
+        .. code-block:: python
+            from uiwiz import ui
+
+            ui.dict({"name": "John Doe", "age": 50})
+
+        :param data: list or dict data
+        """
         if not data:
             raise ValueError("Data cannot be None or empty")
         if not isinstance(data, (Iterable, dict)):

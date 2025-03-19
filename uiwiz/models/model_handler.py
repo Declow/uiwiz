@@ -41,10 +41,9 @@ switch = {
 }
 
 
-class ModelForm:
+class ModelForm(Form):
     model: BaseModel
     compact: bool
-    form: Form
     button: Button
     label_classes: str
     instance: Optional[BaseModel]
@@ -58,6 +57,38 @@ class ModelForm:
         size: ELEMENT_SIZE = "md",
         **kwargs,  # override fields with custom ui
     ):
+        """ModelForm
+
+        Create a form from a pydantic model. The form will be rendered with the fields from the model.
+        The model can also be a pydantic model instance. The form will be prefilled with the instance data.
+
+        Example:
+        .. code-block:: python
+            from pydantic import BaseModel
+            from uiwiz import ui, UiwizApp
+
+            app = UiwizApp()
+
+            class DataInput(BaseModel):
+                name: str
+                age: int
+
+            @app.ui("/handle-submit")
+            async def handle_submit(data: DataInput):
+                ui.toast(f"Name: {data.name}, Age: {data.age}").success()
+
+            @app.page("/")
+            async def home():
+                ui.modelForm(DataInput).on_submit(handle_submit)
+
+        :param model: The pydantic model to render
+        :param compact: If True, the form will be rendered with the label and input on the same line. If False, the label will be on top of the input
+        :param card_classes: The classes to apply to the container element
+        :param label_classes: The classes to apply to the label element
+        :param size: The size of the input elements
+        :param kwargs: Override the fields with custom ui elements
+        """
+        super().__init__()
         self.model = model
         self.instance = None
 
@@ -73,19 +104,18 @@ class ModelForm:
 
     def on_submit(self, *args, **kwargs) -> "ModelForm":
         self.button.render_html = True
-        self.form.on_submit(*args, **kwargs)
+        super().on_submit(*args, **kwargs)
         return self
 
     def render_model(self, **kwargs) -> Form:
-        if issubclass(self.model, BaseModel) == False:
+        if not issubclass(self.model, BaseModel):
             raise ValueError("type must be a pydantic model")
 
-        with Form().classes(self.card_classes) as form:
+        with self.classes(self.card_classes) as form:
             hints = get_type_hints(self.model, include_extras=True)
             for key, field_type in hints.items():
                 self.render_model_attributes(key, field_type, **kwargs)
             self.button = Button("Save")
-        self.form = form
 
     def render_model_attributes(self, key, field_type, **kwargs) -> "ModelForm":
         args = get_args(field_type)

@@ -5,11 +5,34 @@ from uiwiz.element import Element
 
 class Spinner(Element):
     _size: Literal["xs", "sm", "md", "lg"] = "sm"
-    _type: Literal["spinner", "dots", "ring", "ball", "bars", "infinity"] = "ring"
+    _type: Literal["spinner", "dots", "ring", "ball", "bars", "infinity"] = "infinity"
     root_class: str = "loading "
     _classes: str = "loading-{0} loading-{1}"
 
     def __init__(self, *args: Element) -> None:
+        """Spinner
+
+        Show a spinner while making a request
+
+        Example:
+        .. code-block:: python
+            from uiwiz import ui, UiwizApp
+            import asyncio
+
+            app = UiwizApp()
+
+            @app.ui("/some/endpoint")
+            async def some_endpoint():
+                asyncio.sleep(1)
+                ui.toast("Button clicked").success()
+
+            @app.page("/")
+            async def home():
+                with ui.button("Click me").on_click(some_endpoint, swap="none") as btn:
+                    ui.spinner(btn)
+
+        :param args: Elements to show spinner for when making a request
+        """
         super().__init__("span")
         self._size = Spinner._size
         self.type = Spinner._type

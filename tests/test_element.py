@@ -50,7 +50,7 @@ def test_oob_top_level():
     with ui.element() as root:
         ui.toast("uiwiz")
     assert (
-        '<div id="a-0"></div><div id="toast" hx-swap-oob="afterbegin"><div id="a-2" class="alert w-full z-50 "><span id="a-3">uiwiz</span></div></div>'
+        '<div id="a-0"></div><div id="toast" hx-swap-oob="afterbegin"><div id="a-2" class="alert w-full z-50  relative pr-16" hx-toast-data="{&quot;autoClose&quot;: true}" hx-toast-delete-button=""><span id="a-3">uiwiz</span></div></div>'
         == str(root)
     )
 

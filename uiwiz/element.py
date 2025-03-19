@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import html
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Tuple
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 from typing_extensions import Self
 
@@ -30,11 +30,48 @@ class Element:
         render_html: bool = True,
         oob: bool = False,
     ) -> None:
+        """Element
+
+        Represents an HTML element. This class is used to create HTML elements.
+
+        It is possible to create a custom element by subclassing this class.
+
+        Content of any element will be escaped by default. If you want to render
+        the content as HTML, you can use the ui.html(content="&lt;div&gt;html content&lt;/div&gt;") element.
+
+        The rendering of the element is done by calling the render method.
+        If some work needs to be done before or after rendering, the before_render
+        and after_render methods can be overridden.
+
+        The element attributes can be accessed and modified through the attributes property.
+        The content of an attribute can either be a string or a callable that returns a string.
+
+        Example:
+        .. code-block:: python
+            from uiwiz import ui, UiwizApp
+
+            app = UiwizApp()
+
+            @app.ui("/")
+            async def home():
+                ui.element().classes("flex")
+                with ui.element().classes("relative") as container:
+                    ui.element("h1", "Hello World")
+
+                ui.element().attributes["id"] = "my-id"
+                ui.element().attributes["id"] = lambda: "my-id" # <- This is also possible
+
+        
+        :param tag: The tag of the element type
+        :param content: The content of the element
+        :param render_html: If the element should be rendered
+        :param oob: If the element should be out of band swap
+        """
         self.stack = Frame.get_stack()
         if hasattr(self.__class__, "extensions") and self.__class__.extensions:
             for extension in self.__class__.extensions:
                 self.stack.add_extension(self.__class__, extension)
-        self.attributes: dict[str, str] = _Attributes()
+        self.attributes: dict[str, Union[str, Callable[[], str]]] = _Attributes()
         self.attributes["id"] = self.stack.get_id()
         self.stack.id_count += 1
         self.tag: str = tag
@@ -118,7 +155,12 @@ class Element:
         :param input: The tailwind classes to apply to the element.
         :return: The current instance of the element.
         """
-        clazz = getattr(self.__class__, "root_class", "")
+
+        clazz = (
+            getattr(self, "__root_class__", "")
+            if hasattr(self, "__root_class__")
+            else getattr(self.__class__, "root_class", "")
+        )
         if clazz == "":
             clazz = input
         elif input:
@@ -147,7 +189,9 @@ class Element:
                 if clazz == "":
                     self.attributes["class"] = format.format(size=size)
                 else:
-                    self.attributes["class"] = f"{self.attributes['class']} {format.format(size=size)}"
+                    self.attributes["class"] = (
+                        f"{self.attributes['class']} {format.format(size=size)}"
+                    )
             self._size = size
         return self
 
@@ -156,7 +200,9 @@ class Element:
         output += self.render_oob()
         return output
 
-    def render_top_level(self, render_script: bool = True, render_oob: bool = False) -> str:
+    def render_top_level(
+        self, render_script: bool = True, render_oob: bool = False
+    ) -> str:
         lst = []
         lst.append(self.render_self(render_oob=render_oob))
         if render_script:
@@ -186,7 +232,12 @@ class Element:
 
             lst.append("<%s %s>" % (self.tag, self.__dict_to_attrs__()))
             lst.append(self.content)
-            lst.extend([child.render_self() if child.oob is False else "" for child in self.children])
+            lst.extend(
+                [
+                    child.render_self() if child.oob is False else ""
+                    for child in self.children
+                ]
+            )
 
             if not self.is_void_element:
                 lst.append("</%s>" % self.tag)
@@ -212,7 +263,11 @@ class Element:
             return None
 
         self.attributes["hx-target"] = self.get_target(self.event.get("target"))
-        self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
+        self.attributes["hx-swap"] = (
+            self.event.get("swap")
+            if self.event.get("swap") is not None
+            else "outerHTML"
+        )
 
         self.attributes["hx-post"] = self.__get_endpoint__(self.event["func"])
         self.attributes["hx-trigger"] = self.event.get("trigger")
@@ -288,5 +343,14 @@ class Element:
     def __dict_to_attrs__(self):
         ATTR_NO_VALUE = object()
         return " ".join(
-            (key if value is ATTR_NO_VALUE else '%s="%s"' % (key, value)) for key, value in self.attributes.items()
+            (
+                key
+                if value is ATTR_NO_VALUE
+                else (
+                    '%s="%s"' % (key, value())
+                    if callable(value)
+                    else '%s="%s"' % (key, value)
+                )
+            )
+            for key, value in self.attributes.items()
         )

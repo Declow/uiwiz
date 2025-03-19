@@ -1,48 +1,51 @@
-from typing import Optional
+import typing
+from typing import Literal, Optional
 
 from uiwiz import ui
 from uiwiz.asgi_request_middleware import get_request
 from uiwiz.element import Element
 
+THEMES = Literal[
+    "light",
+    "dark",
+    "nord",
+    "cupcake",
+    "pastel",
+    "bumblebee",
+    "emerald",
+    "corporate",
+    "synthwave",
+    "retro",
+    "cyberpunk",
+    "valentine",
+    "halloween",
+    "garden",
+    "forest",
+    "aqua",
+    "lofi",
+    "fantasy",
+    "wireframe",
+    "black",
+    "luxury",
+    "dracula",
+    "cmyk",
+    "autumn",
+    "business",
+    "acid",
+    "lemonade",
+    "night",
+    "coffee",
+    "winter",
+    "dim",
+    "sunset",
+]
+
 
 class ThemeSelector(Element):
-    def __init__(self, themes: Optional[list[str]] = None) -> None:
+    def __init__(self, themes: Optional[THEMES] = None) -> None:
         super().__init__()
         self.render_html = False
-        self.themes = [
-            "light",
-            "dark",
-            "nord",
-            "cupcake",
-            "pastel",
-            "bumblebee",
-            "emerald",
-            "corporate",
-            "synthwave",
-            "retro",
-            "cyberpunk",
-            "valentine",
-            "halloween",
-            "garden",
-            "forest",
-            "aqua",
-            "lofi",
-            "fantasy",
-            "wireframe",
-            "black",
-            "luxury",
-            "dracula",
-            "cmyk",
-            "autumn",
-            "business",
-            "acid",
-            "lemonade",
-            "night",
-            "coffee",
-            "winter",
-            "dim",
-            "sunset",
-        ]
+        self.themes = list(typing.get_args(THEMES))
         if themes:
             self.themes = themes
 

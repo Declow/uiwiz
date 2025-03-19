@@ -14,6 +14,19 @@ class TextArea(OnEvent):
         value: Optional[str] = None,
         placeholder: Optional[str] = None,
     ) -> None:
+        """TextArea
+        
+        This element is used for text area inputs
+
+        .. code-block:: python
+            from uiwiz import ui
+
+            ui.textarea("textarea", "Hello World", "Type something here"):
+
+        :param name: name of the text area input
+        :param value: default value of the text area input
+        :param placeholder: placeholder of the text area input
+        """
         super().__init__("textarea")
         self.attributes["name"] = name
         if placeholder:
