@@ -1,3 +1,4 @@
+import typing
 from typing import Literal, Optional
 
 from uiwiz import ui
@@ -44,7 +45,7 @@ class ThemeSelector(Element):
     def __init__(self, themes: Optional[THEMES] = None) -> None:
         super().__init__()
         self.render_html = False
-        self.themes = THEMES
+        self.themes = list(typing.get_args(THEMES))
         if themes:
             self.themes = themes
 
