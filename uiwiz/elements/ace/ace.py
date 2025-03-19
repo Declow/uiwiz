@@ -54,6 +54,12 @@ class Ace(
 
         Use the Ace Editor to edit code in a textarea element.
 
+        Example:
+        .. code-block:: python
+            from uiwiz import ui
+
+            ui.ace(name="editor").on_submit(lambda data: ui.toast(data["editor"]).success())
+
         :param name: The name of the textarea element to be submitted with a form
         :param content: The initial content of the editor
         :param lang: The language mode to use. One of "sql" or "python"
