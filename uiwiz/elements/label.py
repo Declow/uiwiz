@@ -9,6 +9,11 @@ class Label(Bindable):
     root_size: str = "label-{size}"
 
     def __init__(self, text: Optional[str] = None, for_: Optional[Element] = None) -> None:
+        """Label
+        
+        :param text: The text to display
+        :param for_: The element to bind the label to
+        """
         super().__init__(tag="label")
         if text:
             self.content = text

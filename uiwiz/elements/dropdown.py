@@ -10,6 +10,20 @@ class Dropdown(OnEvent):
     _classes: str = "select-bordered w-full max-w-xs"
 
     def __init__(self, name: str, items: list[str], placeholder: Optional[str] = None) -> None:
+        """Dropdown
+
+        A dropdown is a list in which the selected item is always visible, and the others are visible on demand.
+
+        .. code-block:: python
+            from uiwiz import ui
+
+            ui.dropdown("dropdown", ["Option 1", "Option 2", "Option 3"], "Select an option")
+            ui.dropdown("dropdown", ["Option 1", "Option 2", "Option 3"], "Option 1") # Option 1 is selected by default
+        
+        :param name: The name of the dropdown
+        :param items: List of items in the dropdown
+        :param placeholder: Placeholder text
+        """
         super().__init__("select")
         self.attributes["name"] = name
         self.classes()

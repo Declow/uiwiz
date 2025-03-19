@@ -5,6 +5,8 @@ class Html(Element):
     def __init__(self, content) -> None:
         """Html element
 
+        Will render a raw htlm string
+
         :param content: html content as string
         """
         super().__init__()
