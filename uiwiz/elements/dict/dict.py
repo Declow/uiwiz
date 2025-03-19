@@ -11,6 +11,11 @@ class Dict(Element):
 
         Will render a dict or list data as a formatted json in the browser
 
+        .. code-block:: python
+            from uiwiz import ui
+
+            ui.dict({"name": "John Doe", "age": 50})
+
         :param data: list or dict data
         """
         if not data:
