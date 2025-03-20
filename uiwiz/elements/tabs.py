@@ -5,7 +5,7 @@ from uiwiz.element import Element
 
 class Tabs(Element):
     root_class: str = "tabs "
-    _classes: str = "tabs-bordered"
+    _classes: str = "tabs-box"
 
     def __init__(self) -> None:
         super().__init__()
