@@ -16,7 +16,7 @@ class AceEditor {
         this.hidden_input = document.getElementById(getAttributeFromElement(element, "hx-ace-editor-hidden-input"));
         this.form = document.getElementById(getAttributeFromElement(element, "hx-ace-editor-form"));
         this.content = getAttributeFromElement(element, "hx-ace-editor-content");
-        
+
         this.sqlOptions = JSON.parse(getAttributeFromElement(element, "hx-ace-editor-sql-options"));
         this.aceOptions = JSON.parse(getAttributeFromElement(element, "hx-ace-editor-options"));
 
@@ -44,7 +44,7 @@ class AceEditor {
             if (this.editor.isFocused() && (event.metaKey || event.ctrlKey) && event.key === "Enter") {
                 this.hidden_input.value = this.editor.getValue();
                 if (this.form) {
-                    htmx.trigger(this.form, "submit");
+                    this.form.requestSubmit();
                 }
             }
         });
