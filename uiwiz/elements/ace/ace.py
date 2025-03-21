@@ -43,7 +43,7 @@ class Ace(
     )
 
     root_class: str = "ace-editor "
-    _classes: str = "rounded-md w-full h-96"
+    _classes: str = "rounded-md w-full h-56 resize-y"
 
     def __init__(
         self,
