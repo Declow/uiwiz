@@ -42,6 +42,9 @@ class Ace(
         show_print_margin=False,
     )
 
+    root_class: str = "ace-editor "
+    _classes: str = "rounded-md w-full h-96"
+
     def __init__(
         self,
         name: Optional[str] = None,
@@ -58,13 +61,13 @@ class Ace(
         .. code-block:: python
             from uiwiz import ui
 
-            ui.ace(name="editor").on_submit(lambda data: ui.toast(data["editor"]).success())
+            ui.ace(name="editor")
 
         :param name: The name of the textarea element to be submitted with a form
         :param content: The initial content of the editor
         :param lang: The language mode to use. One of "sql" or "python"
         :param sql_options: Options for the SQL language mode. Tables and columns to be used for autocompletion
-        :param ace_options: Options for the Ace Editor        
+        :param ace_options: Options for the Ace Editor
         """
         hidden_text = Element("textarea")
         hidden_text.attributes["hidden"] = "true"
@@ -73,7 +76,7 @@ class Ace(
         super().__init__()
         hidden_text.attributes["hx-ace-editor-id"] = self.id
 
-        self.classes("ace-editor rounded-md w-full h-96")
+        self.classes(Ace._classes)
         self.attributes["hx-ace-editor-lang"] = lang
         self.attributes["hx-ace-editor-hidden-input"] = hidden_text.id
         self.attributes["hx-ace-editor-form"] = self.find_parent_form()
