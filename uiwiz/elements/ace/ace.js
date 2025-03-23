@@ -74,10 +74,10 @@ class AceEditor {
         ];
 
         this.sqlOptions.tables.forEach(option => {
-            sqlKeywords.push({ name: option, value: option, score: 900, meta: "Keyword" });
+            sqlKeywords.push({ name: option, value: option, score: 900, meta: "table" });
         });
         this.sqlOptions.columns.forEach(option => {
-            sqlKeywords.push({ name: option, value: option, score: 800, meta: "Keyword" });
+            sqlKeywords.push({ name: option, value: option, score: 800, meta: "column" });
         });
 
         // Custom Autocomplete Completer
