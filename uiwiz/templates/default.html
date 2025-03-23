@@ -8,9 +8,9 @@
 
     <title>{{title}}</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5.0.0/themes.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="/_static/{{ version }}/libs/daisyui.css" rel="stylesheet" type="text/css" />
+    <link href="/_static/{{ version }}/libs/daisyui-themes.css" rel="stylesheet" type="text/css" />
+    <script src="/_static/{{ version }}/libs/tailwind.js"></script>
     <link href="/_static/{{ version }}/app.css" rel="stylesheet" type="text/css" />
     {{ ext_css | safe }}
 </head>
@@ -19,7 +19,7 @@
     <div id="content">
         {% for element in root_element %}{{ element | safe}}{% endfor %}
     </div>
-    <div id="toast" class="toast toast-top toast-end z-50"></div>
+    <div id="toast" class="toast toast-top toast-end z-50" hx-toast-delay="{{ toast_delay }}"></div>
 
     <script src="/_static/{{ version }}/libs/htmx1.9.9.min.js"></script>
     <script src="/_static/{{ version }}/libs/htmx-json-enc.js"></script>

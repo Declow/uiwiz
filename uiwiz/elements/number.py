@@ -3,19 +3,18 @@ from typing import Optional
 from uiwiz.elements.extensions.on_event import OnEvent
 
 
-class Range(OnEvent):
-    root_class: str = "range "
-    root_size: str = "range-{size}"
+class Number(OnEvent):
+    root_class: str = "input "
 
     def __init__(self, name: str, value: int, min: int, max: int, step: Optional[int] = None) -> None:
         """Range
-        
+
         This element is used for range inputs
 
         .. code-block:: python
             from uiwiz import ui
 
-            ui.Range("range", 50, 0, 100, 1):
+            ui.number("range", 50, 0, 100, 1):
 
         :param name: name of the range input
         :param value: default value of the range input
@@ -24,7 +23,7 @@ class Range(OnEvent):
         :param step: step value of the range input
         """
         super().__init__("input")
-        self.attributes["type"] = "range"
+        self.attributes["type"] = "number"
         self.attributes["name"] = name
         self.attributes["min"] = min
         self.attributes["max"] = max

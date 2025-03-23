@@ -1,9 +1,7 @@
 from datetime import date, datetime
-from typing import Callable, Optional, Union
+from typing import Optional, Union
 
-from uiwiz.element import Element
 from uiwiz.elements.extensions.on_event import OnEvent
-from uiwiz.event import ON_EVENTS
 
 
 class Datepicker(OnEvent):
@@ -12,6 +10,11 @@ class Datepicker(OnEvent):
         name: str,
         value: Optional[datetime] = None,
     ) -> None:
+        """Datepicker element
+        
+        :param name: name of the datepicker
+        :param value: default value of the datepicker
+        """
         super().__init__("input")
         self.attributes["name"] = name
         self.attributes["type"] = "date"

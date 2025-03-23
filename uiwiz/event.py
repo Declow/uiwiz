@@ -3,21 +3,33 @@ from typing import TYPE_CHECKING, Callable, Literal, Optional, TypedDict, Union
 if TYPE_CHECKING:
     from uiwiz.element import Element
 
-ON_EVENTS = Literal[
-    "input",
-    "change",
-    "click",
-    "focus",
-    "blur",
-    "submit",
-    "reset",
-    "keydown",
-    "keyup",
-    "keypress",
-    "scroll",
-    "copy",
-    "cut",
-    "paste",
+TRIGGER_COMBINATIONS = Literal[
+    "keydown[ctrlKey&&key=='Enter'], keydown[metaKey&&key=='Enter']",
+    "keydown[key=='Enter']",
+    "keydown[ctrlKey&&key=='Enter']",
+    "keydown[metaKey&&key=='Enter']",
+    "keydown[shiftKey&&key=='Enter']",
+    "keydown[altKey&&key=='Enter']",
+]
+
+ON_EVENTS = Union[
+    Literal[
+        "input",
+        "change",
+        "click",
+        "focus",
+        "blur",
+        "submit",
+        "reset",
+        "keydown",
+        "keyup",
+        "keypress",
+        "scroll",
+        "copy",
+        "cut",
+        "paste",
+    ],
+    TRIGGER_COMBINATIONS,
 ]
 
 # HTMX Swap Events

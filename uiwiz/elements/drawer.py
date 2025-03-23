@@ -47,6 +47,30 @@ class Drawer(Element):
     _classes: str = "drawer bg-base-100 min-h-screen h-full"
 
     def __init__(self, always_open: bool = False, right: bool = False) -> None:
+        """Drawer
+
+        A drawer is a panel that slides in from the side of the screen. It can be used to display additional content or controls.
+
+        .. code-block:: python
+            from uiwiz import ui
+
+            with ui.drawer() as drawer:
+                with drawer.drawer_content():
+                    with ui.nav():
+                        drawer.drawer_button()
+
+                    with ui.col():
+                        ui.label("test1")
+                        ui.button("Click me")
+                        ui.label("test1")
+
+                with drawer.drawer_side():
+                    with ui.element("li"):
+                        ui.link("Drawer-1", "/")
+
+        :param always_open: Always open the drawer until the screen size is too small.
+        :param right: Open the drawer from the right side of the screen.
+        """
         super().__init__()
         self.classes(Drawer._classes)
         self.__drawer_button_menu__: Optional[Element] = None
@@ -57,7 +81,8 @@ class Drawer(Element):
             self.classes(self.attributes["class"] + " drawer-end")
 
         with self:
-            self.drawer_toggle = Checkbox("").classes("drawer-toggle")
+            self.drawer_toggle = Checkbox("")
+            self.drawer_toggle.attributes["class"] = "drawer-toggle"
 
     def drawer_content(self) -> Element:
         self.drawer_content = DrawerContent()
