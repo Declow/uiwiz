@@ -1,7 +1,6 @@
 # ruff: noqa
 from typing import Type, TypeVar
 
-from uiwiz.element import Element as element
 from uiwiz.elements.ace import Ace as ace
 from uiwiz.elements.aggrid.aggrid import Aggrid as aggrid
 from uiwiz.elements.avatar import Avatar as avatar
@@ -16,6 +15,7 @@ from uiwiz.elements.divider import Divider as divider
 from uiwiz.elements.drawer import Drawer as drawer
 from uiwiz.elements.dropdown import Dropdown as dropdown
 from uiwiz.elements.echart.echart import EChart as echart
+from uiwiz.element import Element as element
 from uiwiz.elements.footer import Footer as footer
 from uiwiz.elements.form import Form as form
 from uiwiz.elements.full_width import FullWidth as fullWidth
@@ -29,6 +29,7 @@ from uiwiz.elements.nav import Nav as nav
 from uiwiz.elements.radio import Radio as radio
 from uiwiz.elements.range import Range as range
 from uiwiz.elements.row import Row as row
+from uiwiz.elements.number import Number as number
 from uiwiz.elements.spinner import Spinner as spinner
 from uiwiz.elements.table import Table as table
 from uiwiz.elements.tabs import Tab as tab
