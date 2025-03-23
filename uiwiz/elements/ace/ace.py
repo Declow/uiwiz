@@ -72,6 +72,7 @@ class Ace(
         hidden_text = Element("textarea")
         hidden_text.attributes["hidden"] = "true"
         hidden_text.attributes["name"] = name
+        hidden_text.content = content or ""
 
         super().__init__()
         hidden_text.attributes["hx-ace-editor-id"] = self.id
