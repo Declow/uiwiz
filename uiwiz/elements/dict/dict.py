@@ -1,12 +1,17 @@
+import json
 import numbers
 from pathlib import Path
 from typing import Iterable, Union
 
 from uiwiz.element import Element
+from uiwiz.elements.button import Button
+from uiwiz.elements.html import Html
+from uiwiz.svg.svg_handler import get_svg
 
+JS_PATH = Path(__file__).parent / "copy.js"
 
-class Dict(Element):
-    def __init__(self, data: Union[Iterable[dict], dict]) -> None:
+class Dict(Element, extensions=[JS_PATH]):
+    def __init__(self, data: Union[Iterable[dict], dict], copy_to_clipboard: bool = False) -> None:
         """Dict element
 
         Will render a dict or list data as a formatted json in the browser
@@ -27,7 +32,9 @@ class Dict(Element):
         self.did_render = False
         self.key_class = ""
         self.value_class = "text-primary"
+        self._border_position = "relative"
         self._border_classes = "border border-base-content rounded-lg shadow-lg w-96 shadow-md w-full mb-5"
+        self.copy_to_clipboard = copy_to_clipboard
 
     def key_classes(self, classes):
         self.key_class = classes
@@ -110,5 +117,10 @@ class Dict(Element):
                     Element(content=str(data)).classes(self.value_class)
                     Element(tag="div", content="," if not is_last_item else "")
 
-        with self.classes(self._border_classes):
+        with self.classes(f"{self._border_classes} {self._border_position}"):
+            if self.copy_to_clipboard:
+                with Button("").classes("absolute top-2 right-2 wiz-copy-content") as btn:
+                    # with tailwind classes resize to fit container
+                    Html(content=get_svg("copy")).classes("w-6 h-6")
+                    btn.attributes["data-copy-data"] = json.dumps(data, indent=2)
             format_data(data, is_last_item=True)

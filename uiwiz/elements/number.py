@@ -7,20 +7,20 @@ class Number(OnEvent):
     root_class: str = "input "
 
     def __init__(self, name: str, value: int, min: int, max: int, step: Optional[int] = None) -> None:
-        """Range
+        """number
 
-        This element is used for range inputs
+        This element is used for number inputs
 
         .. code-block:: python
             from uiwiz import ui
 
-            ui.number("range", 50, 0, 100, 1):
+            ui.number("value", 50, 0, 100, 1):
 
-        :param name: name of the range input
-        :param value: default value of the range input
-        :param min: minimum value of the range input
-        :param max: maximum value of the range input
-        :param step: step value of the range input
+        :param name: name of the number input
+        :param value: default value of the number input
+        :param min: minimum value of the number input
+        :param max: maximum value of the number input
+        :param step: step value of the number input
         """
         super().__init__("input")
         self.attributes["type"] = "number"

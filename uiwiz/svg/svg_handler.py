@@ -2,7 +2,7 @@ from typing import Literal
 
 from anyio import Path
 
-_type = Literal["info", "error", "success", "warning", "menu"]
+_type = Literal["info", "error", "success", "warning", "menu", "copy"]
 
 
 def get_svg(svg: _type) -> str:

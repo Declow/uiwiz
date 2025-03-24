@@ -36,7 +36,7 @@ async def test():
                 ],
             },
         }
-        ui.dict(json_data)
+        ui.dict(json_data, copy_to_clipboard=True)
 
         ui.dict([json_data, {"name": "Jane Doe", "age": 40}]).border_classes("")
 

@@ -32,8 +32,7 @@ Create a main.py file
 ```python
 import uvicorn
 
-from uiwiz import ui
-from uiwiz.app import UiwizApp
+from uiwiz import ui, UiwizApp
 
 app = UiwizApp()
 
