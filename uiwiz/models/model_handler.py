@@ -111,7 +111,7 @@ class ModelForm(Form):
         if not issubclass(self.model, BaseModel):
             raise ValueError("type must be a pydantic model")
 
-        with self.classes(self.card_classes) as form:
+        with self.classes(self.card_classes):
             hints = get_type_hints(self.model, include_extras=True)
             for key, field_type in hints.items():
                 self.render_model_attributes(key, field_type, **kwargs)
