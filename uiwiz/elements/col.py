@@ -22,3 +22,4 @@ class Col(Element):
         self.__root_class__ = Col.root_class.format(
             item_position=item_position, gap=gap, padding=padding
         )
+        self.classes("")
