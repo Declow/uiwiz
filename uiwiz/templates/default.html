@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html id="html" lang="en" {{ theme if theme }} {{ overflow | safe }}>
+
 <head>
     {{ head | safe }}
     <meta charset="utf-8">
@@ -19,14 +20,14 @@
     <div id="content">
         {% for element in root_element %}{{ element | safe}}{% endfor %}
     </div>
-    <div id="toast" class="toast toast-top toast-end z-50" hx-toast-delay="{{ toast_delay }}"></div>
+    <div id="toast" class="toast toast-top toast-end text-wrap z-50" hx-toast-delay="{{ toast_delay }}"></div>
 
     <script src="/_static/{{ version }}/libs/htmx1.9.9.min.js"></script>
     <script src="/_static/{{ version }}/libs/htmx-json-enc.js"></script>
     <script src="/_uiwiz/{{ version }}/default.js"></script>
     {{ ext_js | safe }}
     <!-- A bit hacky but aggrid requires the css to load after the grid... -->
-    {{ ext_css | safe }} 
+    {{ ext_css | safe }}
 </body>
 
 </html>
