@@ -1,5 +1,4 @@
 from uiwiz import ui
-from uiwiz.frame import Frame
 
 
 def test_frame_id_reuse():
