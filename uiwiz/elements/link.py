@@ -8,6 +8,16 @@ class Link(Element):
     _classes: str = "link-hover"
 
     def __init__(self, text: str, link: Union[Callable[[], str], str]) -> None:
+        """Link element
+
+        Link element that can be used to navigate to a different page.
+        Can be used as a button or a link.
+        
+        :param text: The text to display
+        :type text: str
+        :param link: The link to navigate to when clicked. Can be a callable that returns a string
+        :type link: Union[Callable[[], str], str]
+        """
         super().__init__("a")
         self.content = text
         self.link = link
@@ -15,7 +25,7 @@ class Link(Element):
             self.attributes["href"] = link
         self.classes(Link._classes)
 
-    def before_render(self):
+    def before_render(self) -> None:
         if callable(self.link):
             self.attributes["href"] = self.link()
             return
