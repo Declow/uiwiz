@@ -12,7 +12,9 @@ class Label(Bindable):
         """Label
         
         :param text: The text to display
+        :type text: str, optional
         :param for_: The element to bind the label to
+        :type for_: Element, optional
         """
         super().__init__(tag="label")
         if text:

@@ -9,7 +9,9 @@ class Checkbox(OnEvent):
         """Checkbox element
         
         :param name: name of the checkbox
+        :type name: str
         :param checked: checked status
+        :type checked: bool, optional
         """
         super().__init__("input")
         if checked:

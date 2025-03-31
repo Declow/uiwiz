@@ -69,7 +69,9 @@ class Drawer(Element):
                         ui.link("Drawer-1", "/")
 
         :param always_open: Always open the drawer until the screen size is too small.
+        :type always_open: bool, optional
         :param right: Open the drawer from the right side of the screen.
+        :type right: bool, optional
         """
         super().__init__()
         self.classes(Drawer._classes)

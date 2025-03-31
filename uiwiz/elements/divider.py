@@ -11,6 +11,7 @@ class Divider(Element):
         Display a divider line between elements.
 
         :param text: The text to display in the divider.
+        :type text: str, optional
         """
         super().__init__("div")
         self.content = text

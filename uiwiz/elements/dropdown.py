@@ -21,8 +21,11 @@ class Dropdown(OnEvent):
             ui.dropdown("dropdown", ["Option 1", "Option 2", "Option 3"], "Option 1") # Option 1 is selected by default
         
         :param name: The name of the dropdown
+        :type name: str
         :param items: List of items in the dropdown
+        :type items: list[str]
         :param placeholder: Placeholder text
+        :type placeholder: str, optional
         """
         super().__init__("select")
         self.attributes["name"] = name

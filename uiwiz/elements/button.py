@@ -13,7 +13,8 @@ class Button(OnEvent):
         Create a button element, with the given title.
         Can be used to trigger events.
         
-        :param title: The title of the button.
+        :param title: The title of the button
+        :type title: str
         """
         super().__init__(tag="button")
         self.content = title

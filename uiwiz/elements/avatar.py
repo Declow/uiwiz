@@ -10,7 +10,9 @@ class Avatar(Element):
         Display an avatar image.
 
         :param path: The path to the image to display.
+        :type path: str
         :param size: The size of the avatar.
+        :type size: int, optional
         """
         super().__init__()
         with self:

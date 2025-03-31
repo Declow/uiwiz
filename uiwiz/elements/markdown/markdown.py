@@ -11,6 +11,13 @@ CODE_HIGHLIGHT = Path(__file__).parent / "codehighlight.css"
 
 class Markdown(Element, extensions=[MARKDOWN, CODE_HIGHLIGHT]):
     def __init__(self, content="", extras=["fenced-code-blocks", "markdown-in-html"]) -> None:
+        """Markdown
+        
+        :param content: Markdown content to be rendered
+        :type content: str
+        :param extras: Extra options for markdown2, defaults to ["fenced-code-blocks", "markdown-in-html"]
+        :type extras: list, optional
+        """
         super().__init__()
         self.classes("markdown-body")
         self.extras = extras

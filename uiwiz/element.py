@@ -61,9 +61,13 @@ class Element:
 
         
         :param tag: The tag of the element type
+        :type tag: str
         :param content: The content of the element
+        :type content: str, optional
         :param render_html: If the element should be rendered
+        :type render_html: bool, optional
         :param oob: If the element should be out of band swap
+        :type oob: bool, optional
         """
         self.stack = Frame.get_stack()
         if hasattr(self.__class__, "extensions") and self.__class__.extensions:

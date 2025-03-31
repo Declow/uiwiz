@@ -8,6 +8,7 @@ class Html(Element):
         Will render a raw htlm string
 
         :param content: html content as string
+        :type content: str
         """
         super().__init__()
         self.__content__ = content

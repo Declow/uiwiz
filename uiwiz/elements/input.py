@@ -20,8 +20,11 @@ class Input(OnEvent):
         This element is used for input data
 
         :param name: Used in the attributes name sent back in json
+        :type name: str, optional
         :param value: The default value for the input
+        :type value: str, optional
         :param placeholder: Text to show before input
+        :type placeholder: str, optional
         """
         super().__init__("input")
         self.classes(Input._classes)

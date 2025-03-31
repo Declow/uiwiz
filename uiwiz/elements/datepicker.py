@@ -13,7 +13,9 @@ class Datepicker(OnEvent):
         """Datepicker element
         
         :param name: name of the datepicker
+        :type name: str
         :param value: default value of the datepicker
+        :type value: datetime, optional
         """
         super().__init__("input")
         self.attributes["name"] = name

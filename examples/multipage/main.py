@@ -14,7 +14,8 @@ async def test():
         with ui.element().classes("w-full"):
             ui.element(content="Hello, world!")
             for route in page_map.values():
-                ui.link(route, route)
+                with ui.col():
+                    ui.link(route, route)
 
 
 if __name__ == "__main__":
