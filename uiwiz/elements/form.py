@@ -9,7 +9,7 @@ class Form(Element):
 
     def __init__(self) -> None:
         """Form
-        
+
         A form is a section of a document containing input elements.
 
         .. code-block:: python
@@ -20,7 +20,7 @@ class Form(Element):
             @app.route("/submit")
             async def submit():
                 return "Form submitted!"
-            
+
             with ui.form().on_submit(submit):
                 ui.input(name="name", placeholder="Name")
         """

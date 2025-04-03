@@ -53,7 +53,7 @@ class UiwizApp(FastAPI):
         """App used for asgi applications
 
         See fastapi documentation for more *args and **kwargs
-        
+
         :param toast_delay: The time in milliseconds before the toast is removed
         :param error_classes: The classes to apply to the toast error for default validation errors
         :param cache_age: The time in seconds to cache the static files
@@ -89,7 +89,6 @@ class UiwizApp(FastAPI):
             return self.render(request, response, template_name="default.js", media_type="application/javascript")
 
         self.exception_handler(RequestValidationError)(self.handle_validation_error)
-        
 
         @self.get("/_static/extension/{__version__}/{extension}/{filename}", include_in_schema=False)
         def get_extension(extension: str, filename: str):
@@ -181,17 +180,19 @@ class UiwizApp(FastAPI):
 
         Frame.get_stack().del_stack()
         Frame.get_stack()
-        
+
         with Element().classes(self.error_classes) as toast:
             toast.attributes["id"] = "toast"
             toast.attributes["hx-swap-oob"] = "afterbegin"
-            toast.attributes["hx-toast-data"] = json.dumps(jsonable_encoder(
-                {
-                    "detail": exc.errors(),
-                    "fieldErrors": fields_with_errors,
-                    "fieldOk": ok_fields,
-                }
-            ))
+            toast.attributes["hx-toast-data"] = json.dumps(
+                jsonable_encoder(
+                    {
+                        "detail": exc.errors(),
+                        "fieldErrors": fields_with_errors,
+                        "fieldOk": ok_fields,
+                    }
+                )
+            )
             html = Html("").classes("alert alert-error relative")
             html.tag = "span"
             html.attributes["hx-toast-data"] = json.dumps({"autoClose": self.auto_close_toast_error})
@@ -202,9 +203,8 @@ class UiwizApp(FastAPI):
                         Element(content=f"{item.get('loc')[1]}: {item.get('msg')}")
                 if not self.auto_close_toast_error:
                     btn = Button("✕").classes("btn btn-sm btn-circle btn-ghost absolute right-2 top-2")
-                    
-        html_content = Frame.get_stack().render()
 
+        html_content = Frame.get_stack().render()
 
         return HTMLResponse(
             content=html_content,

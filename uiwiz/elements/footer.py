@@ -7,7 +7,7 @@ class Footer(Element):
 
     def __init__(self) -> None:
         """Footer
-        
+
         A footer is a section at the bottom of a page that contains information about the page.
 
         .. code-block:: python

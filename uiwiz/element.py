@@ -59,7 +59,7 @@ class Element:
                 ui.element().attributes["id"] = "my-id"
                 ui.element().attributes["id"] = lambda: "my-id" # <- This is also possible
 
-        
+
         :param tag: The tag of the element type
         :type tag: str
         :param content: The content of the element
@@ -191,9 +191,7 @@ class Element:
                 if clazz == "":
                     self.attributes["class"] = format.format(size=size)
                 else:
-                    self.attributes["class"] = (
-                        f"{self.attributes['class']} {format.format(size=size)}"
-                    )
+                    self.attributes["class"] = f"{self.attributes['class']} {format.format(size=size)}"
             self._size = size
         return self
 
@@ -202,9 +200,7 @@ class Element:
         output += self.render_oob()
         return output
 
-    def render_top_level(
-        self, render_script: bool = True, render_oob: bool = False
-    ) -> str:
+    def render_top_level(self, render_script: bool = True, render_oob: bool = False) -> str:
         lst = []
         lst.append(self.render_self(render_oob=render_oob))
         if render_script:
@@ -234,12 +230,7 @@ class Element:
 
             lst.append("<%s %s>" % (self.tag, self.__dict_to_attrs__()))
             lst.append(self.content)
-            lst.extend(
-                [
-                    child.render_self() if child.oob is False else ""
-                    for child in self.children
-                ]
-            )
+            lst.extend([child.render_self() if child.oob is False else "" for child in self.children])
 
             if not self.is_void_element:
                 lst.append("</%s>" % self.tag)
@@ -265,11 +256,7 @@ class Element:
             return None
 
         self.attributes["hx-target"] = self.get_target(self.event.get("target"))
-        self.attributes["hx-swap"] = (
-            self.event.get("swap")
-            if self.event.get("swap") is not None
-            else "outerHTML"
-        )
+        self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
         self.attributes["hx-post"] = self.__get_endpoint__(self.event["func"])
         self.attributes["hx-trigger"] = self.event.get("trigger")
@@ -348,11 +335,7 @@ class Element:
             (
                 key
                 if value is ATTR_NO_VALUE
-                else (
-                    '%s="%s"' % (key, value())
-                    if callable(value)
-                    else '%s="%s"' % (key, value)
-                )
+                else ('%s="%s"' % (key, value()) if callable(value) else '%s="%s"' % (key, value))
             )
             for key, value in self.attributes.items()
         )

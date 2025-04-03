@@ -7,7 +7,7 @@ class Checkbox(OnEvent):
 
     def __init__(self, name: str, checked: bool = False) -> None:
         """Checkbox element
-        
+
         :param name: name of the checkbox
         :type name: str
         :param checked: checked status

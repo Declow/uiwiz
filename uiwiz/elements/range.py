@@ -9,7 +9,7 @@ class Range(OnEvent):
 
     def __init__(self, name: str, value: int, min: int, max: int, step: Optional[int] = None) -> None:
         """Range
-        
+
         This element is used for range inputs
 
         .. code-block:: python

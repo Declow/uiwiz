@@ -14,15 +14,15 @@ class EChart(Element, extensions=[LIB_PATH, JS_PATH]):
 
     def __init__(self, options: dict, height: str = "h-80") -> None:
         """EChart element
-        
+
         See https://echarts.apache.org/examples/en/index.html for examples
         on how to use ECharts
 
         Example usage:
         .. code-block:: python
-                
+
                 from uiwiz import ui
-    
+
                 options = {
                     "title": {"text": "ECharts entry example"},
                     "tooltip": {},
@@ -31,7 +31,7 @@ class EChart(Element, extensions=[LIB_PATH, JS_PATH]):
                     "yAxis": {},
                     "series": [{"name": "Sales", "type": "bar", "data": [5, 20, 36, 10, 10, 20]}],
                 }
-    
+
                 ui.echart(options)
 
         :param options: EChart options
@@ -40,7 +40,7 @@ class EChart(Element, extensions=[LIB_PATH, JS_PATH]):
         with Element() as container:
             container.classes(f"flex justify-center relative overflow-hidden items-center {height}")
             super().__init__()
-        
+
         self.attributes[EChart.name] = EChart.name
         self.attributes[f"{EChart.name}-options"] = json.dumps(options)
         self.attributes["hx-ext"] = EChart.name

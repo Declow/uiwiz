@@ -11,7 +11,7 @@ class Datepicker(OnEvent):
         value: Optional[datetime] = None,
     ) -> None:
         """Datepicker element
-        
+
         :param name: name of the datepicker
         :type name: str
         :param value: default value of the datepicker

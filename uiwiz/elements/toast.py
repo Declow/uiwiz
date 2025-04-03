@@ -29,7 +29,7 @@ class Toast(Element):
 
         :param message: The message to display
         :param svg: The svg to display. One of "info", "warning", "success", "error", "menu"
-        
+
         """
         self.inner_class = Toast.root_class
         super().__init__(tag="div", oob=True)
@@ -44,14 +44,14 @@ class Toast(Element):
     @property
     def auto_close(self) -> bool:
         return self._auto_close
-    
+
     @auto_close.setter
     def auto_close(self, auto_close: bool) -> None:
         self._auto_close = auto_close
-    
+
     def set_auto_close(self, auto_close: bool) -> "Toast":
         """Set auto close
-        
+
         :param auto_close: True or False. Auto close False will keep the toast open until the user closes it
         """
         self.auto_close = auto_close

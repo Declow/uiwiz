@@ -10,6 +10,7 @@ from uiwiz.svg.svg_handler import get_svg
 
 JS_PATH = Path(__file__).parent / "copy.js"
 
+
 class Dict(Element, extensions=[JS_PATH]):
     def __init__(self, data: Union[Iterable[dict], dict], copy_to_clipboard: bool = False) -> None:
         """Dict element

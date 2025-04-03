@@ -10,7 +10,7 @@ class Label(Bindable):
 
     def __init__(self, text: Optional[str] = None, for_: Optional[Element] = None) -> None:
         """Label
-        
+
         :param text: The text to display
         :type text: str, optional
         :param for_: The element to bind the label to

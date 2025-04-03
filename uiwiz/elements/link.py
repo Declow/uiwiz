@@ -12,7 +12,7 @@ class Link(Element):
 
         Link element that can be used to navigate to a different page.
         Can be used as a button or a link.
-        
+
         :param text: The text to display
         :type text: str
         :param link: The link to navigate to when clicked. Can be a callable that returns a string

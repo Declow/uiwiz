@@ -12,7 +12,7 @@ class Button(OnEvent):
         """
         Create a button element, with the given title.
         Can be used to trigger events.
-        
+
         :param title: The title of the button
         :type title: str
         """
