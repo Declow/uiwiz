@@ -1,6 +1,5 @@
 import json
 import logging
-from html import escape
 from mimetypes import guess_type
 from pathlib import Path
 from typing import Optional, Union
@@ -12,8 +11,6 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from jinja2 import Template
 from starlette.requests import Request
 
 from uiwiz.asgi_request_middleware import AsgiRequestMiddleware
@@ -73,7 +70,6 @@ class UiwizApp(FastAPI):
         else:
             self.theme = theme
         self.title = title
-        self.templates = Jinja2Templates(Path(__file__).parent / "templates")
         self.add_static_files(f"/_static/{__version__}/", Path(__file__).parent / "static")
 
         self.add_middleware(AsgiRequestMiddleware)
@@ -81,12 +77,6 @@ class UiwizApp(FastAPI):
         self.add_middleware(AsgiTtlMiddleware, cache_age=cache_age)
         self.extensions: dict[str, Path] = {}
         self.app_paths: dict[str, Path] = {}
-
-        @self.get(f"/_uiwiz/{__version__}/default.js", include_in_schema=False)
-        def return_default_js(request: Request, response: Response):
-            response.headers["cache-control"] = f"max-age={cache_age}"
-            response.headers["x-uiwiz-content"] = "assets"
-            return self.render(request, response, template_name="default.js", media_type="application/javascript")
 
         self.exception_handler(RequestValidationError)(self.handle_validation_error)
 
@@ -123,56 +113,6 @@ class UiwizApp(FastAPI):
 
     def ui(self, path: str, *args, include_js: bool = True, include_css: bool = True, **kwargs) -> PageRouter:
         return PageRouter().ui(path=path, include_js=include_js, include_css=include_css, router=self.router, **kwargs)
-
-    def render(
-        self,
-        request: Request,
-        response: Response,
-        title: Optional[str] = None,
-        status_code: int = 200,
-        template_name: str = "default.html",
-        media_type: str = "text/html",
-        root_overflow: str = "overflow-y: scroll",
-    ):
-        frame = Frame.get_stack()
-        ext_js, ext_css = frame.render_ext()
-
-        theme = self.theme
-        if cookie_theme := request.cookies.get("data-theme"):
-            theme = f"data-theme={escape(cookie_theme)}"
-
-        root_overflow = f'style="{root_overflow}"'
-        standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "page"}
-        default_page: Template = self.templates.get_template(template_name)
-
-        if response:
-            for key, value in response.headers.items():
-                standard_headers[key] = value
-
-        return self.return_funtion_response(
-            HTMLResponse(
-                content=default_page.render(
-                    request=request,
-                    root_element=[frame.render()],
-                    title=self.__get_title__(frame, title),
-                    theme=theme,
-                    ext_js=ext_js,
-                    ext_css=ext_css,
-                    toast_delay=json.dumps({"delay": self.toast_delay}),
-                    description_content=frame.meta_description_content,
-                    overflow=root_overflow,
-                    head=frame.head_ext,
-                    version=__version__,
-                ),
-                status_code=status_code,
-                headers=standard_headers,
-                media_type=media_type,
-            )
-        )
-
-    def return_funtion_response(self, response: Union[str, Response]) -> Union[str, Response]:
-        Frame.get_stack().del_stack()
-        return response
 
     async def handle_validation_error(self, request: Request, exc: RequestValidationError):
         fields_with_errors = [item.get("loc")[1] for item in exc.errors() if item.get("loc")[1] in exc.body]

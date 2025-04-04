@@ -1,7 +1,7 @@
 import asyncio
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Iterable, List, Optional, Union
 from uuid import uuid4
 
 from uiwiz.asgi_request_middleware import get_request
@@ -22,9 +22,8 @@ class Frame:
     stacks: dict[int, "Frame"] = {}
 
     def __init__(self) -> None:
-        self.root_element: Optional[Element] = None
-        self.current_element: Optional[Element] = None
-        self.oob_elements: list[Element] = []
+        self.root: List["Element"] = []
+        self.current_element: Optional["Element"] = None
         self.id_count: int = 0  # used for element id
         self.scripts: list[str] = []
         self.extensions: List[str] = []
@@ -49,36 +48,13 @@ class Frame:
 
         return self.last_id
 
-    def remove_frame(self, element: "Element") -> None:
-        if element is None:
-            if self.root_element:
-                self.root_element.stack = None
-                self.remove_frame(self.root_element)
-        else:
-            element.stack = None
-            for child in element.children:
-                self.remove_frame(child)
-
     def render(self) -> str:
-        if self.root_element:
-            return self.root_element.render()
-        if self.oob_elements:
-            output = ""
-            el: Element
-            for el in self.oob_elements:
-                output += el.render_top_level()
-            return output
-        return ""
+        return "".join([el.render() for el in self.root])
 
-    def render_ext(self) -> Tuple[str, str]:
-        if self.root_element:
-            return self.root_element.render_ext(self.extensions)
-        return "", ""
-
-    def add_extension(self, cls, extensions: Optional[Union[list[Path], Path]]) -> None:
+    def add_extension(self, cls, extensions: Optional[Union[List[Path], Path]]) -> None:
         if extensions is None:
             return
-        if not isinstance(extensions, list):
+        if not isinstance(extensions, Iterable):
             extensions = [extensions]
 
         for extension in extensions:
@@ -97,7 +73,6 @@ class Frame:
 
     @classmethod
     def del_stack(cls) -> None:
-        cls.get_stack().remove_frame(None)
         del cls.stacks[get_task_id()]
 
     @classmethod

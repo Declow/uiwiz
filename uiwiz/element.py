@@ -1,6 +1,6 @@
 import html
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable, List, Optional, Union
 
 from typing_extensions import Self
 
@@ -27,6 +27,7 @@ class Element:
         content: str = "",
         render_html: bool = True,
         oob: bool = False,
+        **kwargs: Optional[dict[str, str]],
     ) -> None:
         """Element
 
@@ -68,19 +69,23 @@ class Element:
         :type render_html: bool, optional
         :param oob: If the element should be out of band swap
         :type oob: bool, optional
+        :param kwargs: The attributes of the element
+        :type kwargs: dict[str, str], optional
         """
         self.stack = Frame.get_stack()
         if hasattr(self.__class__, "extensions") and self.__class__.extensions:
             for extension in self.__class__.extensions:
                 self.stack.add_extension(self.__class__, extension)
         self.attributes: dict[str, Union[str, Callable[[], str]]] = _Attributes()
+        if kwargs:
+            self.attributes.update(kwargs)
         self.attributes["id"] = self.stack.get_id()
         self.stack.id_count += 1
         self.tag: str = tag
         self._size: str = "md"
 
         self.event: Event = {}
-        self.parent_element: Element = None
+        self.parent_element: Optional[Element] = self.stack.current_element
         self.children: list[Element] = []
         self.script: Optional[str] = None
         self.render_html: bool = render_html
@@ -94,11 +99,10 @@ class Element:
 
         if self.oob:
             self.attributes["hx-swap-oob"] = "true"
-            self.stack.oob_elements.append(self)
-
-        if self.stack.root_element is None:
-            self.stack.root_element = self
+            self.stack.root.append(self)
             self.stack.current_element = self
+        elif self.parent_element is None:
+            self.stack.root.append(self)
         else:
             self.stack.current_element.children.append(self)
             self.parent_element = self.stack.current_element
@@ -196,13 +200,8 @@ class Element:
         return self
 
     def render(self, render_script: bool = True) -> str:
-        output = self.render_top_level(render_script)
-        output += self.render_oob()
-        return output
-
-    def render_top_level(self, render_script: bool = True, render_oob: bool = False) -> str:
         lst = []
-        lst.append(self.render_self(render_oob=render_oob))
+        lst.append(self.render_self())
         if render_script:
             for script in self.stack.scripts:
                 lst.append(
@@ -217,10 +216,7 @@ class Element:
                 )
         return "".join(lst)
 
-    def render_self(self, render_oob: bool = False) -> str:
-        if self.oob and render_oob is False:
-            return ""
-
+    def render_self(self) -> str:
         self.before_render()
         if self.script:
             self.stack.scripts.append(self.script)
@@ -237,13 +233,6 @@ class Element:
 
         html = "".join(lst)
         return self.after_render(html)
-
-    def render_oob(self) -> str:
-        lst = []
-        el: Element
-        for el in self.stack.oob_elements:
-            lst.append(el.render_top_level(render_oob=True))
-        return "".join(lst)
 
     def before_render(self):
         pass
@@ -301,22 +290,6 @@ class Element:
 
         return target
 
-    def render_ext(self, lst_ext: list[str]) -> Tuple[str, str]:
-        lst_js = []
-        lst_css = []
-        for lib in lst_ext:
-            if lib.endswith("css"):
-                css = '<link href="%s" rel="stylesheet" type="text/css" />' % lib
-                if css not in lst_css:
-                    lst_css.insert(0, css)
-            elif lib.endswith("js"):
-                js = '<script src="%s"></script>' % lib
-                if js not in lst_js:
-                    lst_js.append(js)
-            else:
-                raise Exception("lib type not supported, supported types css, js")
-        return "".join(lst_js), "".join(lst_css)
-
     def __str__(self) -> str:
         return self.render()
 
@@ -327,7 +300,7 @@ class Element:
 
     def set_frame_and_root(self) -> None:
         self.set_frame(Frame.get_stack())
-        self.stack.root_element = self
+        self.stack.root.append(self)
 
     def __dict_to_attrs__(self):
         ATTR_NO_VALUE = object()
