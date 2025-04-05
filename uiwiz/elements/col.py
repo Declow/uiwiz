@@ -22,7 +22,5 @@ class Col(Element):
         :type padding: str, optional
         """
         super().__init__()
-        self.__root_class__ = Col.root_class.format(
-            item_position=item_position, gap=gap, padding=padding
-        )
+        self.__root_class__ = Col.root_class.format(item_position=item_position, gap=gap, padding=padding)
         self.classes("")

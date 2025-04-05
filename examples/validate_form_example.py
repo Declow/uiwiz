@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from typing import Annotated, Literal
 
@@ -88,4 +89,5 @@ async def test():
 
 
 if __name__ == "__main__":
-    uvicorn.run("validate_form_example:app", reload=True)
+    app_name = os.path.basename(__file__).replace(".py", "")
+    uvicorn.run(app=f"{app_name}:app", host="0.0.0.0", port=8080, workers=1, reload=True)

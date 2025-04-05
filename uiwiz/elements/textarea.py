@@ -15,7 +15,7 @@ class TextArea(OnEvent):
         placeholder: Optional[str] = None,
     ) -> None:
         """TextArea
-        
+
         This element is used for text area inputs
 
         .. code-block:: python

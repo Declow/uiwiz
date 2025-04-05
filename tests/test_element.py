@@ -49,10 +49,7 @@ def test_get_target_element_id():
 def test_oob_top_level():
     with ui.element() as root:
         ui.toast("uiwiz")
-    assert (
-        '<div id="a-0"></div><div id="toast" hx-swap-oob="afterbegin"><div id="a-2" class="alert w-full z-50  relative pr-16" hx-toast-data="{&quot;autoClose&quot;: true}" hx-toast-delete-button=""><span id="a-3">uiwiz</span></div></div>'
-        == str(root)
-    )
+    assert '<div id="a-0"></div>' == str(root)
 
 
 def test_event():
@@ -104,9 +101,11 @@ def test_add_script():
     assert Frame.get_stack().scripts[0] == script
 
 
-def test_oob_no_render():
-    el = ui.element(oob=True)
-    assert el.render_self(False) == ""
+def test_oob_render_outside_of_parent():
+    with ui.element():
+        ui.element(oob=True)
+    out = Frame.get_stack().render()
+    assert out == '<div id="a-0"></div><div id="a-1" hx-swap-oob="true"></div>'
 
 
 def test_str_html_escape():

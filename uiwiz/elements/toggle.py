@@ -7,7 +7,7 @@ class Toggle(OnEvent):
 
     def __init__(self, name: str, checked: bool = False) -> None:
         """Toggle
-        
+
         This element is used for toggle inputs
 
         .. code-block:: python

@@ -12,7 +12,7 @@ class Row(Element):
         padding: str = "",
     ) -> None:
         """Row
-        
+
         Align children elements vertically.
 
         .. code-block:: python
@@ -28,7 +28,5 @@ class Row(Element):
         :param padding: The padding of the row.
         """
         super().__init__()
-        self.__root_class__ = Row.root_class.format(
-            wrap=wrap, item_position=item_position, gap=gap, padding=padding
-        )
+        self.__root_class__ = Row.root_class.format(wrap=wrap, item_position=item_position, gap=gap, padding=padding)
         self.classes("")

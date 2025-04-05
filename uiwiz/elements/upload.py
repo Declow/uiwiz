@@ -24,7 +24,7 @@ class Upload(OnEvent):
                 file_output = await file.read()
 
             ui.upload("file").on_upload(on_upload=handle_upload, swap="none")
-        
+
         """
         super().__init__("input")
         self.attributes["type"] = "file"
