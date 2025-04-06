@@ -138,13 +138,15 @@ class PageRouter(APIRouter):
                 lib_css.append(lib)
                 if page is None:
                     Element("link", href=lib, rel="stylesheet", type="text/css")
-                with page.header:
-                    Element("link", href=lib, rel="stylesheet", type="text/css")
+                else:
+                    with page.header:
+                        Element("link", href=lib, rel="stylesheet", type="text/css")
             elif lib.endswith("js"):
                 if page is None:
                     Element("script", src=lib)
-                with page.body:
-                    Element("script", src=lib)
+                else:
+                    with page.body:
+                        Element("script", src=lib)
             else:
                 raise Exception("lib type not supported, supported types css, js")
         if page is None:
