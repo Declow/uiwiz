@@ -57,7 +57,7 @@ class PageRouter(APIRouter):
                 if response:
                     standard_headers.update(response.headers)
 
-                self.add_ext(page)
+                self.add_ext(page, include_js=True, include_css=True)
 
                 return HTMLResponse(
                     content=Frame.get_stack().render(),
@@ -82,36 +82,36 @@ class PageRouter(APIRouter):
         **kwargs,
     ) -> Callable:
         def decorator(func: Callable) -> Callable:
+            # Capture values at decoration time
+            cap_include_js = include_js
+            cap_include_css = include_css
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
 
             @functools.wraps(func)
             async def decorated(*dec_args, **dec_kwargs) -> Response:
                 Frame.get_stack().del_stack()
-                # Create frame before function is called
-                Frame.get_stack()
+                Frame.get_stack()  # Create frame before function is called
                 response = dec_kwargs["response"]
 
-                # NOTE Ensure the signature matches the parameters of the function
+                # Ensure the signature matches the parameters of the function
                 dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
                 result = func(*dec_args, **dec_kwargs)
                 if inspect.isawaitable(result):
                     result = await result
 
-                if isinstance(result, Response):  # NOTE if setup returns a response, we don't need to render the page
+                if isinstance(result, Response):
                     return self.return_function_response(result)
 
                 standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "partial-ui"}
                 standard_headers.update(response.headers)
 
-                self.add_ext()
-                content = Frame.get_stack().render()
+                self.add_ext(page=None, include_js=cap_include_js, include_css=cap_include_css)
 
+                content = Frame.get_stack().render()
                 return self.return_function_response(HTMLResponse(content=content, headers=standard_headers))
 
             self.__ensure_request_response_signature__(decorated)
-
             _router = router or self
-
             return _router.post(path, include_in_schema=False, **kwargs)(decorated)
 
         return decorator
@@ -131,31 +131,32 @@ class PageRouter(APIRouter):
 
         func.__signature__ = inspect.Signature(params)
 
-    def add_ext(self, page: Optional["Page"] = None) -> None:
+    def add_ext(self, page: Optional["Page"] = None, include_js: bool = False, include_css: bool = False) -> None:
         lib_css = []
         for lib in Frame.get_stack().extensions:
-            if lib.endswith("css"):
+            if lib.endswith("css") and include_css:
                 lib_css.append(lib)
                 if page is None:
                     Element("link", href=lib, rel="stylesheet", type="text/css")
                 else:
                     with page.header:
                         Element("link", href=lib, rel="stylesheet", type="text/css")
-            elif lib.endswith("js"):
+            elif lib.endswith("js") and include_js:
                 if page is None:
                     Element("script", src=lib)
                 else:
                     with page.body:
                         Element("script", src=lib)
-            else:
+            if not lib.endswith("js") and not lib.endswith("css"):
                 raise Exception("lib type not supported, supported types css, js")
-        if page is None:
+
+        if include_css:
             for lib in lib_css:
-                Element("link", href=lib, rel="stylesheet", type="text/css")
-        else:
-            with page.body:
-                for lib in lib_css:
+                if page is None:
                     Element("link", href=lib, rel="stylesheet", type="text/css")
+                else:
+                    with page.header:
+                        Element("link", href=lib, rel="stylesheet", type="text/css")
 
     def render(
         self,

@@ -1,3 +1,6 @@
+from fastapi.testclient import TestClient
+
+from uiwiz import ui
 from uiwiz.app import UiwizApp
 from uiwiz.page_route import PageRouter
 from uiwiz.shared import fetch_route
@@ -111,3 +114,51 @@ def test_router_page_without_prefix():
     assert full_route == apis.get(full_route).path
     assert "func" == apis.get(full_route).name
     assert {"GET"} == apis.get(full_route).methods
+
+
+def test_router_ui_without_extensions():
+    app = UiwizApp()
+
+    pr = PageRouter()
+    route = "/path"
+
+    @pr.ui(route, include_js=False, include_css=False)
+    def func():
+        ui.markdown("""
+# Test
+## Test
+### Test
+""")
+
+    app.include_router(pr)
+
+    client = TestClient(app)
+    response = client.post(route)
+    body = response.read().decode("utf-8")
+    assert response.status_code == 200
+    assert "Markdown/markdown.css" not in body
+    assert "Markdown/codehighlight.css" not in body
+
+
+def test_router_ui_extensions():
+    app = UiwizApp()
+
+    pr = PageRouter()
+    route = "/path"
+
+    @pr.ui(route)
+    def func():
+        ui.markdown("""
+# Test
+## Test
+### Test
+""")
+
+    app.include_router(pr)
+
+    client = TestClient(app)
+    response = client.post(route)
+    body = response.read().decode("utf-8")
+    assert response.status_code == 200
+    assert "Markdown/markdown.css" in body
+    assert "Markdown/codehighlight.css" in body
