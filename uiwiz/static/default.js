@@ -16,7 +16,7 @@ var config = {
 observer.observe(container, config);
 
 function createElementFromHTML(htmlString) {
-    var div = document.createElement('div');
+    const div = document.createElement('div');
     div.innerHTML = htmlString.trim();
 
     // Change this to div.childNodes to support multiple top-level nodes.
@@ -24,9 +24,9 @@ function createElementFromHTML(htmlString) {
 }
 
 function remove(evt) {
-    toastDelay = JSON.parse(document.getElementById("toast").getAttribute("hx-toast-delay")).delay;
-    shortToastDelay = toastDelay - 500;
-    hxToastData = JSON.parse(evt.getAttribute("hx-toast-data"));
+    const toastDelay = JSON.parse(document.getElementById("toast").getAttribute("hx-toast-delay")).delay;
+    const shortToastDelay = toastDelay - 500;
+    var hxToastData = JSON.parse(evt.getAttribute("hx-toast-data"));
 
     if (hxToastData.autoClose) {
         window.setTimeout(() => {
