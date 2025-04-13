@@ -3,9 +3,9 @@ import inspect
 import json
 from dataclasses import dataclass
 from html import escape
-from typing import Callable, Optional, Union
+from typing import Annotated, Callable, Optional, Union
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import HTMLResponse
 
 from uiwiz.element import Element
@@ -14,10 +14,20 @@ from uiwiz.version import __version__
 
 
 @dataclass
-class Page:
-    header: Element
+class PageModel:
     body: Element
+    header: Element
     content: Element
+    html: Element
+
+    def __init__(self) -> None:
+        self.body: Element = None
+        self.header: Element = None
+        self.content: Element = None
+        self.html: Element = None
+
+
+Page = Annotated[PageModel, Depends(lambda: PageModel())]
 
 
 class PageRouter(APIRouter):
@@ -46,6 +56,7 @@ class PageRouter(APIRouter):
                 page = self.render(request, title=title)
                 with page.content:
                     dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
+                    dec_kwargs["page"] = page
                     result = func(*dec_args, **dec_kwargs)
                     if inspect.isawaitable(result):
                         result = await result
@@ -203,4 +214,9 @@ class PageRouter(APIRouter):
                 Element("script", src=f"/_static/{__version__}/libs/htmx1.9.9.min.js")
                 Element("script", src=f"/_static/{__version__}/libs/htmx-json-enc.js")
                 Element("script", src=f"/_static/{__version__}/default.js")
-        return Page(header=header, body=body, content=content)
+        page = PageModel()
+        page.body = body
+        page.header = header
+        page.content = content
+        page.html = html
+        return page
