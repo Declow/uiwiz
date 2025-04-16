@@ -86,6 +86,7 @@ class Element:
 
         self.event: Event = {}
         self.parent_element: Optional[Element] = self.stack.current_element
+        self.external_tree_element: Optional[Element] = None
         self.children: list[Element] = []
         self.script: Optional[str] = None
         self.render_html: bool = render_html
@@ -108,11 +109,18 @@ class Element:
             self.parent_element = self.stack.current_element
 
     def __enter__(self):
+        if self.stack.current_element and self.parent_element and self.stack.current_element != self.parent_element:
+            self.external_tree_element = self.stack.current_element
         self.stack.current_element = self
+
         return self
 
     def __exit__(self, *_):
-        self.stack.current_element = self.parent_element
+        if self.external_tree_element:
+            self.stack.current_element = self.external_tree_element
+            self.external_tree_element = None
+        else:
+            self.stack.current_element = self.parent_element
 
     def __init_subclass__(cls, extensions: List[Path] = None, **kwargs) -> None:
         super().__init_subclass__(**kwargs)

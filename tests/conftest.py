@@ -2,7 +2,7 @@ from unittest import mock
 
 import pytest
 
-from uiwiz import UiwizApp, element
+from uiwiz import UiwizApp
 from uiwiz.asgi_request_middleware import get_request
 from uiwiz.frame import Frame
 from uiwiz.shared import reset_resources
@@ -17,8 +17,6 @@ def setup_app():
         api_mock.return_value = mo
         mo.app = app
         mo.headers = {"hx-target": "a-1"}
-        Frame.get_stack()
-        Frame.del_stack()
         Frame.get_stack()
         reset_resources()
         yield app
