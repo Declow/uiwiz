@@ -213,7 +213,9 @@ class Table(Element):
                     for row in self.data:
                         self.render_row(row, self.id_column_name, self.edit, self.delete)
         if self.create:
-            Button("Add").on_click(self.create, container, swap="beforeend")
+            with self:
+                with Element().classes("pt-2 pb-2"):
+                    Button("Add").on_click(self.create, container, swap="beforeend")
         self.did_render = True
 
     @classmethod
