@@ -163,7 +163,11 @@ class PageRouter(APIRouter):
         if cookie_theme := request.cookies.get("data-theme"):
             theme = escape(cookie_theme)
 
-        Element("!DOCTYPE", html="html")  # funky way to add doctype
+        class RenderDoctype:
+            def render(self):
+                return "<!DOCTYPE html>"
+
+        Frame.get_stack().root = [RenderDoctype()]  # funky way to add doctype
         with Element("html").classes(html_classes) as html:
             html.attributes["id"] = "html"
             html.attributes["lang"] = lang
