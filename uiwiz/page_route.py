@@ -150,14 +150,6 @@ class PageRouter(APIRouter):
             if not lib.endswith("js") and not lib.endswith("css"):
                 raise Exception("lib type not supported, supported types css, js")
 
-        if include_css:
-            for lib in lib_css:
-                if page is None:
-                    Element("link", href=lib, rel="stylesheet", type="text/css")
-                else:
-                    with page.header:
-                        Element("link", href=lib, rel="stylesheet", type="text/css")
-
     def render(
         self,
         request: Request,

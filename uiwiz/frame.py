@@ -61,7 +61,7 @@ class Frame:
             _, filename = os.path.split(extension)
             prefix = f"/_static/extension/{__version__}/{cls.__name__}/"
             endpoint = prefix + filename
-            if extension not in self.extensions:
+            if endpoint not in self.extensions:
                 self.extensions.append(endpoint)
 
     @classmethod
