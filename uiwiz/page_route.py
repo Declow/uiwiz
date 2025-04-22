@@ -141,6 +141,10 @@ class PageRouter(APIRouter):
                 else:
                     with page.header:
                         Element("link", href=lib, rel="stylesheet", type="text/css")
+
+                    # Hack to make aggrid work with daisyui
+                    with page.body:
+                        Element("link", href=lib, rel="stylesheet", type="text/css")
             elif lib.endswith("js") and include_js:
                 if page is None:
                     Element("script", src=lib)
