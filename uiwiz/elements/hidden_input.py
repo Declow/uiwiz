@@ -9,7 +9,7 @@ class HiddenInput(Element):
     def __init__(
         self,
         name: str,
-        value: Any,
+        value: Optional[Any] = None,
     ) -> None:
         """HiddenInput
 

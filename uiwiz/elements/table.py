@@ -33,13 +33,16 @@ class Table(Element):
         :param id_column_name: The name of the Pydantic attribute to be used with the path param endpoint. An endpoint like /path/{id} should have a attribute "id" on the class
         :return: The current instance of the element.
         """
-        super().__init__()
+        container = Element("div").classes("w-full")
+        with container:
+            super().__init__()
         self.classes(Table._classes_container)
 
         self.schema = []
         if data:
             self.schema = list(data[0].model_fields.keys())
 
+        self.container = container
         self.data = data
         self.did_render: bool = False
         self.edit: Optional[FUNC_TYPE] = None
@@ -213,7 +216,7 @@ class Table(Element):
                     for row in self.data:
                         self.render_row(row, self.id_column_name, self.edit, self.delete)
         if self.create:
-            with self:
+            with self.container:
                 with Element().classes("pt-2 pb-2"):
                     Button("Add").on_click(self.create, container, swap="beforeend")
         self.did_render = True
