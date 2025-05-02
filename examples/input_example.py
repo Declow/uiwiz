@@ -124,14 +124,9 @@ async def test():
 
             d = {"asd": {"gg": 0}, "gg": True, "dd": "text"}
             print(json.dumps(d, indent=4))
-            v = v = json.dumps(d, indent=2)
-            out = "\n".join(["      " + e for e in v.split("\n")])
-            print(out)
             ui.dict(d)
 
-            ui.input("text").set_placeholder("Floating label").set_floating_label(
-                "Floating label"
-            ).parent_element.classes("floating-label")
+            ui.input("text").set_placeholder("Floating label").set_floating_label()
 
     with ui.footer():
         ui.label("some footer text")
