@@ -122,6 +122,8 @@ class Dict(Element, extensions=[JS_PATH]):
             if self.copy_to_clipboard:
                 with Button("").classes("absolute top-2 right-2 wiz-copy-content") as btn:
                     # with tailwind classes resize to fit container
-                    Html(content=get_svg("copy")).classes("w-6 h-6")
+                    icon = Html(content=get_svg("copy")).classes("w-6 h-6")
+                    icon.attributes["style"] = "fill: var(--color-base-content);"
+
                     btn.attributes["data-copy-data"] = json.dumps(data, indent=2)
             format_data(data, is_last_item=True)
