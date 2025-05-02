@@ -10,10 +10,7 @@ class Input(OnEvent):
     _classes: str = "input-bordered w-full"
 
     def __init__(
-        self,
-        name: Optional[str] = None,
-        value: Optional[str] = None,
-        placeholder: Optional[str] = None,
+        self, name: Optional[str] = None, value: Optional[str] = None, placeholder: Optional[str] = None
     ) -> None:
         """Input
 
@@ -48,13 +45,14 @@ class Input(OnEvent):
         self.placeholder = value
         return self
 
-    def set_floating_label(self, label: str) -> "Input":
+    def set_floating_label(self, label: Optional[str] = None) -> "Input":
         if self.placeholder is None:
             raise ValueError("Placeholder must be set before floating label")
 
         self.parent_element.children.remove(self)
         with Element("label").classes("floating-label") as container:
-            self.label_text = Element("span", content=label)
+            value = label if label else self.placeholder
+            self.label_text = Element("span", content=value)
             container.children.append(self)
             self.parent_element = container
 
