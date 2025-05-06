@@ -92,17 +92,6 @@ class UiwizApp(FastAPI):
             content_type, _ = guess_type(resource_key)
             return Response(content, media_type=content_type)
 
-    def __get_title__(self, frame: Frame, route_title: Optional[str] = None) -> str:
-        title = self.title
-
-        if route_title:
-            title = route_title
-
-        if dynamic_title := frame.title:
-            title = dynamic_title
-
-        return title
-
     def add_static_files(self, url_path: str, local_directory: Union[str, Path]) -> None:
         self.mount(url_path, StaticFiles(directory=str(local_directory)))
 

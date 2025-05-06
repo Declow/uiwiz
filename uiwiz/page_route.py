@@ -17,7 +17,7 @@ class PageDefinition:
     header: Element
     body: Element
     content: Element
-    title: Element
+    title_ele: Element
     lang: str
 
     def __init__(self):
@@ -31,6 +31,14 @@ class PageDefinition:
     def lang(self, value: str) -> None:
         self._lang = value
         self.html.attributes["lang"] = value
+
+    @property
+    def title(self) -> str:
+        return self.title_ele.content
+
+    @title.setter
+    def title(self, value: str) -> None:
+        self.title_ele.content = value
 
     def render(
         self,
@@ -48,6 +56,7 @@ class PageDefinition:
                 return "<!DOCTYPE html>"
 
         frame.root.append(RenderDoctype())  # funky way to add doctype
+        page_title = request.app.title if title is None else title
         with Element("html").classes("overflow-y-scroll") as html:
             html.attributes["id"] = "html"
             html.attributes["lang"] = self.lang
@@ -58,7 +67,7 @@ class PageDefinition:
                 Element("meta", charset="utf-8")
                 Element("meta", description=frame.meta_description_content)
 
-                title_ele = Element("title", content=request.app.__get_title__(frame, title))
+                title_ele = Element("title", content=page_title)
 
                 Element("link", href=f"/_static/{__version__}/libs/daisyui.css", rel="stylesheet", type="text/css")
                 Element(
@@ -83,7 +92,7 @@ class PageDefinition:
         self.header = header
         self.body = body
         self.content = content
-        self.title = title_ele
+        self.title_ele = title_ele
         return self
 
 
