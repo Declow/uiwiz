@@ -9,7 +9,7 @@ from pydantic import BaseModel
 
 import uiwiz.ui as ui
 from uiwiz.app import UiwizApp
-from uiwiz.page_route import noted
+from uiwiz.page_route import Page
 
 logging.basicConfig(level=logging.INFO)
 
@@ -49,9 +49,14 @@ def get_data():
     return ui.aggrid.response(df)
 
 
-@app.page("/")
-async def test(page: noted):
+# set static page title
+@app.page("/", title="Input Example")
+async def test(page: Page):
     create_nav()
+    # set dynamic page title
+    page.title = "Dynamic title"
+    # set dynamic page lang
+    page.lang = "de"
     with ui.container():
         with ui.fullWidth():
             with ui.form().on_submit(handle_input):

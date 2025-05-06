@@ -1,7 +1,6 @@
 import functools
 import inspect
 import json
-from dataclasses import dataclass
 from html import escape
 from typing import Annotated, Callable, Optional, TypedDict, Union
 
@@ -13,21 +12,31 @@ from uiwiz.frame import Frame
 from uiwiz.version import __version__
 
 
-class Page:
+class __PageDefinition__:
+    html: Element
     header: Element
     body: Element
     content: Element
+    title: Element
+    lang: str
 
     def __init__(self):
-        pass
+        self._lang: str = "en"
+
+    @property
+    def lang(self) -> str:
+        return self._lang
+
+    @lang.setter
+    def lang(self, value: str) -> None:
+        self._lang = value
+        self.html.attributes["lang"] = value
 
     def render(
         self,
         request: Request,
         title: Optional[str] = None,
-        html_classes: str = "overflow-y-scroll",
-        lang: str = "en",
-    ) -> "Page":
+    ) -> "__PageDefinition__":
         frame = Frame.get_stack()
 
         theme = request.app.theme
@@ -39,9 +48,9 @@ class Page:
                 return "<!DOCTYPE html>"
 
         Frame.get_stack().root = [RenderDoctype()]  # funky way to add doctype
-        with Element("html").classes(html_classes) as html:
+        with Element("html").classes("overflow-y-scroll") as html:
             html.attributes["id"] = "html"
-            html.attributes["lang"] = lang
+            html.attributes["lang"] = self.lang
             html.attributes["data-theme"] = theme
 
             with Element("head") as header:
@@ -49,7 +58,7 @@ class Page:
                 Element("meta", charset="utf-8")
                 Element("meta", description=frame.meta_description_content)
 
-                Element("title", content=request.app.__get_title__(frame, title))
+                title_ele = Element("title", content=request.app.__get_title__(frame, title))
 
                 Element("link", href=f"/_static/{__version__}/libs/daisyui.css", rel="stylesheet", type="text/css")
                 Element(
@@ -60,9 +69,8 @@ class Page:
             with Element("body") as body:
                 body.attributes["hx-ext"] = "swap-header"
                 with Element("div", id="content"):
-                    with Element().classes("flex min-h-screen h-full") as content:
-                        with Element("div").classes("flex flex-col w-full") as content:
-                            pass
+                    with Element().classes("flex min-h-screen h-full"):
+                        content = Element("div").classes("flex flex-col w-full")
 
                 toast = Element("div").classes("toast toast-top toast-end text-wrap z-50")
                 toast.attributes["id"] = "toast"
@@ -71,17 +79,19 @@ class Page:
                 Element("script", src=f"/_static/{__version__}/libs/htmx1.9.9.min.js")
                 Element("script", src=f"/_static/{__version__}/libs/htmx-json-enc.js")
                 Element("script", src=f"/_static/{__version__}/default.js")
+        self.html = html
         self.header = header
         self.body = body
         self.content = content
+        self.title = title_ele
         return self
 
 
-noted = Annotated[Page, Depends()]
+Page = Annotated[__PageDefinition__, Depends()]
 
 
 class DecKwargs(TypedDict):
-    page: Page
+    page: __PageDefinition__
     request: Request
     response: Response
 
@@ -98,6 +108,7 @@ class PageRouter(APIRouter):
     ) -> Callable:
         def decorator(func: Callable, *args, **kwargs) -> Callable:
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
+            cap_title = title
 
             @functools.wraps(func)
             async def decorated(*dec_args, **dec_kwargs: DecKwargs) -> Response:
@@ -108,10 +119,10 @@ class PageRouter(APIRouter):
                 response = dec_kwargs["response"]
 
                 # NOTE Ensure the signature matches the parameters of the function
-                page: Page = (
-                    dec_kwargs.get("page").render(request, title=title)
+                page: __PageDefinition__ = (
+                    dec_kwargs.get("page").render(request, title=cap_title)
                     if "page" in dec_kwargs
-                    else self.render(request, title=title)
+                    else self.render(request, title=cap_title)
                 )
                 with page.content:
                     dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
@@ -200,7 +211,9 @@ class PageRouter(APIRouter):
 
         func.__signature__ = inspect.Signature(params)
 
-    def add_ext(self, page: Optional["Page"] = None, include_js: bool = False, include_css: bool = False) -> None:
+    def add_ext(
+        self, page: Optional["__PageDefinition__"] = None, include_js: bool = False, include_css: bool = False
+    ) -> None:
         lib_css = []
         for lib in Frame.get_stack().extensions:
             if lib.endswith("css") and include_css:
