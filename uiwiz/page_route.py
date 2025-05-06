@@ -12,7 +12,7 @@ from uiwiz.frame import Frame
 from uiwiz.version import __version__
 
 
-class __PageDefinition__:
+class PageDefinition:
     html: Element
     header: Element
     body: Element
@@ -36,7 +36,7 @@ class __PageDefinition__:
         self,
         request: Request,
         title: Optional[str] = None,
-    ) -> "__PageDefinition__":
+    ) -> "PageDefinition":
         frame = Frame.get_stack()
 
         theme = request.app.theme
@@ -87,11 +87,11 @@ class __PageDefinition__:
         return self
 
 
-Page = Annotated[__PageDefinition__, Depends()]
+Page = Annotated[PageDefinition, Depends()]
 
 
 class DecKwargs(TypedDict):
-    page: __PageDefinition__
+    page: PageDefinition
     request: Request
     response: Response
 
@@ -119,10 +119,10 @@ class PageRouter(APIRouter):
                 response = dec_kwargs["response"]
 
                 # NOTE Ensure the signature matches the parameters of the function
-                page: __PageDefinition__ = (
+                page: PageDefinition = (
                     dec_kwargs.get("page").render(request, title=cap_title)
                     if "page" in dec_kwargs
-                    else self.render(request, title=cap_title)
+                    else PageDefinition().render(request, title=cap_title)
                 )
                 with page.content:
                     dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
@@ -212,7 +212,7 @@ class PageRouter(APIRouter):
         func.__signature__ = inspect.Signature(params)
 
     def add_ext(
-        self, page: Optional["__PageDefinition__"] = None, include_js: bool = False, include_css: bool = False
+        self, page: Optional["PageDefinition"] = None, include_js: bool = False, include_css: bool = False
     ) -> None:
         lib_css = []
         for lib in Frame.get_stack().extensions:
