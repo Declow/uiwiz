@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 import uiwiz.ui as ui
 from uiwiz.app import UiwizApp
+from uiwiz.page_route import noted
 
 logging.basicConfig(level=logging.INFO)
 
@@ -49,7 +50,7 @@ def get_data():
 
 
 @app.page("/")
-async def test():
+async def test(page: noted):
     create_nav()
     with ui.container():
         with ui.fullWidth():
