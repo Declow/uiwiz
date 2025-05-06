@@ -1,5 +1,4 @@
 # ruff: noqa
-from typing import Type, TypeVar
 
 from uiwiz.elements.ace import Ace as ace
 from uiwiz.elements.aggrid.aggrid import Aggrid as aggrid
