@@ -1,11 +1,10 @@
 import functools
 import inspect
 import json
-from dataclasses import dataclass
 from html import escape
-from typing import Callable, Optional, Union
+from typing import Annotated, Callable, Optional, TypedDict, Union
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import HTMLResponse
 
 from uiwiz.element import Element
@@ -13,11 +12,97 @@ from uiwiz.frame import Frame
 from uiwiz.version import __version__
 
 
-@dataclass
-class Page:
+class PageDefinition:
+    html: Element
     header: Element
     body: Element
     content: Element
+    title_ele: Element
+    lang: str
+
+    def __init__(self):
+        self._lang: str = "en"
+
+    @property
+    def lang(self) -> str:
+        return self._lang
+
+    @lang.setter
+    def lang(self, value: str) -> None:
+        self._lang = value
+        self.html.attributes["lang"] = value
+
+    @property
+    def title(self) -> str:
+        return self.title_ele.content
+
+    @title.setter
+    def title(self, value: str) -> None:
+        self.title_ele.content = value
+
+    def render(
+        self,
+        request: Request,
+        title: Optional[str] = None,
+    ) -> "PageDefinition":
+        frame = Frame.get_stack()
+
+        theme = request.app.theme
+        if cookie_theme := request.cookies.get("data-theme"):
+            theme = escape(cookie_theme)
+
+        class RenderDoctype:
+            def render(self):
+                return "<!DOCTYPE html>"
+
+        frame.root.append(RenderDoctype())  # funky way to add doctype
+        page_title = request.app.title if title is None else title
+        with Element("html").classes("overflow-y-scroll") as html:
+            html.attributes["id"] = "html"
+            html.attributes["lang"] = self.lang
+            html.attributes["data-theme"] = theme
+
+            with Element("head") as header:
+                Element("meta", name="viewport").attributes["content"] = "width=device-width, initial-scale=1"
+                Element("meta", charset="utf-8")
+                Element("meta", description=frame.meta_description_content)
+
+                title_ele = Element("title", content=page_title)
+
+                Element("link", href=f"/_static/{__version__}/libs/daisyui.css", rel="stylesheet", type="text/css")
+                Element(
+                    "link", href=f"/_static/{__version__}/libs/daisyui-themes.css", rel="stylesheet", type="text/css"
+                )
+                Element("script", src=f"/_static/{__version__}/libs/tailwind.js")
+                Element("link", href=f"/_static/{__version__}/app.css", rel="stylesheet", type="text/css")
+            with Element("body") as body:
+                body.attributes["hx-ext"] = "swap-header"
+                with Element("div", id="content"):
+                    with Element().classes("flex min-h-screen h-full"):
+                        content = Element("div").classes("flex flex-col w-full")
+
+                toast = Element("div").classes("toast toast-top toast-end text-wrap z-50")
+                toast.attributes["id"] = "toast"
+                toast.attributes["hx-toast-delay"] = json.dumps({"delay": request.app.toast_delay})
+
+                Element("script", src=f"/_static/{__version__}/libs/htmx1.9.9.min.js")
+                Element("script", src=f"/_static/{__version__}/libs/htmx-json-enc.js")
+                Element("script", src=f"/_static/{__version__}/default.js")
+        self.html = html
+        self.header = header
+        self.body = body
+        self.content = content
+        self.title_ele = title_ele
+        return self
+
+
+Page = Annotated[PageDefinition, Depends()]
+
+
+class DecKwargs(TypedDict):
+    page: PageDefinition
+    request: Request
+    response: Response
 
 
 class PageRouter(APIRouter):
@@ -32,9 +117,10 @@ class PageRouter(APIRouter):
     ) -> Callable:
         def decorator(func: Callable, *args, **kwargs) -> Callable:
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
+            cap_title = title
 
             @functools.wraps(func)
-            async def decorated(*dec_args, **dec_kwargs) -> Response:
+            async def decorated(*dec_args, **dec_kwargs: DecKwargs) -> Response:
                 Frame.get_stack().del_stack()
                 # Create frame before function is called
 
@@ -42,8 +128,11 @@ class PageRouter(APIRouter):
                 response = dec_kwargs["response"]
 
                 # NOTE Ensure the signature matches the parameters of the function
-
-                page = self.render(request, title=title)
+                page: PageDefinition = (
+                    dec_kwargs.get("page").render(request, title=cap_title)
+                    if "page" in dec_kwargs
+                    else PageDefinition().render(request, title=cap_title)
+                )
                 with page.content:
                     dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
                     result = func(*dec_args, **dec_kwargs)
@@ -76,8 +165,8 @@ class PageRouter(APIRouter):
     def ui(
         self,
         path: str,
-        include_js: bool = True,
-        include_css: bool = True,
+        include_js: bool = False,
+        include_css: bool = False,
         router: Optional[APIRouter] = None,
         **kwargs,
     ) -> Callable:
@@ -131,7 +220,9 @@ class PageRouter(APIRouter):
 
         func.__signature__ = inspect.Signature(params)
 
-    def add_ext(self, page: Optional["Page"] = None, include_js: bool = False, include_css: bool = False) -> None:
+    def add_ext(
+        self, page: Optional["PageDefinition"] = None, include_js: bool = False, include_css: bool = False
+    ) -> None:
         lib_css = []
         for lib in Frame.get_stack().extensions:
             if lib.endswith("css") and include_css:
@@ -153,54 +244,3 @@ class PageRouter(APIRouter):
                         Element("script", src=lib)
             if not lib.endswith("js") and not lib.endswith("css"):
                 raise Exception("lib type not supported, supported types css, js")
-
-    def render(
-        self,
-        request: Request,
-        title: Optional[str],
-        html_classes: str = "overflow-y-scroll",
-        lang: str = "en",
-    ) -> Page:
-        frame = Frame.get_stack()
-
-        theme = request.app.theme
-        if cookie_theme := request.cookies.get("data-theme"):
-            theme = escape(cookie_theme)
-
-        class RenderDoctype:
-            def render(self):
-                return "<!DOCTYPE html>"
-
-        Frame.get_stack().root = [RenderDoctype()]  # funky way to add doctype
-        with Element("html").classes(html_classes) as html:
-            html.attributes["id"] = "html"
-            html.attributes["lang"] = lang
-            html.attributes["data-theme"] = theme
-
-            with Element("head") as header:
-                Element("meta", name="viewport").attributes["content"] = "width=device-width, initial-scale=1"
-                Element("meta", charset="utf-8")
-                Element("meta", description=frame.meta_description_content)
-
-                Element("title", content=request.app.__get_title__(frame, title))
-
-                Element("link", href=f"/_static/{__version__}/libs/daisyui.css", rel="stylesheet", type="text/css")
-                Element(
-                    "link", href=f"/_static/{__version__}/libs/daisyui-themes.css", rel="stylesheet", type="text/css"
-                )
-                Element("script", src=f"/_static/{__version__}/libs/tailwind.js")
-                Element("link", href=f"/_static/{__version__}/app.css", rel="stylesheet", type="text/css")
-            with Element("body") as body:
-                body.attributes["hx-ext"] = "swap-header"
-                with Element("div", id="content"):
-                    with Element().classes("flex flex-col min-h-screen h-full") as content:
-                        pass
-
-                toast = Element("div").classes("toast toast-top toast-end text-wrap z-50")
-                toast.attributes["id"] = "toast"
-                toast.attributes["hx-toast-delay"] = json.dumps({"delay": request.app.toast_delay})
-
-                Element("script", src=f"/_static/{__version__}/libs/htmx1.9.9.min.js")
-                Element("script", src=f"/_static/{__version__}/libs/htmx-json-enc.js")
-                Element("script", src=f"/_static/{__version__}/default.js")
-        return Page(header=header, body=body, content=content)

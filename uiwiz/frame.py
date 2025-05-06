@@ -29,9 +29,7 @@ class Frame:
         self.extensions: List[str] = []
         self.app = get_request().app
         self.last_id = None
-        self.title: Optional[str] = None
         self.meta_description_content: str = ""
-        self.head_ext: str = ""
 
     def get_id(self) -> str:
         headers = get_request().headers
@@ -74,12 +72,6 @@ class Frame:
     @classmethod
     def del_stack(cls) -> None:
         del cls.stacks[get_task_id()]
-
-    @classmethod
-    def set_title(cls, title: str) -> None:
-        if isinstance(title, str) is False:
-            raise Exception(f"Expected str got: {type(title)}")
-        Frame.get_stack().title = title
 
     @classmethod
     def set_meta_description_content(cls, content: str) -> None:
