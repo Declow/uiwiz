@@ -47,7 +47,7 @@ class PageDefinition:
             def render(self):
                 return "<!DOCTYPE html>"
 
-        Frame.get_stack().root = [RenderDoctype()]  # funky way to add doctype
+        frame.root.append(RenderDoctype())  # funky way to add doctype
         with Element("html").classes("overflow-y-scroll") as html:
             html.attributes["id"] = "html"
             html.attributes["lang"] = self.lang
