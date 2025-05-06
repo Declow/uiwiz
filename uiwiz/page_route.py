@@ -156,8 +156,8 @@ class PageRouter(APIRouter):
     def ui(
         self,
         path: str,
-        include_js: bool = True,
-        include_css: bool = True,
+        include_js: bool = False,
+        include_css: bool = False,
         router: Optional[APIRouter] = None,
         **kwargs,
     ) -> Callable:
