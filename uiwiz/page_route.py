@@ -78,8 +78,7 @@ class PageDefinition:
             with Element("body") as body:
                 body.attributes["hx-ext"] = "swap-header"
                 with Element("div", id="content"):
-                    with Element().classes("flex min-h-screen h-full"):
-                        content = Element("div").classes("flex flex-col w-full")
+                    content = Element().classes("flex min-h-screen h-full")
 
                 toast = Element("div").classes("toast toast-top toast-end text-wrap z-50")
                 toast.attributes["id"] = "toast"

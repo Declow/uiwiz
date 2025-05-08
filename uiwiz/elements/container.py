@@ -10,4 +10,4 @@ class Container(Col):
         A container element that centers its children.
         """
         super().__init__()
-        self.classes(super().root_class)
+        self.classes(Container.root_class)
