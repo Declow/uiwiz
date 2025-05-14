@@ -1,8 +1,8 @@
-from uiwiz.elements.col import Col
+from uiwiz.element import Element
 
 
-class Container(Col):
-    root_class: str = "container mx-auto max-w-[960px]"
+class Container(Element):
+    root_class: str = "container flex flex-col mx-auto max-w-[960px] pt-2 pb-2"
 
     def __init__(self) -> None:
         """Container
@@ -10,4 +10,4 @@ class Container(Col):
         A container element that centers its children.
         """
         super().__init__()
-        self.classes(super().root_class)
+        self.classes()
