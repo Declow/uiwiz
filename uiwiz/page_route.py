@@ -2,7 +2,7 @@ import functools
 import inspect
 import json
 from html import escape
-from typing import Annotated, Callable, Optional, TypedDict, Union
+from typing import Annotated, Callable, Optional, Type, TypedDict, Union
 
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import HTMLResponse
@@ -13,10 +13,10 @@ from uiwiz.version import __version__
 
 
 class PageDefinition:
-    html: Element
-    header: Element
-    body: Element
-    content: Element
+    html_ele: Element
+    header_ele: Element
+    body_ele: Element
+    content_ele: Element
     title_ele: Element
     lang: str
 
@@ -30,7 +30,7 @@ class PageDefinition:
     @lang.setter
     def lang(self, value: str) -> None:
         self._lang = value
-        self.html.attributes["lang"] = value
+        self.html_ele.attributes["lang"] = value
 
     @property
     def title(self) -> str:
@@ -75,25 +75,38 @@ class PageDefinition:
                 )
                 Element("script", src=f"/_static/{__version__}/libs/tailwind.js")
                 Element("link", href=f"/_static/{__version__}/app.css", rel="stylesheet", type="text/css")
+                self.header(header)
             with Element("body") as body:
                 body.attributes["hx-ext"] = "swap-header"
+                self.body(body)
                 with Element("div", id="content"):
                     with Element().classes("flex min-h-screen h-full"):
-                        content = Element("div").classes("flex flex-col w-full")
+                        with Element("div").classes("flex flex-col w-full") as content:
+                            self.content(content)
 
                 toast = Element("div").classes("toast toast-top toast-end text-wrap z-50")
                 toast.attributes["id"] = "toast"
                 toast.attributes["hx-toast-delay"] = json.dumps({"delay": request.app.toast_delay})
 
-                Element("script", src=f"/_static/{__version__}/libs/htmx1.9.9.min.js")
-                Element("script", src=f"/_static/{__version__}/libs/htmx-json-enc.js")
-                Element("script", src=f"/_static/{__version__}/default.js")
-        self.html = html
-        self.header = header
-        self.body = body
-        self.content = content
+            Element("script", src=f"/_static/{__version__}/libs/htmx1.9.9.min.js")
+            Element("script", src=f"/_static/{__version__}/libs/htmx-json-enc.js")
+            Element("script", src=f"/_static/{__version__}/default.js")
+
+        self.html_ele = html
+        self.header_ele = header
+        self.body_ele = body
+        self.content_ele = content
         self.title_ele = title_ele
         return self
+
+    def header(self, header: Element) -> None:
+        pass
+
+    def body(self, body: Element) -> None:
+        pass
+
+    def content(self, content: Element) -> None:
+        pass
 
 
 Page = Annotated[PageDefinition, Depends()]
@@ -106,6 +119,16 @@ class DecKwargs(TypedDict):
 
 
 class PageRouter(APIRouter):
+    @functools.wraps(APIRouter.__init__)
+    def __init__(self, *args, page_definition_class: Type[PageDefinition] = PageDefinition, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not issubclass(page_definition_class, PageDefinition):
+            raise TypeError("page_definition_class must be a subclass of PageDefinition")
+        if page_definition_class is None:
+            self.page_definition_class = PageDefinition
+        else:
+            self.page_definition_class = page_definition_class
+
     def page(
         self,
         path: str,
@@ -131,9 +154,9 @@ class PageRouter(APIRouter):
                 page: PageDefinition = (
                     dec_kwargs.get("page").render(request, title=cap_title)
                     if "page" in dec_kwargs
-                    else PageDefinition().render(request, title=cap_title)
+                    else self.page_definition_class().render(request, title=cap_title)
                 )
-                with page.content:
+                with page.content_ele:
                     dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
                     result = func(*dec_args, **dec_kwargs)
                     if inspect.isawaitable(result):
