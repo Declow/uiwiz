@@ -55,6 +55,8 @@ class MyDefinition(PageDefinition):
 
 route = PageRouter(page_definition_class=MyDefinition)
 
+PageRouter()
+
 
 # set static page title
 @route.page("/", title="Input Example")

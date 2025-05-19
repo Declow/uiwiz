@@ -1,11 +1,17 @@
 import functools
 import inspect
 import json
+from enum import Enum
 from html import escape
-from typing import Annotated, Callable, Optional, Type, TypedDict, Union
+from typing import Annotated, Any, Callable, Dict, List, Optional, Sequence, Type, TypedDict, Union
 
-from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Depends, Request, Response, params
+from fastapi.datastructures import Default
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.routing import APIRoute
+from starlette.routing import BaseRoute
+from starlette.types import ASGIApp, Lifespan
+from typing_extensions import Doc, deprecated
 
 from uiwiz.element import Element
 from uiwiz.frame import Frame
@@ -119,9 +125,177 @@ class DecKwargs(TypedDict):
 
 
 class PageRouter(APIRouter):
-    @functools.wraps(APIRouter.__init__)
-    def __init__(self, *args, page_definition_class: Type[PageDefinition] = PageDefinition, **kwargs):
-        super().__init__(*args, **kwargs)
+    """
+    `PageRouter` class, used to group *path operations*, for example to structure
+    an app in multiple files. It would then be included in the `UiWizard` app, or
+    in another `PageRouter` (ultimately included in the app).
+
+    ## Example
+
+    ```python
+    from uiwiz import PageRouter, UiwizApp, ui
+
+    app = UiwizApp()
+    router = PageRouter()
+
+
+    @router.get("/users/", tags=["users"])
+    async def read_users():
+        ui.element("h1", content="Hello world")
+
+
+    app.include_router(router)
+    ```
+    """
+
+    def __init__(
+        self,
+        *,
+        prefix: Annotated[str, Doc("An optional path prefix for the router.")] = "",
+        tags: Annotated[
+            Optional[List[Union[str, Enum]]],
+            Doc(
+                """
+                A list of tags to be applied to all the *path operations* in this
+                router.
+
+                It will be added to the generated OpenAPI (e.g. visible at `/docs`).
+
+                Read more about it in the
+                [FastAPI docs for Path Operation Configuration](https://fastapi.tiangolo.com/tutorial/path-operation-configuration/).
+                """
+            ),
+        ] = None,
+        dependencies: Annotated[
+            Optional[Sequence[params.Depends]],
+            Doc(
+                """
+                A list of dependencies (using `Depends()`) to be applied to all the
+                *path operations* in this router.
+
+                Read more about it in the
+                [FastAPI docs for Bigger Applications - Multiple Files](https://fastapi.tiangolo.com/tutorial/bigger-applications/#include-an-apirouter-with-a-custom-prefix-tags-responses-and-dependencies).
+                """
+            ),
+        ] = None,
+        default_response_class: Annotated[
+            Type[Response],
+            Doc(
+                """
+                The default response class to be used.
+
+                Read more in the
+                [FastAPI docs for Custom Response - HTML, Stream, File, others](https://fastapi.tiangolo.com/advanced/custom-response/#default-response-class).
+                """
+            ),
+        ] = Default(JSONResponse),
+        redirect_slashes: Annotated[
+            bool,
+            Doc(
+                """
+                Whether to detect and redirect slashes in URLs when the client doesn't
+                use the same format.
+                """
+            ),
+        ] = True,
+        default: Annotated[
+            Optional[ASGIApp],
+            Doc(
+                """
+                Default function handler for this router. Used to handle
+                404 Not Found errors.
+                """
+            ),
+        ] = None,
+        dependency_overrides_provider: Annotated[
+            Optional[Any],
+            Doc(
+                """
+                Only used internally by FastAPI to handle dependency overrides.
+
+                You shouldn't need to use it. It normally points to the `FastAPI` app
+                object.
+                """
+            ),
+        ] = None,
+        route_class: Annotated[
+            Type[APIRoute],
+            Doc(
+                """
+                Custom route (*path operation*) class to be used by this router.
+
+                Read more about it in the
+                [FastAPI docs for Custom Request and APIRoute class](https://fastapi.tiangolo.com/how-to/custom-request-and-route/#custom-apiroute-class-in-a-router).
+                """
+            ),
+        ] = APIRoute,
+        # which the router cannot know statically, so we use typing.Any
+        lifespan: Annotated[
+            Optional[Lifespan[Any]],
+            Doc(
+                """
+                A `Lifespan` context manager handler. This replaces `startup` and
+                `shutdown` functions with a single context manager.
+
+                Read more in the
+                [FastAPI docs for `lifespan`](https://fastapi.tiangolo.com/advanced/events/).
+                """
+            ),
+        ] = None,
+        deprecated: Annotated[
+            Optional[bool],
+            Doc(
+                """
+                Mark all *path operations* in this router as deprecated.
+
+                It will be added to the generated OpenAPI (e.g. visible at `/docs`).
+
+                Read more about it in the
+                [FastAPI docs for Path Operation Configuration](https://fastapi.tiangolo.com/tutorial/path-operation-configuration/).
+                """
+            ),
+        ] = None,
+        page_definition_class: Annotated[
+            Type[PageDefinition],
+            Doc("""
+                The page definition class to use for this router.
+                
+                This enables the use of custom page definitions for rendering the HTML
+                pages. The default is `PageDefinition`, which provides a basic HTML
+                structure. You can create your own class that inherits from `PageDefinition`
+                and override the `header`, `body`, and `content` methods to customize the
+                HTML structure and content as needed.
+                Example:
+                ```python
+                class MyPageDefinition(PageDefinition):
+                    def header(self, header: Element) -> None:
+                        # Custom header content
+                        Element("link", href="/custom.css", rel="stylesheet")
+                
+                    def body(self, body: Element) -> None:
+                        # Custom body content
+                        Element("div", content="Custom Body").classes("custom-body")
+                
+                    def content(self, content: Element) -> None:
+                        # Custom content
+                        Element("h1", content="Custom Content").classes("custom-content")
+                """),
+        ] = PageDefinition,
+        **kwargs,
+    ):
+        super().__init__(
+            prefix=prefix,
+            tags=tags,
+            dependencies=dependencies,
+            default_response_class=default_response_class,
+            redirect_slashes=redirect_slashes,
+            default=default,
+            dependency_overrides_provider=dependency_overrides_provider,
+            route_class=route_class,
+            lifespan=lifespan,
+            deprecated=deprecated,
+            **kwargs,
+        )
         if not issubclass(page_definition_class, PageDefinition):
             raise TypeError("page_definition_class must be a subclass of PageDefinition")
         if page_definition_class is None:
