@@ -2,7 +2,7 @@ import json
 import logging
 from mimetypes import guess_type
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Type, Union
 
 from fastapi import FastAPI, Response
 from fastapi.encoders import jsonable_encoder
@@ -19,7 +19,7 @@ from uiwiz.elements.button import Button
 from uiwiz.elements.col import Col
 from uiwiz.elements.html import Html
 from uiwiz.frame import Frame
-from uiwiz.page_route import PageRouter
+from uiwiz.page_route import PageDefinition, PageRouter
 from uiwiz.shared import register_path, resources
 from uiwiz.static_middleware import AsgiTtlMiddleware
 from uiwiz.version import __version__
@@ -44,6 +44,7 @@ class UiwizApp(FastAPI):
         theme: Optional[str] = None,
         title: Optional[str] = "UiWiz",
         auto_close_toast_error: bool = False,
+        page_definition_class: Type[PageDefinition] = PageDefinition,
         *args,
         **kwargs,
     ) -> None:
@@ -57,6 +58,7 @@ class UiwizApp(FastAPI):
         :param theme: The default theme to use
         :param title: The default title for the app
         :param auto_close_toast_error: If the toast error should auto close
+        :param page_definition_class: The page definition class to use for the application
         :param args: FastAPI args
         :param kwargs: FastAPI kwargs
         """
@@ -65,6 +67,7 @@ class UiwizApp(FastAPI):
         self.toast_delay = toast_delay
         self.error_classes = error_classes
         self.auto_close_toast_error = auto_close_toast_error
+        self.page_definition_class = page_definition_class
         if theme:
             self.theme = f"data-theme={theme}"
         else:
@@ -98,7 +101,9 @@ class UiwizApp(FastAPI):
     def page(
         self, path: str, *args, title: Optional[str] = None, favicon: Optional[str] = None, **kwargs
     ) -> PageRouter:
-        return PageRouter().page(path, *args, title=title, favicon=favicon, router=self.router, **kwargs)
+        return PageRouter(self.page_definition_class).page(
+            path, *args, title=title, favicon=favicon, router=self.router, **kwargs
+        )
 
     def ui(self, path: str, *args, include_js: bool = True, include_css: bool = True, **kwargs) -> PageRouter:
         return PageRouter().ui(path=path, include_js=include_js, include_css=include_css, router=self.router, **kwargs)

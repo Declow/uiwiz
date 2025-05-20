@@ -3,15 +3,14 @@ import inspect
 import json
 from enum import Enum
 from html import escape
-from typing import Annotated, Any, Callable, Dict, List, Optional, Sequence, Type, TypedDict, Union
+from typing import Annotated, Any, Callable, List, Optional, Sequence, Type, TypedDict, Union
 
 from fastapi import APIRouter, Depends, Request, Response, params
 from fastapi.datastructures import Default
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.routing import APIRoute
-from starlette.routing import BaseRoute
 from starlette.types import ASGIApp, Lifespan
-from typing_extensions import Doc, deprecated
+from typing_extensions import Doc
 
 from uiwiz.element import Element
 from uiwiz.frame import Frame
@@ -138,11 +137,9 @@ class PageRouter(APIRouter):
     app = UiwizApp()
     router = PageRouter()
 
-
     @router.get("/users/", tags=["users"])
     async def read_users():
         ui.element("h1", content="Hello world")
-
 
     app.include_router(router)
     ```
@@ -256,7 +253,7 @@ class PageRouter(APIRouter):
             ),
         ] = None,
         page_definition_class: Annotated[
-            Type[PageDefinition],
+            Optional[Type[PageDefinition]],
             Doc("""
                 The page definition class to use for this router.
                 
@@ -264,7 +261,8 @@ class PageRouter(APIRouter):
                 pages. The default is `PageDefinition`, which provides a basic HTML
                 structure. You can create your own class that inherits from `PageDefinition`
                 and override the `header`, `body`, and `content` methods to customize the
-                HTML structure and content as needed.
+                HTML structure and content as needed. Setting the `page_definition_class` in the 
+                UiwizApp will set the default for all routers.
                 Example:
                 ```python
                 class MyPageDefinition(PageDefinition):
@@ -280,7 +278,7 @@ class PageRouter(APIRouter):
                         # Custom content
                         Element("h1", content="Custom Content").classes("custom-content")
                 """),
-        ] = PageDefinition,
+        ] = None,
         **kwargs,
     ):
         super().__init__(
@@ -296,12 +294,9 @@ class PageRouter(APIRouter):
             deprecated=deprecated,
             **kwargs,
         )
-        if not issubclass(page_definition_class, PageDefinition):
+        if page_definition_class is not None and not issubclass(page_definition_class, PageDefinition):
             raise TypeError("page_definition_class must be a subclass of PageDefinition")
-        if page_definition_class is None:
-            self.page_definition_class = PageDefinition
-        else:
-            self.page_definition_class = page_definition_class
+        self.page_definition_class = page_definition_class
 
     def page(
         self,
@@ -323,6 +318,9 @@ class PageRouter(APIRouter):
 
                 request = dec_kwargs["request"]
                 response = dec_kwargs["response"]
+
+                if self.page_definition_class is None:
+                    self.page_definition_class = request.app.page_definition_class
 
                 # NOTE Ensure the signature matches the parameters of the function
                 page: PageDefinition = (
