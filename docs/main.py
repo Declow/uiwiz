@@ -1,29 +1,38 @@
-import uvicorn
+from contextlib import asynccontextmanager
 
-from docs.layout import Layout
+import uvicorn
+from fastapi import Request
+
+from docs.layout import Layout, pages
 from uiwiz import PageDefinition, PageRouter, UiwizApp, ui
 
-app = UiwizApp(theme="dim", page_definition_class=Layout)
-
 router = PageRouter(page_definition_class=PageDefinition)
+page_dict = {item.path: item for item in pages}
+
+@asynccontextmanager
+async def lifespan(app: UiwizApp):
+    """Lifespan event handler for the application."""
+
+    for page in pages:
+        """
+        Register each page with the application.
+        This is the same as using the @app.page decorator,
+        but allows for dynamic page registration.
+        """
+        app.page(path=page.path, title=page.title)(docs)
+
+    yield
 
 
-@app.page("/")
-def index():
+app = UiwizApp(theme="dim", lifespan=lifespan, page_definition_class=Layout)
+
+def docs(request: Request):
+    page = page_dict.get(request.url.path, None)
+    with open(f"docs/pages/{page.file_name}", "r") as f:
+        content = f.read()
+
     with ui.container():
-        ui.label("Hello world").classes("text-3xl")
-        ui.button("Click me")
-
-
-@router.page(
-    "/about",
-)
-def about():
-    ui.label("About page").classes("text-3xl")
-    ui.button("Click me")
-
-
-app.include_router(router)
+        ui.markdown(content)
 
 
 if __name__ == "__main__":

@@ -1,9 +1,17 @@
 import functools
 import inspect
 import json
-from enum import Enum
 from html import escape
-from typing import Annotated, Any, Callable, List, Optional, Sequence, Type, TypedDict, Union
+from typing import (
+    Annotated,
+    Any,
+    Callable,
+    Optional,
+    Sequence,
+    Type,
+    TypedDict,
+    Union,
+)
 
 from fastapi import APIRouter, Depends, Request, Response, params
 from fastapi.datastructures import Default
@@ -26,6 +34,37 @@ class PageDefinition:
     lang: str
 
     def __init__(self):
+        """
+        The PageDefinition class is designed to be subclassed, allowing
+        developers to override the `header`, `body`, and `content` methods
+        to customize the HTML structure and content as needed. The `footer`
+        method can also be overridden to add custom footer content.
+
+        This allows for a flexible and reusable page structure that can
+        be easily extended for different pages in a web application or applied
+        to all pages in a web application by setting the `page_definition_class`
+        in the `UiwizApp` instance.
+
+
+        ## Example:
+        ```python
+        from uiwiz import PageDefinition, Element
+
+        class MyPage(PageDefinition):
+            def header(self, header: Element) -> None:
+                Element("link", href="/custom.css", rel="stylesheet")
+
+            def body(self, body: Element) -> None:
+                Element("div", content="Custom Body").classes("custom-body")
+
+            def content(self, content: Element) -> Optional[Element]:
+                return Element("h1", content="Custom Content").classes("custom-content")
+            
+            def footer(self, content: Element) -> None:
+                Element("footer", content="Custom Footer").classes("custom-footer")
+        ```
+        
+        """
         self._lang: str = "en"
 
     @property
@@ -94,8 +133,16 @@ class PageDefinition:
                     with Element().classes("flex min-h-screen h-full"):
                         with Element("div").classes("flex flex-col w-full") as content:
                             self.content_ele = content
-                            self.content(content)
-                            self.footer(content)
+                            user_content = self.content(content)
+                            if user_content is not None:
+                                if isinstance(user_content, Element):
+                                    self.content_ele = user_content
+                                else:
+                                    raise TypeError(
+                                        f"Expected Element, got {type(user_content).__name__} in content method"
+                                    )
+                            with content:
+                                self.footer(content)
 
                 toast = Element("div").classes("toast toast-top toast-end text-wrap z-50")
                 toast.attributes["id"] = "toast"
@@ -113,7 +160,7 @@ class PageDefinition:
     def body(self, body: Element) -> None:
         pass
 
-    def content(self, content: Element) -> None:
+    def content(self, content: Element) -> Optional[Element]:
         pass
 
     def footer(self, content: Element) -> None:
@@ -155,20 +202,6 @@ class PageRouter(APIRouter):
         self,
         *,
         prefix: Annotated[str, Doc("An optional path prefix for the router.")] = "",
-        tags: Annotated[
-            Optional[List[Union[str, Enum]]],
-            Doc(
-                """
-                A list of tags to be applied to all the *path operations* in this
-                router.
-
-                It will be added to the generated OpenAPI (e.g. visible at `/docs`).
-
-                Read more about it in the
-                [FastAPI docs for Path Operation Configuration](https://fastapi.tiangolo.com/tutorial/path-operation-configuration/).
-                """
-            ),
-        ] = None,
         dependencies: Annotated[
             Optional[Sequence[params.Depends]],
             Doc(
@@ -210,17 +243,6 @@ class PageRouter(APIRouter):
                 """
             ),
         ] = None,
-        dependency_overrides_provider: Annotated[
-            Optional[Any],
-            Doc(
-                """
-                Only used internally by FastAPI to handle dependency overrides.
-
-                You shouldn't need to use it. It normally points to the `FastAPI` app
-                object.
-                """
-            ),
-        ] = None,
         route_class: Annotated[
             Type[APIRoute],
             Doc(
@@ -242,19 +264,6 @@ class PageRouter(APIRouter):
 
                 Read more in the
                 [FastAPI docs for `lifespan`](https://fastapi.tiangolo.com/advanced/events/).
-                """
-            ),
-        ] = None,
-        deprecated: Annotated[
-            Optional[bool],
-            Doc(
-                """
-                Mark all *path operations* in this router as deprecated.
-
-                It will be added to the generated OpenAPI (e.g. visible at `/docs`).
-
-                Read more about it in the
-                [FastAPI docs for Path Operation Configuration](https://fastapi.tiangolo.com/tutorial/path-operation-configuration/).
                 """
             ),
         ] = None,
@@ -289,15 +298,12 @@ class PageRouter(APIRouter):
     ):
         super().__init__(
             prefix=prefix,
-            tags=tags,
             dependencies=dependencies,
             default_response_class=default_response_class,
             redirect_slashes=redirect_slashes,
             default=default,
-            dependency_overrides_provider=dependency_overrides_provider,
             route_class=route_class,
             lifespan=lifespan,
-            deprecated=deprecated,
             **kwargs,
         )
         if page_definition_class is not None and not issubclass(page_definition_class, PageDefinition):
@@ -421,7 +427,10 @@ class PageRouter(APIRouter):
         func.__signature__ = inspect.Signature(params)
 
     def add_ext(
-        self, page: Optional["PageDefinition"] = None, include_js: bool = False, include_css: bool = False
+        self,
+        page: Optional["PageDefinition"] = None,
+        include_js: bool = False,
+        include_css: bool = False,
     ) -> None:
         lib_css = []
         for lib in Frame.get_stack().extensions:
@@ -430,17 +439,17 @@ class PageRouter(APIRouter):
                 if page is None:
                     Element("link", href=lib, rel="stylesheet", type="text/css")
                 else:
-                    with page.header:
+                    with page.header_ele:
                         Element("link", href=lib, rel="stylesheet", type="text/css")
 
                     # Hack to make aggrid work with daisyui
-                    with page.body:
+                    with page.body_ele:
                         Element("link", href=lib, rel="stylesheet", type="text/css")
             elif lib.endswith("js") and include_js:
                 if page is None:
                     Element("script", src=lib)
                 else:
-                    with page.body:
+                    with page.body_ele:
                         Element("script", src=lib)
             if not lib.endswith("js") and not lib.endswith("css"):
                 raise Exception("lib type not supported, supported types css, js")
