@@ -87,8 +87,8 @@ class Drawer(Element):
             self.drawer_toggle.attributes["class"] = "drawer-toggle"
 
     def drawer_content(self) -> Element:
-        self.drawer_content = DrawerContent()
-        return self.drawer_content
+        self._drawer_content = DrawerContent()
+        return self._drawer_content
 
     def drawer_side(self) -> Element:
         self.side = DrawerSide(self.drawer_toggle)

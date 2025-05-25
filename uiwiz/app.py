@@ -101,7 +101,7 @@ class UiwizApp(FastAPI):
     def page(
         self, path: str, *args, title: Optional[str] = None, favicon: Optional[str] = None, **kwargs
     ) -> PageRouter:
-        return PageRouter(self.page_definition_class).page(
+        return PageRouter(page_definition_class=self.page_definition_class).page(
             path, *args, title=title, favicon=favicon, router=self.router, **kwargs
         )
 

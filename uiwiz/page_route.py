@@ -63,16 +63,20 @@ class PageDefinition:
         frame.root.append(RenderDoctype())  # funky way to add doctype
         page_title = request.app.title if title is None else title
         with Element("html").classes("overflow-y-scroll") as html:
+            self.html_ele = html
+
             html.attributes["id"] = "html"
             html.attributes["lang"] = self.lang
             html.attributes["data-theme"] = theme
 
             with Element("head") as header:
+                self.header_ele = header
+
                 Element("meta", name="viewport").attributes["content"] = "width=device-width, initial-scale=1"
                 Element("meta", charset="utf-8")
                 Element("meta", description=frame.meta_description_content)
 
-                title_ele = Element("title", content=page_title)
+                self.title_ele = Element("title", content=page_title)
 
                 Element("link", href=f"/_static/{__version__}/libs/daisyui.css", rel="stylesheet", type="text/css")
                 Element(
@@ -82,12 +86,16 @@ class PageDefinition:
                 Element("link", href=f"/_static/{__version__}/app.css", rel="stylesheet", type="text/css")
                 self.header(header)
             with Element("body") as body:
+                self.body_ele = body
+
                 body.attributes["hx-ext"] = "swap-header"
                 self.body(body)
                 with Element("div", id="content"):
                     with Element().classes("flex min-h-screen h-full"):
                         with Element("div").classes("flex flex-col w-full") as content:
+                            self.content_ele = content
                             self.content(content)
+                            self.footer(content)
 
                 toast = Element("div").classes("toast toast-top toast-end text-wrap z-50")
                 toast.attributes["id"] = "toast"
@@ -97,11 +105,6 @@ class PageDefinition:
             Element("script", src=f"/_static/{__version__}/libs/htmx-json-enc.js")
             Element("script", src=f"/_static/{__version__}/default.js")
 
-        self.html_ele = html
-        self.header_ele = header
-        self.body_ele = body
-        self.content_ele = content
-        self.title_ele = title_ele
         return self
 
     def header(self, header: Element) -> None:
@@ -111,6 +114,9 @@ class PageDefinition:
         pass
 
     def content(self, content: Element) -> None:
+        pass
+
+    def footer(self, content: Element) -> None:
         pass
 
 
@@ -333,7 +339,6 @@ class PageRouter(APIRouter):
                     result = func(*dec_args, **dec_kwargs)
                     if inspect.isawaitable(result):
                         result = await result
-
                 if isinstance(result, Response):
                     return self.return_function_response(result)
                 standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "page"}
