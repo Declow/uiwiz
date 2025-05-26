@@ -4,6 +4,7 @@ import uvicorn
 from fastapi import Request
 
 from docs.layout import Layout, pages
+from docs.page_docs import docs_router
 from uiwiz import PageDefinition, PageRouter, UiwizApp, ui
 
 router = PageRouter(page_definition_class=PageDefinition)
@@ -19,14 +20,15 @@ async def lifespan(app: UiwizApp):
         This is the same as using the @app.page decorator,
         but allows for dynamic page registration.
         """
-        app.page(path=page.path, title=page.title)(docs)
+        app.page(path=page.path, title=page.title)(render_md)
+        app.include_router(docs_router)
 
     yield
 
 
 app = UiwizApp(theme="dim", lifespan=lifespan, page_definition_class=Layout)
 
-def docs(request: Request):
+def render_md(request: Request):
     page = page_dict.get(request.url.path, None)
     with open(f"docs/pages/{page.file_name}", "r") as f:
         content = f.read()

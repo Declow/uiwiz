@@ -166,6 +166,20 @@ class PageDefinition:
     def footer(self, content: Element) -> None:
         pass
 
+    def before_render(self, request: Request) -> None:
+        """
+        This method is called before the page is rendered.
+        It can be used to modify the page before it is rendered.
+        """
+        pass
+
+    def after_render(self, request: Request) -> None:
+        """
+        This method is called after the page is rendered.
+        It can be used to modify the page after it is rendered.
+        """
+        pass
+
 
 Page = Annotated[PageDefinition, Depends()]
 
@@ -336,15 +350,18 @@ class PageRouter(APIRouter):
 
                 # NOTE Ensure the signature matches the parameters of the function
                 page: PageDefinition = (
-                    dec_kwargs.get("page").render(request, title=cap_title)
+                    dec_kwargs.get("page")
                     if "page" in dec_kwargs
-                    else self.page_definition_class().render(request, title=cap_title)
+                    else self.page_definition_class()
                 )
+                page.before_render(request)
+                page.render(request, title=cap_title)
                 with page.content_ele:
                     dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
                     result = func(*dec_args, **dec_kwargs)
                     if inspect.isawaitable(result):
                         result = await result
+                page.after_render(request)
                 if isinstance(result, Response):
                     return self.return_function_response(result)
                 standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "page"}

@@ -77,10 +77,8 @@ class Drawer(Element):
         self.classes(Drawer._classes)
         self.__drawer_button_menu__: Optional[Element] = None
 
-        if always_open:
-            self.classes(self.attributes["class"] + " lg:drawer-open")
-        if right:
-            self.classes(self.attributes["class"] + " drawer-end")
+        self.always_open(always_open)
+        self.right(right)
 
         with self:
             self.drawer_toggle = Checkbox("")
@@ -99,3 +97,17 @@ class Drawer(Element):
         self.__drawer_button_menu__.attributes["for"] = self.drawer_toggle.id
         with self.__drawer_button_menu__:
             Html(get_svg("menu"))
+
+    def always_open(self, value: bool) -> None:
+        """Set the drawer to always open until the screen size is too small."""
+        if value:
+            self.classes(self.attributes["class"] + " lg:drawer-open")
+        else:
+            self.classes(self.attributes["class"].replace("lg:drawer-open", ""))
+    
+    def right(self, value: bool) -> None:
+        """Set the drawer to open from the right side of the screen."""
+        if value:
+            self.classes(self.attributes["class"] + " drawer-end")
+        else:
+            self.classes(self.attributes["class"].replace("drawer-end", ""))

@@ -12,7 +12,6 @@ class Page:
 
 pages = [
     Page(path="/", title="Home", file_name="index.md"),
-    Page(path="/docs", title="Docs", file_name="docs.md"),
 ]
 
 
