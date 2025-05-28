@@ -1,5 +1,7 @@
 from typing import Optional
 
+from typing_extensions import override
+
 from uiwiz import PageDefinition, ui
 from uiwiz.svg.svg_handler import get_svg
 
@@ -26,6 +28,32 @@ class Layout(PageDefinition):
         self._nav = None
         self.hide_on = "md"
 
+    @override
+    def content(self, _: ui.element) -> Optional[ui.element]:
+        self.drawer = ui.drawer()
+        with self.drawer:
+            with self.drawer.drawer_content() as content:
+                self.nav(self.drawer)
+
+            with self.drawer.drawer_side():
+                with ui.element("ul").classes("flex-none block md:hidden w-full"):
+                    with ui.element("li").classes("menu menu-compact"):
+                        for page in pages:
+                            with ui.element("li"):
+                                ui.link(page.title, page.path)
+                        with ui.element("li"):
+                            ui.themeSelector()
+
+        return content
+
+    @override
+    def footer(self, _: ui.element):
+        with ui.footer().classes("footer mx-auto footer-center p-4 bg-base-200 text-base-content"):
+            with ui.element("div").classes("flex flex-col items-center justify-center"):
+                ui.label("Made with ❤️ by Uiwiz").classes("text-sm")
+                ui.link("GitHub", "https://github.com/declow/uiwizard")
+
+
     def nav(self, drawer):
         with ui.element().classes(
             "sticky top-0 flex h-16 justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm z-40"
@@ -41,18 +69,3 @@ class Layout(PageDefinition):
                                 ui.link(page.title, page.path)
                         with ui.element("li"):
                             ui.themeSelector()
-
-    def content(self, _: ui.element) -> Optional[ui.element]:
-        self.drawer = ui.drawer()
-        with self.drawer:
-            with self.drawer.drawer_content() as content:
-                self.nav(self.drawer)
-
-        return content
-
-    def footer(self, _: ui.element):
-        with ui.footer():
-            with ui.element().classes("flex flex-col items-center justify-center"):
-                with ui.element("div").classes("flex flex-col items-center justify-center"):
-                    ui.label("Made with ❤️ by Uiwiz").classes("text-sm")
-                    ui.link("GitHub", "https://github.com/declow/uiwizard")

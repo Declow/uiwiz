@@ -1,6 +1,7 @@
 import functools
 import inspect
 import json
+from functools import partial
 from html import escape
 from typing import (
     Annotated,
@@ -84,11 +85,12 @@ class PageDefinition:
     def title(self, value: str) -> None:
         self.title_ele.content = value
 
-    def render(
+    async def render(
         self,
+        user_method: Optional[Callable],
         request: Request,
         title: Optional[str] = None,
-    ) -> "PageDefinition":
+    ) -> Optional[Response]:
         frame = Frame.get_stack()
 
         theme = request.app.theme
@@ -129,20 +131,21 @@ class PageDefinition:
 
                 body.attributes["hx-ext"] = "swap-header"
                 self.body(body)
-                with Element("div", id="content"):
-                    with Element().classes("flex min-h-screen h-full"):
-                        with Element("div").classes("flex flex-col w-full") as content:
-                            self.content_ele = content
-                            user_content = self.content(content)
-                            if user_content is not None:
-                                if isinstance(user_content, Element):
-                                    self.content_ele = user_content
-                                else:
-                                    raise TypeError(
-                                        f"Expected Element, got {type(user_content).__name__} in content method"
-                                    )
-                            with content:
-                                self.footer(content)
+                with Element("div").classes("flex flex-col w-full min-h-screen") as content:
+                    self.content_ele = content
+                    user_content = self.content(content)
+                    if user_content is not None:
+                        if isinstance(user_content, Element):
+                            self.content_ele = user_content
+                        else:
+                            raise TypeError(
+                                f"Expected Element, got {type(user_content).__name__} in content method"
+                            )
+                    with self.content_ele:
+                        result = user_method()
+                        if inspect.isawaitable(result):
+                            result = await result
+                        self.footer(content)
 
                 toast = Element("div").classes("toast toast-top toast-end text-wrap z-50")
                 toast.attributes["id"] = "toast"
@@ -152,7 +155,7 @@ class PageDefinition:
             Element("script", src=f"/_static/{__version__}/libs/htmx-json-enc.js")
             Element("script", src=f"/_static/{__version__}/default.js")
 
-        return self
+        return result
 
     def header(self, header: Element) -> None:
         pass
@@ -164,20 +167,6 @@ class PageDefinition:
         pass
 
     def footer(self, content: Element) -> None:
-        pass
-
-    def before_render(self, request: Request) -> None:
-        """
-        This method is called before the page is rendered.
-        It can be used to modify the page before it is rendered.
-        """
-        pass
-
-    def after_render(self, request: Request) -> None:
-        """
-        This method is called after the page is rendered.
-        It can be used to modify the page after it is rendered.
-        """
         pass
 
 
@@ -354,14 +343,10 @@ class PageRouter(APIRouter):
                     if "page" in dec_kwargs
                     else self.page_definition_class()
                 )
-                page.before_render(request)
-                page.render(request, title=cap_title)
-                with page.content_ele:
-                    dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
-                    result = func(*dec_args, **dec_kwargs)
-                    if inspect.isawaitable(result):
-                        result = await result
-                page.after_render(request)
+                
+                dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
+                user_method = partial(func, *dec_args, **dec_kwargs)
+                result = await page.render(user_method=user_method, request=request, title=cap_title)
                 if isinstance(result, Response):
                     return self.return_function_response(result)
                 standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "page"}
@@ -460,13 +445,13 @@ class PageRouter(APIRouter):
                         Element("link", href=lib, rel="stylesheet", type="text/css")
 
                     # Hack to make aggrid work with daisyui
-                    with page.body_ele:
+                    with page.html_ele:
                         Element("link", href=lib, rel="stylesheet", type="text/css")
             elif lib.endswith("js") and include_js:
                 if page is None:
                     Element("script", src=lib)
                 else:
-                    with page.body_ele:
+                    with page.html_ele:
                         Element("script", src=lib)
             if not lib.endswith("js") and not lib.endswith("css"):
                 raise Exception("lib type not supported, supported types css, js")
