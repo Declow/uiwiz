@@ -36,7 +36,7 @@ class DrawerSide(Element):
 
 
 class DrawerContent(Element):
-    _classes: str = "drawer-content flex flex-col"
+    _classes: str = "drawer-content flex flex-col min-h-screen"
 
     def __init__(self) -> None:
         super().__init__()
