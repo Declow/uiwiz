@@ -14,7 +14,7 @@ def create_nav():
 @app.page("/")
 async def test():
     create_nav()
-    with ui.element().classes("col lg:px-80"):
+    with ui.container():
         with ui.element().classes("w-full"):
             with ui.tabs() as tu:
                 with ui.tab("Content 1"):

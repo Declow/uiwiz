@@ -11,10 +11,9 @@ app = UiwizApp(theme="aqua")
 
 
 def create_nav():
-    with ui.nav():
-        with ui.row():
-            ui.button("this is from a method")
-            ui.themeSelector()
+    with ui.nav().classes("gap-2 bg-base-200"):
+        ui.button("this is from a method")
+        ui.themeSelector()
 
 
 @app.ui("/some/comnponent")
@@ -45,7 +44,7 @@ class Test:
 @app.page("/")
 async def test(request: Request):
     create_nav()
-    with ui.col():
+    with ui.container():
         ui.markdown(code)
         ui.link("some text", "/second").classes("btn")
 
