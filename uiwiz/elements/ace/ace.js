@@ -70,7 +70,17 @@ class AceEditor {
             { name: "WHERE", value: "WHERE", score: 1000, meta: "Keyword" },
             { name: "INSERT", value: "INSERT", score: 1000, meta: "Keyword" },
             { name: "UPDATE", value: "UPDATE", score: 1000, meta: "Keyword" },
-            { name: "DELETE", value: "DELETE", score: 1000, meta: "Keyword" }
+            { name: "DELETE", value: "DELETE", score: 1000, meta: "Keyword" },
+            { name: "LIMIT", value: "LIMIT", score: 1000, meta: "Keyword" },
+            { name: "ORDER", value: "ORDER", score: 1000, meta: "Keyword" },
+            { name: "BY", value: "BY", score: 1000, meta: "Keyword" },
+            { name: "AND", value: "AND", score: 1000, meta: "Keyword" },
+            { name: "CASE", value: "CASE", score: 1000, meta: "Keyword" },
+            { name: "COLUMN", value: "COLUMN", score: 1000, meta: "Keyword" },
+            { name: "CONSTRAINT", value: "CONSTRAINT", score: 1000, meta: "Keyword" },
+            { name: "GROUP", value: "GROUP", score: 1000, meta: "Keyword" },
+            { name: "HAVING", value: "HAVING", score: 1000, meta: "Keyword" },
+            { name: "VALUES", value: "VALUES", score: 1000, meta: "Keyword" }
         ];
 
         this.sqlOptions.tables.forEach(option => {

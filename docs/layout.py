@@ -62,7 +62,7 @@ class Layout(PageDefinition):
                 with ui.element().classes("flex-1"):
                     with ui.label(for_=drawer.drawer_toggle).classes(f"btn drawer-button {self.hide_on}:hidden"):
                         ui.html(get_svg("menu"))
-                with ui.element().classes(f"flex-none hidden {self.hide_on}:block"):
+                with ui.element().classes(f"flex-none hidden:{self.hide_on} block"):
                     with ui.element("ul").classes("menu menu-horizontal menu-md"):
                         for page in pages:
                             with ui.element("li"):

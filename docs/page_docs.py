@@ -1,4 +1,5 @@
 from docs.layout import Layout, Page, pages
+from docs.pages.docs.elements import create_elements
 from uiwiz import PageRouter, ui
 
 
@@ -18,4 +19,8 @@ async def docs_index():
         content = f.read()
     with ui.container():
         ui.markdown(content)
-    
+
+
+@docs_router.page("/elements", title="Elements")
+async def docs_elements():
+    create_elements()
