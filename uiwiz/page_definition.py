@@ -104,7 +104,11 @@ class PageDefinition:
                 self.title_ele = Element("title", content=page_title)
 
                 Element("link", href=f"/_static/{__version__}/libs/output.css", rel="stylesheet", type="text/css")
-
+                Element("link", href=f"/_static/{__version__}/libs/daisyui.css", rel="stylesheet", type="text/css")
+                Element(
+                    "link", href=f"/_static/{__version__}/libs/daisyui-themes.css", rel="stylesheet", type="text/css"
+                )
+                Element("script", src=f"/_static/{__version__}/libs/tailwind.js")
                 Element("link", href=f"/_static/{__version__}/app.css", rel="stylesheet", type="text/css")
                 self.header(header)
             with Element("body") as body:

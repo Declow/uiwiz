@@ -9,7 +9,7 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "tailwindcss -c ./tailwindcss/tailwind.config.js -i ./tailwindcss/input.css -o ./uiwiz/static/libs/output.css --minify"
+    "build": "tailwindcss -c ./tailwindcss/tailwind.config.js -i ./tailwindcss/input.css -o ./uiwiz/static/libs/output.css --minify --content ./**/*.html"
   },
   "keywords": [],
   "author": "",
