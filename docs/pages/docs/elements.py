@@ -12,12 +12,13 @@ def get_clean_annotation_name(annotation):
     #     origin = annotation if "typing.Optional" not in str(annotation) else "Optional"
     #     args = ", ".join(get_clean_annotation_name(arg) for arg in annotation.__args__)
     #     return f"{origin}[{args}]"
-    if hasattr(annotation, '__name__'):
+    if hasattr(annotation, "__name__"):
         return annotation.__name__
-    elif hasattr(annotation, '_name') and annotation._name:
+    elif hasattr(annotation, "_name") and annotation._name:
         return annotation._name
     else:
-        return str(annotation).replace('typing.', '')
+        return str(annotation).replace("typing.", "")
+
 
 def extract_param_annotations(cls):
     sig = inspect.signature(cls.__init__)
@@ -32,6 +33,7 @@ def extract_param_annotations(cls):
                 annotations[name]["default"] = default_value
     return annotations
 
+
 def create_elements():
     pass
     print(Path(elements.__file__).parent)
@@ -42,15 +44,10 @@ def create_elements():
         create_docs_element(element)
 
 
-
 def create_docs_element(element: Type[ui.element]):
-    with ui.container().classes("prose prose-maincolors"):
+    with ui.container().classes("prose"):
         with ui.element().classes("flex flex-row"):
-            with ui.element("h2", f"ui.{element.__name__.lower()}"):
-                ui.element("span", f"ui.{element.__name__.lower()}")
-                
-        # ui.element("p", element.__doc__ or "No documentation available.")
-        sig = inspect.signature(element.__init__)
+            ui.element("h2", f"ui.{element.__name__.lower()}")
 
         anno = extract_param_annotations(element)
         if anno:

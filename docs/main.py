@@ -10,6 +10,7 @@ from uiwiz import PageDefinition, PageRouter, UiwizApp, ui
 router: PageRouter = PageRouter(page_definition_class=PageDefinition)
 page_dict: dict[str, Page] = {item.path: item for item in pages}
 
+
 @asynccontextmanager
 async def lifespan(app: UiwizApp):
     """Lifespan event handler for the application."""
@@ -27,6 +28,7 @@ async def lifespan(app: UiwizApp):
 
 
 app: UiwizApp = UiwizApp(theme="dim", lifespan=lifespan, page_definition_class=Layout)
+
 
 async def render_md(request: Request):
     page = page_dict.get(request.url.path, None)
