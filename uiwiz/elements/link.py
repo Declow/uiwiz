@@ -13,6 +13,13 @@ class Link(Element):
         Link element that can be used to navigate to a different page.
         Can be used as a button or a link.
 
+        Example:
+        .. code-block:: python
+        
+            from uiwiz import ui
+
+            ui.link("Click me", "/some/path").classes("btn btn-primary") 
+
         :param text: The text to display
         :type text: str
         :param link: The link to navigate to when clicked. Can be a callable that returns a string

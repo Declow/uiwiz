@@ -23,7 +23,27 @@ class Aggrid(Element, extensions=[CSS_PATH, LIB_PATH, JS_PATH]):
 
     _classes: str = "ag-theme-quartz ag-theme-uiwiz w-full"
 
-    def __init__(self, df: pd.DataFrame, column_option: OPTIONS = OPTIONS.autoSizeColumn) -> None:
+    def __init__(self, df: pd.DataFrame) -> None:
+        """Aggrid
+
+        Use aggrid to display a DataFrame in a grid format.
+        Can be used anywhere in a @page_router.ui("<path>") or @app.ui("<path>")
+
+        Example:
+        .. code-block:: python
+        
+            from uiwiz import ui
+            import pandas as pd
+
+            df = pd.DataFrame({
+                "Name": ["Alice", "Bob", "Charlie"],
+                "Age": [25, 30, 35],
+                "City": ["New York", "Los Angeles", "Chicago"]
+            })
+            ui.aggrid(df) 
+
+        :param df: The DataFrame to display in the grid
+        """
         super().__init__("div")
         self.classes(Aggrid._classes)
 

@@ -1,8 +1,9 @@
 import inspect
-from optparse import OptionParser
+import typing
 from pathlib import Path
 from typing import Type
 
+from docs.pages.docs.extract_doc import extract_text
 from uiwiz import elements, ui
 
 
@@ -43,15 +44,30 @@ def create_elements():
 
 
 def create_docs_element(element: Type[ui.element]):
-    import typing
-    with ui.container().classes("prose border border-base-content rounded-lg"):
+    
+    with ui.container(space_y="space-y-2").classes("prose border border-base-content rounded-lg"):
         with ui.element().classes("flex flex-row"):
             ui.element("h2", f"ui.{element.__name__.lower()}")
 
+        
+
+        des, cb, _ = extract_text(element.__init__.__doc__)
+        with ui.element().classes("not-prose"):
+            try:
+                ui.markdown("""```python
+""" + cb + """```""")
+            except Exception:
+                pass
+            try:
+                exec(cb)
+            except Exception:
+                pass
+
+        ui.element("h3", "Constructor").classes("mt-4")
         anno = extract_param_annotations(element)
         if anno:
             for name, details in anno.items():
-                with ui.element("div").classes("flex flex-row"):
+                with ui.element("div").classes("flex flex-row pl-4"):
                     ui.element("span", f"{name}: {details['type']}").classes("font-bold")
                     if "default" in details:
                         ui.element("span", f"= {details['default']}").classes("text-gray-500 ml-2")
@@ -92,4 +108,5 @@ def create_docs_element(element: Type[ui.element]):
                         ui.element("span", content="No documentation provided").classes("text-gray-500")
                     else:
                         for line in method.__doc__.splitlines():
+
                             ui.element("div", content=line).classes("pl-4")

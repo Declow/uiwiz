@@ -59,9 +59,10 @@ class Ace(
 
         Example:
         .. code-block:: python
+        
             from uiwiz import ui
 
-            ui.ace(name="editor")
+            ui.ace(name="editor") 
 
         :param name: The name of the textarea element to be submitted with a form
         :param content: The initial content of the editor
