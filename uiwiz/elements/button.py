@@ -22,7 +22,7 @@ class Button(OnEvent):
 
             from uiwiz import ui
 
-            ui.button("Click me").on_click(some_function, target="this", swap="none") 
+            ui.button("Click me").on_click(lambda: ui.toast("test"), target="this", swap="none") 
 
         :param title: The title of the button
         :type title: str
