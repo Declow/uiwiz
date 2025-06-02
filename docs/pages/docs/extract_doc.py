@@ -70,7 +70,7 @@ def extract_text(docstring: str) -> tuple[str, str, dict[str, str]]:
         if re.match(r':param(?:\s+\w+)?\s+\w+\s*:', stripped):
             continue
         if not in_code_block:
-            description_lines.append(line)
+            description_lines.append(line.lstrip())
     description = "\n".join(description_lines).strip()
 
     return description, code_block, parameters
