@@ -23,4 +23,4 @@ async def docs_index():
 
 @docs_router.page("/elements", title="Elements")
 async def docs_elements():
-    create_elements()
+    create_elements(docs_router)

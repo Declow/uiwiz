@@ -1,10 +1,9 @@
 import inspect
 import typing
 from pathlib import Path
-from typing import Type
 
 from docs.pages.docs.extract_doc import extract_text
-from uiwiz import elements, ui
+from uiwiz import PageRouter, elements, ui
 
 
 def get_clean_annotation_name(annotation):
@@ -33,17 +32,17 @@ def extract_param_annotations(cls):
     return annotations
 
 
-def create_elements():
-    pass
+def create_elements(router: PageRouter):
     print(Path(elements.__file__).parent)
     for element_name in dir(ui):
         if element_name.startswith("_"):
             continue
         element = getattr(ui, element_name)
-        create_docs_element(element)
+        create_docs_element(element, router)
 
 
-def create_docs_element(element: Type[ui.element]):
+def create_docs_element(element: ui.element, router: PageRouter):
+    app = router # noqa
     with ui.container(space_y="space-y-2").classes("prose outline rounded-lg"):
         with ui.element().classes("flex flex-row"):
             ui.element("h2", f"ui.{element.__name__.lower()}")
