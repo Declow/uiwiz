@@ -53,7 +53,7 @@ def create_docs_element(element: Type[ui.element]):
         with ui.element().classes("not-prose"):
             try:
                 ui.markdown("""```python
-""" + cb + """```""")
+""" + cb + " " + """```""")
             except Exception:
                 pass
             try:
