@@ -44,14 +44,12 @@ def create_elements():
 
 
 def create_docs_element(element: Type[ui.element]):
-    
-    with ui.container(space_y="space-y-2").classes("prose border border-base-content rounded-lg"):
+    with ui.container(space_y="space-y-2").classes("prose outline rounded-lg"):
         with ui.element().classes("flex flex-row"):
             ui.element("h2", f"ui.{element.__name__.lower()}")
 
-        
-
         des, cb, _ = extract_text(element.__init__.__doc__)
+        ui.markdown(des).classes("text-content")
         with ui.element().classes("not-prose"):
             try:
                 ui.markdown("""```python
@@ -99,7 +97,7 @@ def create_docs_element(element: Type[ui.element]):
                         ret_anno = type_hints.get('return', sig.return_annotation)
                         return_type = get_clean_annotation_name(ret_anno) if ret_anno is not inspect.Signature.empty else "Any"
                         # Method name in bold, params in blue, return type in green
-                        ui.element("span", f"{method_name}(").classes("font-bold")
+                        ui.element("span", f"{method_name}(").classes("font-bold pl-4")
                         if param_str:
                             ui.element("span", param_str).classes("text-info ml-1 mr-1")
                         ui.element("span", ")").classes("font-bold")
@@ -108,5 +106,4 @@ def create_docs_element(element: Type[ui.element]):
                         ui.element("span", content="No documentation provided").classes("text-gray-500")
                     else:
                         for line in method.__doc__.splitlines():
-
-                            ui.element("div", content=line).classes("pl-4")
+                            ui.element("div", content=line).classes("pl-8")
