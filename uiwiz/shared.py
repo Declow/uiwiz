@@ -18,7 +18,11 @@ def hash_function_extended(func):
     same in different workers, so I had to use the source code
     to generate a hash that would be the same in all workers.
     """
-    source = inspect.getsource(func) + func.__name__
+    try:
+        source = inspect.getsource(func) + func.__name__
+    except (TypeError, OSError):
+        # Fallback for built-in functions or functions without source code
+        source = f"{func.__module__}.{func.__qualname__}"
     return hashlib.sha256(source.encode("utf-8")).hexdigest()
 
 
