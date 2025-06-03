@@ -3,7 +3,7 @@ import textwrap
 
 
 def extract_text(docstring: str) -> tuple[str, str, dict[str, str]]:
-    docstring = textwrap.dedent(docstring or '').strip()
+    docstring = textwrap.dedent(docstring or "").strip()
     lines = docstring.splitlines()
 
     # Find code block (robust to any indentation, blank lines, and multiple code blocks)
@@ -12,9 +12,9 @@ def extract_text(docstring: str) -> tuple[str, str, dict[str, str]]:
     in_code_block = False
     code_block_indent = None
     for i, line in enumerate(lines):
-        if not in_code_block and re.match(r'\..\s*code-block', line.strip(), re.IGNORECASE):
+        if not in_code_block and re.match(r"\..\s*code-block", line.strip(), re.IGNORECASE):
             # Find the first non-blank, indented line after the marker
-            for j in range(i+1, len(lines)):
+            for j in range(i + 1, len(lines)):
                 if lines[j].strip() == "":
                     continue
                 indent = len(lines[j]) - len(lines[j].lstrip())
@@ -46,7 +46,7 @@ def extract_text(docstring: str) -> tuple[str, str, dict[str, str]]:
     # Extract parameter lines that start with ':param' (allow for type or not)
     parameters = {}
     for line in lines:
-        m = re.match(r':param(?:\s+\w+)?\s+(\w+)\s*:\s*(.*)', line.strip())
+        m = re.match(r":param(?:\s+\w+)?\s+(\w+)\s*:\s*(.*)", line.strip())
         if m:
             param_name, param_desc = m.groups()
             parameters[param_name] = param_desc.strip()
@@ -56,7 +56,7 @@ def extract_text(docstring: str) -> tuple[str, str, dict[str, str]]:
     in_code_block = False
     for i, line in enumerate(lines):
         stripped = line.strip()
-        if re.match(r'\..\s*code-block', stripped, re.IGNORECASE):
+        if re.match(r"\..\s*code-block", stripped, re.IGNORECASE):
             in_code_block = True
             continue
         if in_code_block:
@@ -67,10 +67,12 @@ def extract_text(docstring: str) -> tuple[str, str, dict[str, str]]:
                 continue
             else:
                 in_code_block = False
-        if re.match(r':param(?:\s+\w+)?\s+\w+\s*:', stripped):
+        if re.match(r":param(?:\s+\w+)?\s+\w+\s*:", stripped):
             continue
         if not in_code_block:
-            description_lines.append(line.lstrip())
-    description = "\n".join(description_lines).strip()
+            stripped = stripped.lstrip()
+            if stripped:
+                description_lines.append(stripped)
+    description = "\n\n".join(description_lines).strip()
 
     return description, code_block, parameters
