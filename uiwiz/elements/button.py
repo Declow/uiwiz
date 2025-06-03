@@ -8,6 +8,7 @@ from uiwiz.event import FUNC_TYPE, SWAP_EVENTS, TARGET_TYPE
 def some_function():
     ui.toast("Button clicked").success()
 
+
 class Button(OnEvent):
     root_class: str = "btn"
     root_size: str = "btn-{size}"
@@ -22,7 +23,11 @@ class Button(OnEvent):
 
             from uiwiz import ui
 
-            ui.button("Click me").on_click(lambda: ui.toast("test"), target="this", swap="none") 
+            @app.ui("/ui/toast/click")
+            def click_event():
+                ui.toast("Button clicked").success()
+
+            ui.button("Click me").on_click(click_event, target="this", swap="none")
 
         :param title: The title of the button
         :type title: str
