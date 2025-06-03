@@ -10,6 +10,13 @@ class Radio(OnEvent):
 
         This element is used for radio buttons
 
+        .. code-block:: python
+            from uiwiz import ui
+
+            with ui.form():
+                ui.radio("group1", checked=True)
+                ui.radio("group1")
+
         :param name: name of the radio group
         :param checked: if the radio is checked
         """

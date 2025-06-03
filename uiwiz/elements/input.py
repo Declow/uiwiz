@@ -16,6 +16,11 @@ class Input(OnEvent):
 
         This element is used for input data
 
+        .. code-block:: python
+            from uiwiz import ui
+
+            ui.input("username", "default_value", "Enter your username")
+
         :param name: Used in the attributes name sent back in json
         :type name: str, optional
         :param value: The default value for the input

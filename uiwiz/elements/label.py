@@ -11,6 +11,15 @@ class Label(Bindable):
     def __init__(self, text: Optional[str] = None, for_: Optional[Element] = None) -> None:
         """Label
 
+        This element is used for labels that can be bound to form elements.
+
+        .. code-block:: python
+            from uiwiz import ui
+
+            with ui.form():
+                input = ui.input("username")
+                ui.label("Username", for_=input)
+
         :param text: The text to display
         :type text: str, optional
         :param for_: The element to bind the label to

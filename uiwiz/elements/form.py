@@ -13,13 +13,11 @@ class Form(Element):
         A form is a section of a document containing input elements.
 
         .. code-block:: python
-            from uiwiz import ui, UiwizApp
-
-            app = UiwizApp()
+            from uiwiz import ui
 
             @app.route("/submit")
             async def submit():
-                return "Form submitted!"
+                ui.toast("Form submitted successfully!").success()
 
             with ui.form().on_submit(submit):
                 ui.input(name="name", placeholder="Name")

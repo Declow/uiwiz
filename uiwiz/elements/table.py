@@ -29,6 +29,22 @@ class Table(Element):
         """
         Creates a table from a list of pydantic models
 
+        Example:
+        .. code-block:: python
+            from uiwiz import ui
+            from pydantic import BaseModel
+
+            class User(BaseModel):
+                id: int
+                name: str
+                email: str
+
+            data = [
+                User(id=1, name="John Doe", email="wiz@ui-wizard.com"),
+                User(id=1, name="John Doe", email="wiz@ui-wizard.com"),
+            ]
+            ui.table(data, id_column_name="id")
+
         :param data: A list of pydantic models
         :param id_column_name: The name of the Pydantic attribute to be used with the path param endpoint. An endpoint like /path/{id} should have a attribute "id" on the class
         :return: The current instance of the element.

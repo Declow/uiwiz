@@ -16,20 +16,16 @@ class Spinner(Element):
 
         Example:
         .. code-block:: python
-            from uiwiz import ui, UiwizApp
-            import asyncio
-
-            app = UiwizApp()
-
+            from uiwiz import ui
+            
             @app.ui("/some/endpoint")
-            async def some_endpoint():
-                asyncio.sleep(1)
+            def some_endpoint():
+                import time
+                time.sleep(1)  # Simulate a long-running request
                 ui.toast("Button clicked").success()
 
-            @app.page("/")
-            async def home():
-                with ui.button("Click me").on_click(some_endpoint, swap="none") as btn:
-                    ui.spinner(btn)
+            with ui.button("Click me").on_click(some_endpoint, swap="none") as btn:
+                ui.spinner(btn)
 
         :param args: Elements to show spinner for when making a request
         """

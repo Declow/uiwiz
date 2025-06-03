@@ -9,7 +9,7 @@ from uiwiz import ui
     (ui.upload.__init__.__doc__, 'ui.upload("file")'),
     (ui.button.__init__.__doc__, 'button'),
     (ui.textarea.__init__.__doc__, 'ui.textarea'),
-    (ui.input.__init__.__doc__, 'ui.input("name")'),
+    (ui.input.__init__.__doc__, 'from uiwiz import ui\n\nui.input("username", "default_value", "Enter your username")'),
     (ui.upload.on_upload.__doc__, 'ui.upload("file").on_upload(on_upload=handle_upload, swap="none")'),
     #(ui.toast.__init__.__doc__, 'ui.toast("message")'),
     #(ui.aggrid.__init__.__doc__, 'ui.aggrid("grid")'),

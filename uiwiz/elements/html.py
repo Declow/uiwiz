@@ -5,7 +5,12 @@ class Html(Element):
     def __init__(self, content) -> None:
         """Html element
 
-        Will render a raw htlm string
+        Will render a raw htlm string. This is useful for embedding custom HTML content directly into the UI.
+
+        .. code-block:: python
+            from uiwiz import ui
+
+            ui.html("<h1>Hello World</h1>")
 
         :param content: html content as string
         :type content: str
