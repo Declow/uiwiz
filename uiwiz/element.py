@@ -47,18 +47,9 @@ class Element:
 
         Example:
         .. code-block:: python
-            from uiwiz import ui, UiwizApp
+            from uiwiz import ui
 
-            app = UiwizApp()
-
-            @app.ui("/")
-            async def home():
-                ui.element().classes("flex")
-                with ui.element().classes("relative") as container:
-                    ui.element("h1", "Hello World")
-
-                ui.element().attributes["id"] = "my-id"
-                ui.element().attributes["id"] = lambda: "my-id" # <- This is also possible
+            ui.element("h1", "Hello World")
 
 
         :param tag: The tag of the element type
@@ -162,7 +153,7 @@ class Element:
 
     def get_classes(self) -> str:
         """Get html classes of the element.
-        
+
         :return: The classes of the element.
         :type: str
         """
@@ -259,7 +250,7 @@ class Element:
 
     def after_render(self, html: str) -> str:
         """This method is called after the element is rendered.
-        
+
         :param html: The rendered HTML of the element."""
         return html
 
