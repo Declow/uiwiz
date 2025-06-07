@@ -43,7 +43,7 @@ def create_elements(router: PageRouter):
 
 def create_docs_element(element: ui.element, router: PageRouter):
     app = router # noqa
-    with ui.container(space_y="space-y-2").classes("prose outline rounded-lg"):
+    with ui.container(space_y="").classes("prose outline rounded-lg"):
         with ui.element().classes("flex flex-row"):
             ui.element("h2", f"ui.{element.__name__.lower()}")
 

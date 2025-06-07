@@ -10,7 +10,7 @@ class Html(Element):
         .. code-block:: python
             from uiwiz import ui
 
-            ui.html("<h1>Hello World</h1>")
+            ui.html("<strong>Hello World</strong>")
 
         :param content: html content as string
         :type content: str

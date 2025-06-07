@@ -12,7 +12,15 @@ class Col(Element):
     ) -> None:
         """Col
 
-        Align children elements horizontally.
+        Align children elements vertically in a column layout.
+
+        Example:
+        .. code-block:: python
+            from uiwiz import ui
+
+            with ui.col():
+                ui.button("Button 1")
+                ui.button("Button 2")
 
         :param item_position: The position of the items in the column. Items-start by default and will align the items to the left. items-end will align the items to the right.
         :type item_position: str, optional

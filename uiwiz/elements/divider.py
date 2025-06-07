@@ -10,6 +10,16 @@ class Divider(Element):
 
         Display a divider line between elements.
 
+        Example:
+        .. code-block:: python
+
+            from uiwiz import ui
+
+            with ui.col():
+                ui.button("Button 1")
+                ui.divider("or")
+                ui.button("Button 2")
+
         :param text: The text to display in the divider.
         :type text: str, optional
         """

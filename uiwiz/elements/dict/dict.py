@@ -21,6 +21,7 @@ class Dict(Element, extensions=[JS_PATH]):
             from uiwiz import ui
 
             ui.dict({"name": "John Doe", "age": 50})
+            ui.dict({"name": "John Doe", "age": 50}, copy_to_clipboard=True).border_classes("")
 
         :param data: list or dict data
         """
