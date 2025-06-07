@@ -6,6 +6,16 @@ from docs.pages.docs.extract_doc import extract_text
 from uiwiz import PageRouter, elements, ui
 
 
+def get_class_properties(cls):
+    # Returns a list of (name, property) tuples for all properties in the class
+    return [
+        (name, prop)
+        for name, prop in inspect.getmembers(cls)
+        if not name.startswith("_")
+        and not inspect.isroutine(prop)
+        and not isinstance(prop, (property, staticmethod, classmethod))
+    ]
+
 def get_clean_annotation_name(annotation):
     import typing
     if hasattr(annotation, "__name__"):
@@ -59,6 +69,13 @@ def create_docs_element(element: ui.element, router: PageRouter):
                 exec(cb)
             except Exception:
                 pass
+
+        
+        # ui.element(content="Properties").classes("mt-4")
+        # properties = get_class_properties(element)
+        # if properties:
+        #     for name, prop in properties:
+        #         ui.element(content=name)
 
         ui.element("h3", "Constructor").classes("mt-4")
         anno = extract_param_annotations(element)
