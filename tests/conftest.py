@@ -20,5 +20,5 @@ def setup_app():
         Frame.get_stack()
         reset_resources()
         yield app
-        Frame.del_stack()
+        Frame.get_stack().del_stack()
         reset_resources()
