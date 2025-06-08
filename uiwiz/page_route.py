@@ -244,7 +244,8 @@ class PageRouter(APIRouter):
                     result = await result
 
                 if isinstance(result, Response):
-                    return self.return_function_response(result)
+                    Frame.get_stack().del_stack()
+                    return result
 
                 standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "partial-ui"}
                 standard_headers.update(response.headers)
@@ -252,17 +253,13 @@ class PageRouter(APIRouter):
                 self.add_ext(page=None, include_js=cap_include_js, include_css=cap_include_css)
 
                 content = Frame.get_stack().render()
-                return self.return_function_response(HTMLResponse(content=content, headers=standard_headers))
+                return HTMLResponse(content=content, headers=standard_headers)
 
             self.__ensure_request_response_signature__(decorated)
             _router = router or self
             return _router.post(path, include_in_schema=False, **kwargs)(decorated)
 
         return decorator
-
-    def return_function_response(self, response: Union[str, Response]) -> Union[str, Response]:
-        Frame.get_stack().del_stack()
-        return response
 
     def __ensure_request_response_signature__(self, func: Callable):
         data = {"request": Request, "response": Response}
