@@ -2,10 +2,12 @@ from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import Request
+from fastapi.responses import HTMLResponse
 
 from docs.layout import Layout, Page, pages
 from docs.page_docs import docs_router
 from uiwiz import PageDefinition, PageRouter, UiwizApp, ui
+from uiwiz.frame import Frame
 
 router: PageRouter = PageRouter(page_definition_class=PageDefinition)
 page_dict: dict[str, Page] = {item.path: item for item in pages}
@@ -33,12 +35,27 @@ app: UiwizApp = UiwizApp(theme="dim", lifespan=lifespan, page_definition_class=L
 async def render_md(request: Request):
     page = page_dict.get(request.url.path, None)
     if page:
-        with open(f"docs/pages/{page.file_name}", "r") as f:
-            content = f.read()
-
         with ui.container():
-            ui.markdown(content)
+            ui.markdown(page.content)
+    else:
+        with ui.container():
+            ui.markdown("Page not found.")
 
+
+async def not_found():
+    with ui.container():
+        ui.markdown("Page not found. Please check the URL or return to the home page.")
+        for page in pages:
+            ui.link(page.title, page.path)
+
+@app.exception_handler(404)
+async def not_found_exception_handler(request: Request, exc: Exception):
+    await Layout().render(not_found, request, title="Not Found")
+    return HTMLResponse(
+        content=Frame.get_stack().render(),
+        status_code=404,
+        media_type="text/html",
+    )
 
 if __name__ == "__main__":
     uvicorn.run("docs.main:app", host="0.0.0.0", port=8080, reload=True)

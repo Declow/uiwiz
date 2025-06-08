@@ -1,4 +1,5 @@
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 
 from typing_extensions import override
 
@@ -7,13 +8,20 @@ from uiwiz.svg.svg_handler import get_svg
 
 
 class Page:
-    def __init__(self, path: str, title: str, file_name: str):
+    def __init__(self, path: str, title: str, file: Union[Path, str]) -> None:
         self.path = path
         self.title = title
-        self.file_name = file_name
+        if isinstance(file, Path):
+            with file.open("r") as f:
+                self.content = f.read()
+        elif isinstance(file, str):
+            self.content = file
+        else:
+            raise ValueError("File must be a Path or a string representing the content.")
 
 pages = [
-    Page(path="/", title="Home", file_name="index.md"),
+    Page(path="/", title="Home", file=Path("docs/pages/index.md")),
+    # Page(path="/docs", title="Docs", file_name="/docs/index.md"),
 ]
 
 

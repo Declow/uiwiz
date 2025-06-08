@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from docs.layout import Layout, Page, pages
 from docs.pages.docs.elements import create_docs_element, create_elements
 from uiwiz import PageRouter, ui
@@ -9,16 +11,17 @@ class LayoutDocs(Layout):
 
 docs_router = PageRouter(prefix="/docs")
 
-index = Page(path=f"{docs_router.prefix}/", title="Docs", file_name="index.md")
+#index = 
 
-pages.append(index)
+pages.append(Page(path=f"{docs_router.prefix}/", title="Docs", file=Path("docs/pages/docs/index.md")))
+#pages.append(Page(path=f"{docs_router.prefix}/", title="Docs", file_name="/docs/index.md"))
 
-@docs_router.page(path="/", title="Docs")
-async def docs_index():
-    with open("docs/pages/docs/index.md", "r") as f:
-        content = f.read()
-    with ui.container():
-        ui.markdown(content)
+# @docs_router.page(path="/", title="Docs")
+# async def docs_index():
+#     with open("docs/pages/docs/index.md", "r") as f:
+#         content = f.read()
+#     with ui.container():
+#         ui.markdown(content)
 
 
 @docs_router.page("/element/{name}", title="Elements")
