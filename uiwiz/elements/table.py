@@ -56,7 +56,7 @@ class Table(Element):
 
         self.schema = []
         if data:
-            self.schema = list(data[0].model_fields.keys())
+            self.schema = list(data[0].__class__.model_fields.keys())
 
         self.container = container
         self.data = data
@@ -256,7 +256,7 @@ class Table(Element):
         :return: The tr element container
         """
         with Element("tr") as container:
-            for item in list(row.model_fields.keys()):
+            for item in list(row.__class__.model_fields.keys()):
                 Element("td", content=row.__getattribute__(item))
             if edit and delete:
                 with Element("td").classes("flex justify-end join"):
