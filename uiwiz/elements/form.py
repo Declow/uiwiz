@@ -15,7 +15,7 @@ class Form(Element):
         .. code-block:: python
             from uiwiz import ui
 
-            @app.route("/ui/form/submit")
+            @app.ui("/ui/form/submit")
             async def ui_form_submit():
                 ui.toast("Form submitted successfully!").success()
 
