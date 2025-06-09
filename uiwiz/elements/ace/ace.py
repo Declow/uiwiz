@@ -83,14 +83,14 @@ class Ace(
         self.classes(Ace._classes)
         self.attributes["hx-ace-editor-lang"] = lang
         self.attributes["hx-ace-editor-hidden-input"] = hidden_text.id
-        self.attributes["hx-ace-editor-form"] = self.find_parent_form()
+        self.attributes["hx-ace-editor-form"] = self.__find_parent_form__()
         self.attributes["hx-ace-editor-content"] = content
 
 
         self.attributes["hx-ace-editor-options"] = json.dumps(humps.camelize(self.options))
         self.attributes["hx-ace-editor-sql-options"] = json.dumps(self.sql_options)
 
-    def find_parent_form(self) -> Optional[str]:
+    def __find_parent_form__(self) -> Optional[str]:
         parent = self.parent_element
         while parent:
             if isinstance(parent, Form):
