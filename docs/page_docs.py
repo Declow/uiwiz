@@ -11,17 +11,6 @@ class LayoutDocs(Layout):
 
 docs_router = PageRouter(prefix="/docs")
 
-#index = 
-#pages.append(Page(path=f"{docs_router.prefix}/", title="Docs", file_name="/docs/index.md"))
-
-# @docs_router.page(path="/", title="Docs")
-# async def docs_index():
-#     with open("docs/pages/docs/index.md", "r") as f:
-#         content = f.read()
-#     with ui.container():
-#         ui.markdown(content)
-
-
 @docs_router.page("/element/{name}", title="Elements")
 async def docs_element(name: str):
     create_docs_element(getattr(ui, name), docs_router)
