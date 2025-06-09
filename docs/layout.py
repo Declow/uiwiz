@@ -1,14 +1,16 @@
 from pathlib import Path
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
+from fastapi import Request
 from typing_extensions import override
 
 from uiwiz import PageDefinition, ui
 from uiwiz.svg.svg_handler import get_svg
 
+pages = []
 
 class Page:
-    def __init__(self, path: str, title: str, file: Union[Path, str]) -> None:
+    def __init__(self, path: str, title: str, file: Union[Path, str, Callable[[], str]]) -> None:
         self.path = path
         self.title = title
         if isinstance(file, Path):
@@ -16,14 +18,22 @@ class Page:
                 self.content = f.read()
         elif isinstance(file, str):
             self.content = file
+        elif callable(file):
+            self.content = file
         else:
             raise ValueError("File must be a Path or a string representing the content.")
+        
+        pages.append(self)
 
-pages = [
-    Page(path="/", title="Home", file=Path("docs/pages/index.md")),
-    # Page(path="/docs", title="Docs", file_name="/docs/index.md"),
-]
+    async def render(self):
+        """Render the page content."""
+        with ui.container():
+            if callable(self.content):
+                await self.content()
+            else:
+                ui.markdown(self.content)
 
+Page(path="/", title="Home", file=Path("docs/pages/index.md"))
 
 class Layout(PageDefinition):
     def __init__(self) -> None:

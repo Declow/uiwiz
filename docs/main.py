@@ -35,8 +35,7 @@ app: UiwizApp = UiwizApp(theme="dim", lifespan=lifespan, page_definition_class=L
 async def render_md(request: Request):
     page = page_dict.get(request.url.path, None)
     if page:
-        with ui.container():
-            ui.markdown(page.content)
+        await page.render()
     else:
         with ui.container():
             ui.markdown("Page not found.")
