@@ -1,13 +1,14 @@
 from pathlib import Path
 from typing import Callable, Optional, Union
 
-from fastapi import Request
 from typing_extensions import override
 
 from uiwiz import PageDefinition, ui
 from uiwiz.svg.svg_handler import get_svg
 
+parent = Path(__file__).parent
 pages = []
+
 
 class Page:
     def __init__(self, path: str, title: str, file: Union[Path, str, Callable[[], str]]) -> None:
@@ -22,7 +23,7 @@ class Page:
             self.content = file
         else:
             raise ValueError("File must be a Path or a string representing the content.")
-        
+
         pages.append(self)
 
     async def render(self):
@@ -33,7 +34,9 @@ class Page:
             else:
                 ui.markdown(self.content)
 
-Page(path="/", title="Home", file=Path("docs/pages/index.md"))
+
+Page(path="/", title="Home", file=parent / "pages/index.md")
+
 
 class Layout(PageDefinition):
     def __init__(self) -> None:
@@ -70,7 +73,6 @@ class Layout(PageDefinition):
             with ui.element("div").classes("flex flex-col items-center justify-center"):
                 ui.label("Made with ❤️ by Uiwiz").classes("text-sm")
                 ui.link("GitHub", "https://github.com/declow/uiwizard")
-
 
     def nav(self, drawer):
         with ui.element().classes(
