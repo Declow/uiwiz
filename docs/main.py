@@ -23,6 +23,8 @@ async def lifespan(app: UiwizApp):
         This is the same as using the @app.page decorator,
         but allows for dynamic page registration.
         """
+        if page.content is None:
+            continue
         app.page(path=page.path, title=page.title)(render_md)
         app.include_router(docs_router)
 
@@ -47,6 +49,7 @@ async def not_found():
         for page in pages:
             ui.link(page.title, page.path)
 
+
 @app.exception_handler(404)
 async def not_found_exception_handler(request: Request, exc: Exception):
     await Layout().render(not_found, request, title="Not Found")
@@ -55,6 +58,7 @@ async def not_found_exception_handler(request: Request, exc: Exception):
         status_code=404,
         media_type="text/html",
     )
+
 
 if __name__ == "__main__":
     uvicorn.run("docs.main:app", host="0.0.0.0", port=8080, reload=True)

@@ -11,7 +11,7 @@ pages = []
 
 
 class Page:
-    def __init__(self, path: str, title: str, file: Union[Path, str, Callable[[], str]]) -> None:
+    def __init__(self, path: str, title: str, file: Union[Path, str, Callable[[], str], None]) -> None:
         self.path = path
         self.title = title
         if isinstance(file, Path):
@@ -22,7 +22,7 @@ class Page:
         elif callable(file):
             self.content = file
         else:
-            raise ValueError("File must be a Path or a string representing the content.")
+            self.content = None
 
         pages.append(self)
 
