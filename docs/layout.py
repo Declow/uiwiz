@@ -24,7 +24,8 @@ class Page:
         else:
             self.content = None
 
-        pages.append(self)
+        if path not in [page.path for page in pages]:
+            pages.append(self)
 
     async def render(self):
         """Render the page content."""
@@ -69,7 +70,7 @@ class Layout(PageDefinition):
 
     @override
     def footer(self, _: ui.element):
-        with ui.footer().classes("footer mx-auto footer-center p-4 bg-base-200 text-base-content"):
+        with ui.footer().classes("footer mx-auto footer-center p-4 text-base-content"):
             with ui.element("div").classes("flex flex-col items-center justify-center"):
                 ui.label("Made with ❤️ by Uiwiz").classes("text-sm")
                 ui.link("GitHub", "https://github.com/declow/uiwizard")
