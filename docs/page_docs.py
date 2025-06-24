@@ -12,7 +12,7 @@ class LayoutDocs(Layout):
         self.drawer.always_open(True)
 
 
-docs_router = PageRouter(prefix="/docs")
+docs_router = PageRouter(prefix="/reference")
 
 
 @docs_router.page("/element/{name}", title="Elements")
@@ -25,7 +25,7 @@ async def docs_elements():
     create_elements(docs_router)
 
 
-async def docs_index():
+async def reference():
     with ui.container():
         ui.markdown("This is the reference page. It will contain links to all the elements and their documentation.")
         for value in dir(ui):
@@ -35,5 +35,4 @@ async def docs_index():
         ui.link("All Elements", f"{docs_router.prefix}/elements")
 
 
-Page(path=f"{docs_router.prefix}/", title="Docs", file=parent / "pages/docs/index.md")
-Page(path=f"{docs_router.prefix}/reference", title="Reference", file=docs_index)
+Page(path=f"{docs_router.prefix}/", title="Reference", file=reference)
