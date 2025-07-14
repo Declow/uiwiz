@@ -59,12 +59,11 @@ class Layout(PageDefinition):
 
             with self.drawer.drawer_side():
                 with ui.element("ul").classes("flex-none block md:hidden w-full"):
-                    with ui.element("li").classes("menu menu-compact"):
-                        for page in pages:
-                            with ui.element("li"):
-                                ui.link(page.title, page.path)
+                    for page in pages:
                         with ui.element("li"):
-                            ui.themeSelector()
+                            ui.link(page.title, page.path)
+                    with ui.element("li"):
+                        ui.themeSelector()
 
         return content
 
