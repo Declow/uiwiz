@@ -11,7 +11,7 @@ pages = []
 
 
 class Page:
-    def __init__(self, path: str, title: str, file: Union[Path, str, Callable[[], str], None]) -> None:
+    def __init__(self, path: str, title: str, file: Union[Path, str, Callable[[], str], None] = None) -> None:
         self.path = path
         self.title = title
         if isinstance(file, Path):
@@ -29,7 +29,7 @@ class Page:
 
     async def render(self):
         """Render the page content."""
-        with ui.container():
+        with ui.container(padding="p-4"):
             if callable(self.content):
                 await self.content()
             else:

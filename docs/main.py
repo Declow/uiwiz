@@ -39,12 +39,12 @@ async def render_md(request: Request):
     if page:
         await page.render()
     else:
-        with ui.container():
+        with ui.container(padding="p-4"):
             ui.markdown("Page not found.")
 
 
 async def not_found():
-    with ui.container():
+    with ui.container(padding="p-4"):
         ui.markdown("Page not found. Please check the URL or return to the home page.")
         for page in pages:
             ui.link(page.title, page.path)

@@ -26,7 +26,7 @@ async def docs_elements():
 
 
 async def reference():
-    with ui.container():
+    with ui.container(padding="p-4"):
         ui.markdown("This is the reference page. It will contain links to all the elements and their documentation.")
         for value in dir(ui):
             if value.startswith("_"):

@@ -10,5 +10,5 @@ class Container(Element):
         A container element that centers a box in the middle of the screen.
         """
         super().__init__()
-        self.__root_class__ = Container.root_class.format(max_w=max_w,padding=padding, space_y=space_y)
+        self.__root_class__ = Container.root_class.format(max_w=max_w, padding=padding, space_y=space_y)
         self.classes()

@@ -70,13 +70,6 @@ def create_docs_element(element: ui.element, router: PageRouter):
             except Exception:
                 pass
 
-        
-        # ui.element(content="Properties").classes("mt-4")
-        # properties = get_class_properties(element)
-        # if properties:
-        #     for name, prop in properties:
-        #         ui.element(content=name)
-
         ui.element("h3", "Constructor").classes("mt-4")
         anno = extract_param_annotations(element)
         if anno:
