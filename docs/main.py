@@ -52,7 +52,7 @@ async def not_found():
 
 @app.exception_handler(404)
 async def not_found_exception_handler(request: Request, exc: Exception):
-    await Layout().render(not_found, request, title="Not Found")
+    await app.page_definition_class().render(not_found, request, title="Not Found")
     return HTMLResponse(
         content=Frame.get_stack().render(),
         status_code=404,
