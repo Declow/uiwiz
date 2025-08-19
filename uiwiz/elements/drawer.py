@@ -25,10 +25,12 @@ class DrawerSide(Element):
 
     def __enter__(self):
         super().__enter__()
-        close_label = Label("", self.drawer_toggle)
-        close_label.attributes["class"] = "drawer-overlay"
-        close_label.attributes["aria-label"] = "close sidebar"
-        self.setup = DrawerSetup()
+        if not hasattr(self, "close_label"):
+            self.close_label = Label("", self.drawer_toggle)
+            self.close_label.attributes["class"] = "drawer-overlay"
+            self.close_label.attributes["aria-label"] = "close sidebar"
+        if not hasattr(self, "setup"):
+            self.setup = DrawerSetup()
         self.setup.__enter__()
 
     def __exit__(self, *_):
@@ -104,7 +106,7 @@ class Drawer(Element):
             self.classes(self.attributes["class"] + " lg:drawer-open")
         else:
             self.classes(self.attributes["class"].replace("lg:drawer-open", ""))
-    
+
     def right(self, value: bool) -> None:
         """Set the drawer to open from the right side of the screen."""
         if value:
