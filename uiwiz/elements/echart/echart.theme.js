@@ -19,6 +19,7 @@ export function registerEChartsTheme() {
             ],
             "backgroundColor": style.getPropertyValue("--color-base-100"), //"rgba(254,248,239,1)",
             "textStyle": {},
+            "label": { "textBorderColor": "transparent" },
             "title": {
                 "textStyle": {
                     "color": "#333333"
