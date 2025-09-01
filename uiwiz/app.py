@@ -68,10 +68,7 @@ class UiwizApp(FastAPI):
         self.error_classes = error_classes
         self.auto_close_toast_error = auto_close_toast_error
         self.page_definition_class = page_definition_class
-        if theme:
-            self.theme = f"data-theme={theme}"
-        else:
-            self.theme = theme
+        self.theme = theme
         self.title = title
         self.add_static_files(f"/_static/{__version__}/", Path(__file__).parent / "static")
 

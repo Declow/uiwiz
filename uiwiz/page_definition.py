@@ -92,7 +92,8 @@ class PageDefinition:
 
             html.attributes["id"] = "html"
             html.attributes["lang"] = self.lang
-            html.attributes["data-theme"] = theme
+            if theme:
+                html.attributes["data-theme"] = theme
 
             with Element("head") as header:
                 self.header_ele = header
