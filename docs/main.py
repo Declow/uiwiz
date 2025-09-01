@@ -31,7 +31,7 @@ async def lifespan(app: UiwizApp):
     yield
 
 
-app: UiwizApp = UiwizApp(theme="dim", lifespan=lifespan, page_definition_class=Layout)
+app: UiwizApp = UiwizApp(lifespan=lifespan, page_definition_class=Layout)
 
 
 async def render_md(request: Request):
