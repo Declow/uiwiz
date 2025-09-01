@@ -1,6 +1,4 @@
 export function registerEChartsTheme() {
-    // write to console
-
     var style = window.getComputedStyle(document.body);
     var textColor = style.getPropertyValue("--color-base-content");
     echarts.registerTheme('westeros',
@@ -17,9 +15,12 @@ export function registerEChartsTheme() {
                 "#724e58",
                 "#4b565b"
             ],
-            "backgroundColor": style.getPropertyValue("--color-base-100"), //"rgba(254,248,239,1)",
+            "backgroundColor": style.getPropertyValue("--color-base-100"),
             "textStyle": {},
-            "label": { "textBorderColor": "transparent" },
+            "label": { 
+                "textBorderColor": "transparent",
+                "color": textColor
+            },
             "title": {
                 "textStyle": {
                     "color": "#333333"
