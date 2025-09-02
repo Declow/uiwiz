@@ -12,6 +12,14 @@ class Datepicker(OnEvent):
     ) -> None:
         """Datepicker element
 
+        This element is used for date inputs
+
+        .. code-block:: python
+            from uiwiz import ui
+            from datetime import datetime
+
+            ui.datepicker("datepicker", datetime.now())
+
         :param name: name of the datepicker
         :type name: str
         :param value: default value of the datepicker

@@ -24,26 +24,26 @@ def test_element_void():
 
 def test_get_target_none():
     el = ui.element()
-    assert "this" == el.get_target(None)
+    assert "this" == el.__get_target__(None)
 
 
 def test_get_target_lambda():
     el = ui.element()
-    assert "#this" == el.get_target(lambda: "this")
+    assert "#this" == el.__get_target__(lambda: "this")
 
 
 def test_get_target_str():
     el = ui.element()
-    assert "#outerHTML" == el.get_target("outerHTML")
-    assert "#asd" == el.get_target("asd")
-    assert "this" == el.get_target("this")
-    assert "#shouldbeok" == el.get_target("#shouldbeok")
+    assert "#outerHTML" == el.__get_target__("outerHTML")
+    assert "#asd" == el.__get_target__("asd")
+    assert "this" == el.__get_target__("this")
+    assert "#shouldbeok" == el.__get_target__("#shouldbeok")
 
 
 def test_get_target_element_id():
     el = ui.element()
     el2 = ui.element()
-    assert f"#{el2.id}" == el.get_target(el2)
+    assert f"#{el2.id}" == el.__get_target__(el2)
 
 
 def test_oob_top_level():

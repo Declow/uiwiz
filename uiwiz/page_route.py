@@ -1,102 +1,18 @@
 import functools
 import inspect
-import json
-from html import escape
-from typing import Annotated, Callable, Optional, TypedDict, Union
+from functools import partial
+from typing import Annotated, Any, Callable, Optional, Sequence, Type, TypedDict
 
-from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Request, Response, params
+from fastapi.datastructures import Default
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.routing import APIRoute
+from starlette.types import ASGIApp, Lifespan
+from typing_extensions import Doc
 
 from uiwiz.element import Element
 from uiwiz.frame import Frame
-from uiwiz.version import __version__
-
-
-class PageDefinition:
-    html: Element
-    header: Element
-    body: Element
-    content: Element
-    title_ele: Element
-    lang: str
-
-    def __init__(self):
-        self._lang: str = "en"
-
-    @property
-    def lang(self) -> str:
-        return self._lang
-
-    @lang.setter
-    def lang(self, value: str) -> None:
-        self._lang = value
-        self.html.attributes["lang"] = value
-
-    @property
-    def title(self) -> str:
-        return self.title_ele.content
-
-    @title.setter
-    def title(self, value: str) -> None:
-        self.title_ele.content = value
-
-    def render(
-        self,
-        request: Request,
-        title: Optional[str] = None,
-    ) -> "PageDefinition":
-        frame = Frame.get_stack()
-
-        theme = request.app.theme
-        if cookie_theme := request.cookies.get("data-theme"):
-            theme = escape(cookie_theme)
-
-        class RenderDoctype:
-            def render(self):
-                return "<!DOCTYPE html>"
-
-        frame.root.append(RenderDoctype())  # funky way to add doctype
-        page_title = request.app.title if title is None else title
-        with Element("html").classes("overflow-y-scroll") as html:
-            html.attributes["id"] = "html"
-            html.attributes["lang"] = self.lang
-            html.attributes["data-theme"] = theme
-
-            with Element("head") as header:
-                Element("meta", name="viewport").attributes["content"] = "width=device-width, initial-scale=1"
-                Element("meta", charset="utf-8")
-                Element("meta", description=frame.meta_description_content)
-
-                title_ele = Element("title", content=page_title)
-
-                Element("link", href=f"/_static/{__version__}/libs/daisyui.css", rel="stylesheet", type="text/css")
-                Element(
-                    "link", href=f"/_static/{__version__}/libs/daisyui-themes.css", rel="stylesheet", type="text/css"
-                )
-                Element("script", src=f"/_static/{__version__}/libs/tailwind.js")
-                Element("link", href=f"/_static/{__version__}/app.css", rel="stylesheet", type="text/css")
-            with Element("body") as body:
-                body.attributes["hx-ext"] = "swap-header"
-                with Element("div", id="content"):
-                    with Element().classes("flex min-h-screen h-full"):
-                        content = Element("div").classes("flex flex-col w-full")
-
-                toast = Element("div").classes("toast toast-top toast-end text-wrap z-50")
-                toast.attributes["id"] = "toast"
-                toast.attributes["hx-toast-delay"] = json.dumps({"delay": request.app.toast_delay})
-
-                Element("script", src=f"/_static/{__version__}/libs/htmx1.9.9.min.js")
-                Element("script", src=f"/_static/{__version__}/libs/htmx-json-enc.js")
-                Element("script", src=f"/_static/{__version__}/default.js")
-        self.html = html
-        self.header = header
-        self.body = body
-        self.content = content
-        self.title_ele = title_ele
-        return self
-
-
-Page = Annotated[PageDefinition, Depends()]
+from uiwiz.page_definition import PageDefinition
 
 
 class DecKwargs(TypedDict):
@@ -106,6 +22,139 @@ class DecKwargs(TypedDict):
 
 
 class PageRouter(APIRouter):
+    """
+    `PageRouter` class, used to group *path operations*, for example to structure
+    an app in multiple files. It would then be included in the `UiWizard` app, or
+    in another `PageRouter` (ultimately included in the app).
+
+    ## Example
+
+    ```python
+    from uiwiz import PageRouter, UiwizApp, ui
+
+    app = UiwizApp()
+    router = PageRouter()
+
+    @router.get("/users/", tags=["users"])
+    async def read_users():
+        ui.element("h1", content="Hello world")
+
+    app.include_router(router)
+    ```
+    """
+
+    def __init__(
+        self,
+        *,
+        prefix: Annotated[str, Doc("An optional path prefix for the router.")] = "",
+        dependencies: Annotated[
+            Optional[Sequence[params.Depends]],
+            Doc(
+                """
+                A list of dependencies (using `Depends()`) to be applied to all the
+                *path operations* in this router.
+
+                Read more about it in the
+                [FastAPI docs for Bigger Applications - Multiple Files](https://fastapi.tiangolo.com/tutorial/bigger-applications/#include-an-apirouter-with-a-custom-prefix-tags-responses-and-dependencies).
+                """
+            ),
+        ] = None,
+        default_response_class: Annotated[
+            Type[Response],
+            Doc(
+                """
+                The default response class to be used.
+
+                Read more in the
+                [FastAPI docs for Custom Response - HTML, Stream, File, others](https://fastapi.tiangolo.com/advanced/custom-response/#default-response-class).
+                """
+            ),
+        ] = Default(JSONResponse),
+        redirect_slashes: Annotated[
+            bool,
+            Doc(
+                """
+                Whether to detect and redirect slashes in URLs when the client doesn't
+                use the same format.
+                """
+            ),
+        ] = True,
+        default: Annotated[
+            Optional[ASGIApp],
+            Doc(
+                """
+                Default function handler for this router. Used to handle
+                404 Not Found errors.
+                """
+            ),
+        ] = None,
+        route_class: Annotated[
+            Type[APIRoute],
+            Doc(
+                """
+                Custom route (*path operation*) class to be used by this router.
+
+                Read more about it in the
+                [FastAPI docs for Custom Request and APIRoute class](https://fastapi.tiangolo.com/how-to/custom-request-and-route/#custom-apiroute-class-in-a-router).
+                """
+            ),
+        ] = APIRoute,
+        # which the router cannot know statically, so we use typing.Any
+        lifespan: Annotated[
+            Optional[Lifespan[Any]],
+            Doc(
+                """
+                A `Lifespan` context manager handler. This replaces `startup` and
+                `shutdown` functions with a single context manager.
+
+                Read more in the
+                [FastAPI docs for `lifespan`](https://fastapi.tiangolo.com/advanced/events/).
+                """
+            ),
+        ] = None,
+        page_definition_class: Annotated[
+            Optional[Type[PageDefinition]],
+            Doc("""
+                The page definition class to use for this router.
+                
+                This enables the use of custom page definitions for rendering the HTML
+                pages. The default is `PageDefinition`, which provides a basic HTML
+                structure. You can create your own class that inherits from `PageDefinition`
+                and override the `header`, `body`, and `content` methods to customize the
+                HTML structure and content as needed. Setting the `page_definition_class` in the 
+                UiwizApp will set the default for all routers.
+                Example:
+                ```python
+                class MyPageDefinition(PageDefinition):
+                    def header(self, header: Element) -> None:
+                        # Custom header content
+                        Element("link", href="/custom.css", rel="stylesheet")
+                
+                    def body(self, body: Element) -> None:
+                        # Custom body content
+                        Element("div", content="Custom Body").classes("custom-body")
+                
+                    def content(self, content: Element) -> None:
+                        # Custom content
+                        Element("h1", content="Custom Content").classes("custom-content")
+                """),
+        ] = None,
+        **kwargs,
+    ):
+        super().__init__(
+            prefix=prefix,
+            dependencies=dependencies,
+            default_response_class=default_response_class,
+            redirect_slashes=redirect_slashes,
+            default=default,
+            route_class=route_class,
+            lifespan=lifespan,
+            **kwargs,
+        )
+        if page_definition_class is not None and not issubclass(page_definition_class, PageDefinition):
+            raise TypeError("page_definition_class must be a subclass of PageDefinition")
+        self.page_definition_class = page_definition_class
+
     def page(
         self,
         path: str,
@@ -127,18 +176,15 @@ class PageRouter(APIRouter):
                 request = dec_kwargs["request"]
                 response = dec_kwargs["response"]
 
-                # NOTE Ensure the signature matches the parameters of the function
-                page: PageDefinition = (
-                    dec_kwargs.get("page").render(request, title=cap_title)
-                    if "page" in dec_kwargs
-                    else PageDefinition().render(request, title=cap_title)
-                )
-                with page.content:
-                    dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
-                    result = func(*dec_args, **dec_kwargs)
-                    if inspect.isawaitable(result):
-                        result = await result
+                if self.page_definition_class is None:
+                    self.page_definition_class = request.app.page_definition_class
 
+                # NOTE Ensure the signature matches the parameters of the function
+                page: PageDefinition = dec_kwargs.get("page") if "page" in dec_kwargs else self.page_definition_class()
+
+                dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
+                user_method = partial(func, *dec_args, **dec_kwargs)
+                result = await page.render(user_method=user_method, request=request, title=cap_title)
                 if isinstance(result, Response):
                     return self.return_function_response(result)
                 standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "page"}
@@ -189,7 +235,8 @@ class PageRouter(APIRouter):
                     result = await result
 
                 if isinstance(result, Response):
-                    return self.return_function_response(result)
+                    Frame.get_stack().del_stack()
+                    return result
 
                 standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "partial-ui"}
                 standard_headers.update(response.headers)
@@ -197,17 +244,13 @@ class PageRouter(APIRouter):
                 self.add_ext(page=None, include_js=cap_include_js, include_css=cap_include_css)
 
                 content = Frame.get_stack().render()
-                return self.return_function_response(HTMLResponse(content=content, headers=standard_headers))
+                return HTMLResponse(content=content, headers=standard_headers)
 
             self.__ensure_request_response_signature__(decorated)
             _router = router or self
             return _router.post(path, include_in_schema=False, **kwargs)(decorated)
 
         return decorator
-
-    def return_function_response(self, response: Union[str, Response]) -> Union[str, Response]:
-        Frame.get_stack().del_stack()
-        return response
 
     def __ensure_request_response_signature__(self, func: Callable):
         data = {"request": Request, "response": Response}
@@ -221,7 +264,10 @@ class PageRouter(APIRouter):
         func.__signature__ = inspect.Signature(params)
 
     def add_ext(
-        self, page: Optional["PageDefinition"] = None, include_js: bool = False, include_css: bool = False
+        self,
+        page: Optional["PageDefinition"] = None,
+        include_js: bool = False,
+        include_css: bool = False,
     ) -> None:
         lib_css = []
         for lib in Frame.get_stack().extensions:
@@ -230,17 +276,17 @@ class PageRouter(APIRouter):
                 if page is None:
                     Element("link", href=lib, rel="stylesheet", type="text/css")
                 else:
-                    with page.header:
+                    with page.header_ele:
                         Element("link", href=lib, rel="stylesheet", type="text/css")
 
                     # Hack to make aggrid work with daisyui
-                    with page.body:
+                    with page.html_ele:
                         Element("link", href=lib, rel="stylesheet", type="text/css")
             elif lib.endswith("js") and include_js:
                 if page is None:
-                    Element("script", src=lib)
+                    Element("script", src=lib, type="module")
                 else:
-                    with page.body:
-                        Element("script", src=lib)
+                    with page.html_ele:
+                        Element("script", src=lib, type="module")
             if not lib.endswith("js") and not lib.endswith("css"):
                 raise Exception("lib type not supported, supported types css, js")

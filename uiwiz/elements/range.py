@@ -15,7 +15,7 @@ class Range(OnEvent):
         .. code-block:: python
             from uiwiz import ui
 
-            ui.range("range", 50, 0, 100, 1):
+            ui.range("range", 50, 0, 100, 1)
 
         :param name: name of the range input
         :param value: default value of the range input

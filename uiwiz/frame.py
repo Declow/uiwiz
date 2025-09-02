@@ -47,8 +47,10 @@ class Frame:
         return self.last_id
 
     def render(self) -> str:
-        return "".join([el.render() for el in self.root])
-
+        content = "".join([el.render() for el in self.root])
+        self.del_stack()
+        return content
+    
     def add_extension(self, cls, extensions: Optional[Union[List[Path], Path]]) -> None:
         if extensions is None:
             return

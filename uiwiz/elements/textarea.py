@@ -21,7 +21,7 @@ class TextArea(OnEvent):
         .. code-block:: python
             from uiwiz import ui
 
-            ui.textarea("textarea", "Hello World", "Type something here"):
+            ui.textarea("textarea", "Hello World", "Type something here")
 
         :param name: name of the text area input
         :param value: default value of the text area input

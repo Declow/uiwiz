@@ -47,18 +47,9 @@ class Element:
 
         Example:
         .. code-block:: python
-            from uiwiz import ui, UiwizApp
+            from uiwiz import ui
 
-            app = UiwizApp()
-
-            @app.ui("/")
-            async def home():
-                ui.element().classes("flex")
-                with ui.element().classes("relative") as container:
-                    ui.element("h1", "Hello World")
-
-                ui.element().attributes["id"] = "my-id"
-                ui.element().attributes["id"] = lambda: "my-id" # <- This is also possible
+            ui.element("h1", "Hello World")
 
 
         :param tag: The tag of the element type
@@ -131,6 +122,7 @@ class Element:
 
     @property
     def id(self):
+        """Get the id of the element."""
         return self.attributes.get("id")
 
     @property
@@ -160,6 +152,11 @@ class Element:
         return False
 
     def get_classes(self) -> str:
+        """Get html classes of the element.
+
+        :return: The classes of the element.
+        :type: str
+        """
         return self.attributes["class"]
 
     def classes(self, input: str = "") -> Self:
@@ -208,8 +205,13 @@ class Element:
         return self
 
     def render(self, render_script: bool = True) -> str:
+        """
+        Render the element as HTML.
+        :param render_script: If any element has a javascript script, it will be rendered as well.
+        :type render_script: bool
+        """
         lst = []
-        lst.append(self.render_self())
+        lst.append(self.__render_self__())
         if render_script:
             for script in self.stack.scripts:
                 lst.append(
@@ -224,17 +226,17 @@ class Element:
                 )
         return "".join(lst)
 
-    def render_self(self) -> str:
+    def __render_self__(self) -> str:
         self.before_render()
         if self.script:
             self.stack.scripts.append(self.script)
         lst = []
         if self.render_html:
-            self.add_event_to_attributes()
+            self.__add_event_to_attributes__()
 
             lst.append("<%s %s>" % (self.tag, self.__dict_to_attrs__()))
             lst.append(self.content)
-            lst.extend([child.render_self() if child.oob is False else "" for child in self.children])
+            lst.extend([child.__render_self__() if child.oob is False else "" for child in self.children])
 
             if not self.is_void_element:
                 lst.append("</%s>" % self.tag)
@@ -243,16 +245,20 @@ class Element:
         return self.after_render(html)
 
     def before_render(self):
+        """This method is called before the element is rendered."""
         pass
 
     def after_render(self, html: str) -> str:
+        """This method is called after the element is rendered.
+
+        :param html: The rendered HTML of the element."""
         return html
 
-    def add_event_to_attributes(self) -> None:
+    def __add_event_to_attributes__(self) -> None:
         if self.event == {}:
             return None
 
-        self.attributes["hx-target"] = self.get_target(self.event.get("target"))
+        self.attributes["hx-target"] = self.__get_target__(self.event.get("target"))
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
 
         self.attributes["hx-post"] = self.__get_endpoint__(self.event["func"])
@@ -282,7 +288,7 @@ class Element:
             self.stack.app.ui(endpoint)(func)
         return endpoint
 
-    def get_target(self, target: TARGET_TYPE) -> str:
+    def __get_target__(self, target: TARGET_TYPE) -> str:
         _target = "this"
         if target is None:
             return _target
@@ -301,13 +307,13 @@ class Element:
     def __str__(self) -> str:
         return self.render()
 
-    def set_frame(self, frame: Frame):
+    def __set_frame__(self, frame: Frame):
         self.stack = frame
         for child in self.children:
-            child.set_frame(frame)
+            child.__set_frame__(frame)
 
-    def set_frame_and_root(self) -> None:
-        self.set_frame(Frame.get_stack())
+    def _set_frame_and_root(self) -> None:
+        self.__set_frame__(Frame.get_stack())
         self.stack.root.append(self)
 
     def __dict_to_attrs__(self):

@@ -25,10 +25,12 @@ class DrawerSide(Element):
 
     def __enter__(self):
         super().__enter__()
-        close_label = Label("", self.drawer_toggle)
-        close_label.attributes["class"] = "drawer-overlay"
-        close_label.attributes["aria-label"] = "close sidebar"
-        self.setup = DrawerSetup()
+        if not hasattr(self, "close_label"):
+            self.close_label = Label("", self.drawer_toggle)
+            self.close_label.attributes["class"] = "drawer-overlay"
+            self.close_label.attributes["aria-label"] = "close sidebar"
+        if not hasattr(self, "setup"):
+            self.setup = DrawerSetup()
         self.setup.__enter__()
 
     def __exit__(self, *_):
@@ -36,7 +38,7 @@ class DrawerSide(Element):
 
 
 class DrawerContent(Element):
-    _classes: str = "drawer-content flex flex-col"
+    _classes: str = "drawer-content flex flex-col min-h-screen"
 
     def __init__(self) -> None:
         super().__init__()
@@ -77,18 +79,16 @@ class Drawer(Element):
         self.classes(Drawer._classes)
         self.__drawer_button_menu__: Optional[Element] = None
 
-        if always_open:
-            self.classes(self.attributes["class"] + " lg:drawer-open")
-        if right:
-            self.classes(self.attributes["class"] + " drawer-end")
+        self.always_open(always_open)
+        self.right(right)
 
         with self:
             self.drawer_toggle = Checkbox("")
             self.drawer_toggle.attributes["class"] = "drawer-toggle"
 
     def drawer_content(self) -> Element:
-        self.drawer_content = DrawerContent()
-        return self.drawer_content
+        self._drawer_content = DrawerContent()
+        return self._drawer_content
 
     def drawer_side(self) -> Element:
         self.side = DrawerSide(self.drawer_toggle)
@@ -99,3 +99,17 @@ class Drawer(Element):
         self.__drawer_button_menu__.attributes["for"] = self.drawer_toggle.id
         with self.__drawer_button_menu__:
             Html(get_svg("menu"))
+
+    def always_open(self, value: bool) -> None:
+        """Set the drawer to always open until the screen size is too small."""
+        if value:
+            self.classes(self.attributes["class"] + " lg:drawer-open")
+        else:
+            self.classes(self.attributes["class"].replace("lg:drawer-open", ""))
+
+    def right(self, value: bool) -> None:
+        """Set the drawer to open from the right side of the screen."""
+        if value:
+            self.classes(self.attributes["class"] + " drawer-end")
+        else:
+            self.classes(self.attributes["class"].replace("drawer-end", ""))

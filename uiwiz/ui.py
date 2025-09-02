@@ -5,7 +5,6 @@ from uiwiz.elements.aggrid.aggrid import Aggrid as aggrid
 from uiwiz.elements.avatar import Avatar as avatar
 from uiwiz.elements.button import Button as button
 from uiwiz.elements.checkbox import Checkbox as checkbox
-from uiwiz.elements.code import Code as code
 from uiwiz.elements.col import Col as col
 from uiwiz.elements.container import Container as container
 from uiwiz.elements.datepicker import Datepicker as datepicker
@@ -39,4 +38,3 @@ from uiwiz.elements.toast import Toast as toast
 from uiwiz.elements.toggle import Toggle as toggle
 from uiwiz.elements.upload import Upload as upload
 from uiwiz.models.model_handler import ModelForm as modelForm
-from uiwiz.models.show import show

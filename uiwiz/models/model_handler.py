@@ -65,9 +65,8 @@ class ModelForm(Form):
         Example:
         .. code-block:: python
             from pydantic import BaseModel
-            from uiwiz import ui, UiwizApp
+            from uiwiz import ui
 
-            app = UiwizApp()
 
             class DataInput(BaseModel):
                 name: str
@@ -77,9 +76,7 @@ class ModelForm(Form):
             async def handle_submit(data: DataInput):
                 ui.toast(f"Name: {data.name}, Age: {data.age}").success()
 
-            @app.page("/")
-            async def home():
-                ui.modelForm(DataInput).on_submit(handle_submit)
+            ui.modelForm(DataInput).on_submit(handle_submit)
 
         :param model: The pydantic model to render
         :param compact: If True, the form will be rendered with the label and input on the same line. If False, the label will be on top of the input

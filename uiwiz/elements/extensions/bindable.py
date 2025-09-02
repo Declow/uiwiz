@@ -21,7 +21,7 @@ class Bindable(Element):
 
         async def bind_value(request: Request):
             data = await request.json()
-            self.set_frame_and_root()
+            self._set_frame_and_root()
 
             input_data = data[element.name]
 

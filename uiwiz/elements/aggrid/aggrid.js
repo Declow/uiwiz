@@ -33,7 +33,7 @@ function getGridOptions(cols, rows) {
 }
 
 function createOrGetCurrentGrid(element, cols, rows) {
-    gridApi = null;
+    var gridApi = null;
     if (element.id in _uiWizardGrids) {
         gridApi = _uiWizardGrids[element.id]
         gridApi.setGridOption('columnDefs', cols);
@@ -48,7 +48,7 @@ function createOrGetCurrentGrid(element, cols, rows) {
     return gridApi;
 }
 
-elements = document.querySelectorAll("[hx-aggrid]");
+var elements = document.querySelectorAll("[hx-aggrid]");
 
 elements.forEach((element) => {
     gridHandler(element, null, null);

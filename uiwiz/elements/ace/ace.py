@@ -59,6 +59,7 @@ class Ace(
 
         Example:
         .. code-block:: python
+        
             from uiwiz import ui
 
             ui.ace(name="editor")
@@ -75,20 +76,21 @@ class Ace(
         hidden_text.content = content or ""
 
         super().__init__()
+        self.options = ace_options or Ace.default_options
+        self.sql_options = sql_options or {}
         hidden_text.attributes["hx-ace-editor-id"] = self.id
 
         self.classes(Ace._classes)
         self.attributes["hx-ace-editor-lang"] = lang
         self.attributes["hx-ace-editor-hidden-input"] = hidden_text.id
-        self.attributes["hx-ace-editor-form"] = self.find_parent_form()
+        self.attributes["hx-ace-editor-form"] = self.__find_parent_form__()
         self.attributes["hx-ace-editor-content"] = content
 
-        self.attributes["hx-ace-editor-options"] = (
-            json.dumps(humps.camelize(ace_options)) if ace_options else json.dumps(humps.camelize(Ace.default_options))
-        )
-        self.attributes["hx-ace-editor-sql-options"] = json.dumps(sql_options) if sql_options else "{}"
 
-    def find_parent_form(self) -> Optional[str]:
+        self.attributes["hx-ace-editor-options"] = json.dumps(humps.camelize(self.options))
+        self.attributes["hx-ace-editor-sql-options"] = json.dumps(self.sql_options)
+
+    def __find_parent_form__(self) -> Optional[str]:
         parent = self.parent_element
         while parent:
             if isinstance(parent, Form):

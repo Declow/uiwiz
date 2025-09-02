@@ -29,6 +29,22 @@ class Table(Element):
         """
         Creates a table from a list of pydantic models
 
+        Example:
+        .. code-block:: python
+            from uiwiz import ui
+            from pydantic import BaseModel
+
+            class User(BaseModel):
+                id: int
+                name: str
+                email: str
+
+            data = [
+                User(id=1, name="John Doe", email="wiz@ui-wizard.com"),
+                User(id=1, name="John Doe", email="wiz@ui-wizard.com"),
+            ]
+            ui.table(data, id_column_name="id")
+
         :param data: A list of pydantic models
         :param id_column_name: The name of the Pydantic attribute to be used with the path param endpoint. An endpoint like /path/{id} should have a attribute "id" on the class
         :return: The current instance of the element.
@@ -40,7 +56,7 @@ class Table(Element):
 
         self.schema = []
         if data:
-            self.schema = list(data[0].model_fields.keys())
+            self.schema = list(data[0].__class__.model_fields.keys())
 
         self.container = container
         self.data = data
@@ -240,7 +256,7 @@ class Table(Element):
         :return: The tr element container
         """
         with Element("tr") as container:
-            for item in list(row.model_fields.keys()):
+            for item in list(row.__class__.model_fields.keys()):
                 Element("td", content=row.__getattribute__(item))
             if edit and delete:
                 with Element("td").classes("flex justify-end join"):

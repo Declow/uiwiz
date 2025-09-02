@@ -8,6 +8,12 @@ class Checkbox(OnEvent):
     def __init__(self, name: str, checked: bool = False) -> None:
         """Checkbox element
 
+        Used for forms where a user can select one or more options.
+        .. code-block:: python
+            from uiwiz import ui
+
+            ui.checkbox("subscribe", checked=True)
+
         :param name: name of the checkbox
         :type name: str
         :param checked: checked status

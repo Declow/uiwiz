@@ -43,6 +43,18 @@ THEMES = Literal[
 
 class ThemeSelector(Element):
     def __init__(self, themes: Optional[THEMES] = None) -> None:
+        """Theme Selector
+        A dropdown to select a theme for the application.
+        The selected theme will be stored in a cookie named "data-theme".
+
+        Example:
+        .. code-block:: python
+
+            from uiwiz import ui
+
+            ui.themeSelector(["light", "dark", "nord", "cupcake", "pastel", "bumblebee"])
+        
+        """
         super().__init__()
         self.render_html = False
         self.themes = list(typing.get_args(THEMES))

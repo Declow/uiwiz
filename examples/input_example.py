@@ -1,15 +1,13 @@
 import asyncio
-import json
 import logging
-from typing import Optional
+from typing import Annotated, Optional
 
 import pandas as pd
 import uvicorn
+from fastapi import Depends
 from pydantic import BaseModel
 
-import uiwiz.ui as ui
-from uiwiz.app import UiwizApp
-from uiwiz.page_route import Page
+from uiwiz import Element, PageDefinition, PageRouter, UiwizApp, ui
 
 logging.basicConfig(level=logging.INFO)
 
@@ -33,7 +31,7 @@ class FormInput(BaseModel):
 @app.ui("/form/handle_input")
 async def handle_input(data: FormInput):
     with ui.toast().success():
-        ui.label("test in")
+        ui.label(data.first_name)
     await asyncio.sleep(1)
     print(data)
 
@@ -49,18 +47,34 @@ def get_data():
     return ui.aggrid.response(df)
 
 
+class MyDefinition(PageDefinition):
+    def content(self, _: Element) -> None:
+        with ui.container():
+            ui.label("Hello world").classes("text-3xl")
+
+    def footer(self, content):
+        with ui.footer():
+            ui.label("some footer text")
+
+
+route = PageRouter(page_definition_class=MyDefinition)
+
+PageRouter()
+
+
 # set static page title
-@app.page("/", title="Input Example")
-async def test(page: Page):
-    create_nav()
+@route.page("/", title="Input Example")
+async def test(page: Annotated[MyDefinition, Depends()]):
     # set dynamic page title
     page.title = "Dynamic title"
     # set dynamic page lang
-    page.lang = "de"
+    page.lang = "en"
     with ui.container():
         with ui.fullWidth():
+            create_nav()
+            ui.label("this is a label")
             with ui.form().on_submit(handle_input):
-                ui.input("input name", "first_name")
+                ui.input(name="first_name", value="<name>")
                 la_name = ui.input(name="last_name", placeholder="input last name")
                 ui.label().bind_text_from(la_name)
 
@@ -129,13 +143,12 @@ async def test(page: Page):
             log = ui.element().classes("flex flex-col items-start pt-1")
 
             d = {"asd": {"gg": 0}, "gg": True, "dd": "text"}
-            print(json.dumps(d, indent=4))
             ui.dict(d)
 
             ui.input("text").set_placeholder("Floating label").set_floating_label()
 
-    with ui.footer():
-        ui.label("some footer text")
+
+app.include_router(route)
 
 
 if __name__ == "__main__":

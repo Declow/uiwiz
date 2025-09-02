@@ -4,12 +4,14 @@ from pathlib import Path
 from fastapi.responses import JSONResponse
 
 from uiwiz.element import Element
+from uiwiz.elements.echart.themes import WONDERLAND
 
 LIB_PATH = Path(__file__).parent / "echart.min.js"
 JS_PATH = Path(__file__).parent / "echart.js"
+THEME_PATH = Path(__file__).parent / "echart.theme.js"
 
 
-class EChart(Element, extensions=[LIB_PATH, JS_PATH]):
+class EChart(Element, extensions=[LIB_PATH, THEME_PATH, JS_PATH]):
     name: str = "data-wz-echart"
 
     def __init__(self, options: dict, height: str = "h-80") -> None:
@@ -42,7 +44,7 @@ class EChart(Element, extensions=[LIB_PATH, JS_PATH]):
             super().__init__()
 
         self.attributes[EChart.name] = EChart.name
-        self.attributes[f"{EChart.name}-options"] = json.dumps(options)
+        self.attributes[f"{EChart.name}-options"] = json.dumps({**options, **WONDERLAND})
         self.attributes["hx-ext"] = EChart.name
         self.classes("w-full h-full")
 

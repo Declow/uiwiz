@@ -14,7 +14,7 @@ class Number(OnEvent):
         .. code-block:: python
             from uiwiz import ui
 
-            ui.number("value", 50, 0, 100, 1):
+            ui.number("value", 50, 0, 100, 1)
 
         :param name: name of the number input
         :param value: default value of the number input

@@ -22,6 +22,7 @@ class Upload(OnEvent):
             @app.ui("/upload/endpoint")
             async def handle_upload(file: UploadFile):
                 file_output = await file.read()
+                ui.toast(file_output.decode("utf-8")).success()
 
             ui.upload("file").on_upload(on_upload=handle_upload, swap="none")
 

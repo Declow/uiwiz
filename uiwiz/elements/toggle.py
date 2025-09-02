@@ -13,7 +13,7 @@ class Toggle(OnEvent):
         .. code-block:: python
             from uiwiz import ui
 
-            ui.toggle("toggle", True):
+            ui.toggle("toggle", checked=True)
 
         :param name: name of the toggle input
         :param checked: default checked state of the toggle input
