@@ -1,16 +1,7 @@
 import functools
 import inspect
 from functools import partial
-from typing import (
-    Annotated,
-    Any,
-    Callable,
-    Optional,
-    Sequence,
-    Type,
-    TypedDict,
-    Union,
-)
+from typing import Annotated, Any, Callable, Optional, Sequence, Type, TypedDict
 
 from fastapi import APIRouter, Request, Response, params
 from fastapi.datastructures import Default
