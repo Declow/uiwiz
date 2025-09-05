@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Iterable, List, Optional, Union
 from uuid import uuid4
 
-from uiwiz.asgi_request_middleware import get_request
+from uiwiz.middleware.asgi_request_middleware import get_request
 from uiwiz.version import __version__
 
 if TYPE_CHECKING:

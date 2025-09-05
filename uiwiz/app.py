@@ -8,12 +8,17 @@ from fastapi import FastAPI, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.gzip import GZipMiddleware
+from starlette_authlib.middleware import (
+    AuthlibMiddleware as SessionMiddleware,
+    SecretKey,
+)
 from fastapi.responses import HTMLResponse
 from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from starlette.requests import Request
 
-from uiwiz.asgi_request_middleware import AsgiRequestMiddleware
+from uiwiz.middleware.StripHiddenFormField import StripHiddenFormFieldMiddleware
+from uiwiz.middleware.asgi_request_middleware import AsgiRequestMiddleware
 from uiwiz.element import Element
 from uiwiz.elements.button import Button
 from uiwiz.elements.col import Col
@@ -21,7 +26,7 @@ from uiwiz.elements.html import Html
 from uiwiz.frame import Frame
 from uiwiz.page_route import PageDefinition, PageRouter
 from uiwiz.shared import register_path, resources
-from uiwiz.static_middleware import AsgiTtlMiddleware
+from uiwiz.middleware.static_middleware import AsgiTtlMiddleware
 from uiwiz.version import __version__
 
 logger = logging.getLogger("uiwiz")
@@ -45,6 +50,7 @@ class UiwizApp(FastAPI):
         title: Optional[str] = "UiWiz",
         auto_close_toast_error: bool = False,
         page_definition_class: Type[PageDefinition] = PageDefinition,
+        secret_key: SecretKey = SecretKey(),
         *args,
         **kwargs,
     ) -> None:
@@ -75,6 +81,8 @@ class UiwizApp(FastAPI):
         self.add_middleware(AsgiRequestMiddleware)
         self.add_middleware(GZipMiddleware)
         self.add_middleware(AsgiTtlMiddleware, cache_age=cache_age)
+        self.add_middleware(SessionMiddleware)
+        self.add_middleware(StripHiddenFormFieldMiddleware)
         self.extensions: dict[str, Path] = {}
         self.app_paths: dict[str, Path] = {}
 
