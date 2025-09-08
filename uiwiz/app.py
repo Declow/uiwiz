@@ -81,7 +81,7 @@ class UiwizApp(FastAPI):
         self.add_middleware(AsgiRequestMiddleware)
         self.add_middleware(GZipMiddleware)
         self.add_middleware(AsgiTtlMiddleware, cache_age=cache_age)
-        self.add_middleware(SessionMiddleware)
+        # self.add_middleware(SessionMiddleware)
         self.add_middleware(StripHiddenFormFieldMiddleware)
         self.extensions: dict[str, Path] = {}
         self.app_paths: dict[str, Path] = {}
