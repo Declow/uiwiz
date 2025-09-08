@@ -10,22 +10,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v5
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v6
       with:
         python-version: '3.9'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install poetry==1.8.5
-        poetry install
+        pip install uv
+        uv sync
     - name: Run test
       run: |
-        PYTHONPATH=. poetry run pytest .
+        PYTHONPATH=. uv run pytest .
     - name: Build and publish
       run: |
         git fetch --unshallow --tags
-        poetry version $(git describe --tags --abbrev=0)
-        poetry build
-        poetry publish -u __token__ -p ${{ secrets.PYPI_TOKEN }}
+        uv version $(git describe --tags --abbrev=0)
+        uv build
+        uv publish --username __token__ --password ${{ secrets.PYPI_TOKEN }}

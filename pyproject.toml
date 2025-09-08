@@ -1,18 +1,18 @@
 [project]
 name = "uiwiz"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.2.1"
+description = "UiWiz is a framework to develop web applications"
 readme = "README.md"
-requires-python = ">=3.9.12"
+requires-python = ">=3.9"
 dependencies = [
-    "fastapi>=0.116.1",
-    "markdown2[all]>=2.5.4",
+    "fastapi>=0.115.1",
+    "markdown2[all]>=2.5.3",
     "openpyxl>=3.1.5",
-    "pandas>=2.3.2",
+    "pandas>=2.2.3",
     "pyhumps>=3.8.0",
     "python-multipart>=0.0.20",
     "starlette-authlib>=0.3.12",
-    "uvicorn[standard]>=0.35.0",
+    "uvicorn[standard]>=0.12.0",
 ]
 
 [dependency-groups]
@@ -24,3 +24,6 @@ dev = [
     "pytest-cov>=6.2.1",
     "ruff>=0.12.12",
 ]
+
+[tool.setuptools]
+py-modules = ["uiwiz"]
