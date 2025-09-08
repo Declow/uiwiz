@@ -2,7 +2,7 @@ import typing
 from typing import Literal, Optional
 
 from uiwiz import ui
-from uiwiz.asgi_request_middleware import get_request
+from uiwiz.middleware.asgi_request_middleware import get_request
 from uiwiz.element import Element
 
 THEMES = Literal[

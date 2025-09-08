@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 
 from uiwiz import UiwizApp
-from uiwiz.asgi_request_middleware import get_request
+from uiwiz.middleware.asgi_request_middleware import get_request
 from uiwiz.frame import Frame
 from uiwiz.shared import reset_resources
 
