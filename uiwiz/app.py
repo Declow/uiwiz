@@ -50,7 +50,7 @@ class UiwizApp(FastAPI):
         title: Optional[str] = "UiWiz",
         auto_close_toast_error: bool = False,
         page_definition_class: Type[PageDefinition] = PageDefinition,
-        secret_key: SecretKey = SecretKey(),
+        # secret_key: SecretKey = SecretKey(),
         *args,
         **kwargs,
     ) -> None:
