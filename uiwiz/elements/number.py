@@ -6,7 +6,9 @@ from uiwiz.elements.extensions.on_event import OnEvent
 class Number(OnEvent):
     root_class: str = "input "
 
-    def __init__(self, name: str, value: int, min: int, max: int, step: Optional[int] = None) -> None:
+    def __init__(
+        self, name: str, value: int, min: int, max: int, step: Optional[int] = None, placeholder: Optional[str] = None
+    ) -> None:
         """number
 
         This element is used for number inputs
@@ -21,6 +23,7 @@ class Number(OnEvent):
         :param min: minimum value of the number input
         :param max: maximum value of the number input
         :param step: step value of the number input
+        :param placeholder: placeholder text for the number input
         """
         super().__init__("input")
         self.attributes["type"] = "number"
@@ -30,6 +33,8 @@ class Number(OnEvent):
         self.attributes["value"] = value
         if step:
             self.attributes["step"] = step
+        if placeholder:
+            self.attributes["placeholder"] = placeholder
 
     @property
     def min(self) -> int:
