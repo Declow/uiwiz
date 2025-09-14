@@ -12,6 +12,7 @@ from uiwiz.elements.dict.dict import Dict as dict
 from uiwiz.elements.divider import Divider as divider
 from uiwiz.elements.drawer import Drawer as drawer
 from uiwiz.elements.dropdown import Dropdown as dropdown
+from uiwiz.elements.dropdown import DropdownItem as dropdownItem
 from uiwiz.elements.echart.echart import EChart as echart
 from uiwiz.element import Element as element
 from uiwiz.elements.footer import Footer as footer

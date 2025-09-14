@@ -5,6 +5,8 @@ from uiwiz.elements.extensions.on_event import OnEvent
 
 
 class Datepicker(OnEvent):
+    root_class: str = "input "
+
     def __init__(
         self,
         name: str,
