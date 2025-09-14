@@ -24,6 +24,3 @@ dev = [
     "pytest-cov>=6.2.1",
     "ruff>=0.12.12",
 ]
-
-[tool.setuptools]
-py-modules = ["uiwiz"]
