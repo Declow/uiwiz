@@ -1,5 +1,5 @@
-from uiwiz.elements.col import Col
-from uiwiz.elements.row import Row
+from src.elements.col import Col
+from src.elements.row import Row
 
 
 def test_col_classes():

@@ -1,6 +1,6 @@
 import html
 
-from uiwiz import ui
+from src import ui
 
 
 def test_raw_html():

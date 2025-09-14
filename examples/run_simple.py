@@ -4,8 +4,8 @@ import pandas as pd
 import uvicorn
 from fastapi import Request, UploadFile
 
-import uiwiz.ui as ui
-from uiwiz.app import UiwizApp
+import src.ui as ui
+from src.app import UiwizApp
 
 app = UiwizApp(theme="aqua")
 

@@ -4,9 +4,9 @@ import uvicorn
 from fastapi import Request
 from pydantic import BaseModel, Field
 
-from uiwiz import UiwizApp, ui
-from uiwiz.elements.table import Table
-from uiwiz.models.model_handler import UiAnno
+from src import UiwizApp, ui
+from src.elements.table import Table
+from src.models.model_handler import UiAnno
 
 
 # Define data model

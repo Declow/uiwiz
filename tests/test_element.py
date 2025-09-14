@@ -1,7 +1,7 @@
 from unittest import mock
 
-from uiwiz import ui
-from uiwiz.frame import Frame
+from src import ui
+from src.frame import Frame
 
 
 def test_element_html():

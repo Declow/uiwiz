@@ -1,9 +1,9 @@
 from fastapi.testclient import TestClient
 
-from uiwiz import ui
-from uiwiz.app import UiwizApp
-from uiwiz.page_route import PageRouter
-from uiwiz.shared import fetch_route
+from src import ui
+from src.app import UiwizApp
+from src.page_route import PageRouter
+from src.shared import fetch_route
 
 
 def test_page_go_to_get_request():

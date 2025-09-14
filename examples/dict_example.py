@@ -1,6 +1,6 @@
 import uvicorn
 
-from uiwiz import UiwizApp, ui
+from src import UiwizApp, ui
 
 app = UiwizApp()
 

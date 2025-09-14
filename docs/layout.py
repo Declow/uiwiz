@@ -3,8 +3,8 @@ from typing import Callable, Optional, Union
 
 from typing_extensions import override
 
-from uiwiz import PageDefinition, ui
-from uiwiz.svg.svg_handler import get_svg
+from src import PageDefinition, ui
+from src.svg.svg_handler import get_svg
 
 parent = Path(__file__).parent
 pages = []

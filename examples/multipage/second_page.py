@@ -1,5 +1,5 @@
-from uiwiz import ui
-from uiwiz.page_route import PageRouter
+from src import ui
+from src.page_route import PageRouter
 
 router = PageRouter()
 

@@ -1,9 +1,9 @@
-from uiwiz import ui
+from src import ui
 
 
 def test_frame_id_reuse():
     # setup
-    from uiwiz.frame import get_request
+    from src.frame import get_request
 
     get_request().headers = {"hx-target": "a-1", "hx-swap": "outerHTML"}
 

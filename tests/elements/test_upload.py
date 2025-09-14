@@ -1,4 +1,4 @@
-from uiwiz import ui
+from src import ui
 
 
 def test_upload_element():

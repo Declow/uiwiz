@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 
-from uiwiz import ui
-from uiwiz.frame import Frame
+from src import ui
+from src.frame import Frame
 
 
 def test_correct_parent():

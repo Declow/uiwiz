@@ -3,7 +3,7 @@ import typing
 from pathlib import Path
 
 from docs.pages.docs.extract_doc import extract_text
-from uiwiz import PageRouter, elements, ui
+from src import PageRouter, elements, ui
 
 
 def get_class_properties(cls):

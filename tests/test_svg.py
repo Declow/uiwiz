@@ -1,6 +1,6 @@
 import pytest
 
-from uiwiz.svg.svg_handler import get_svg
+from src.svg.svg_handler import get_svg
 
 
 def test_get_svg():

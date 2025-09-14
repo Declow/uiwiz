@@ -1,8 +1,8 @@
 import uvicorn
 
 from examples.multipage.second_page import router
-from uiwiz import UiwizApp, ui
-from uiwiz.shared import page_map
+from src import UiwizApp, ui
+from src.shared import page_map
 
 app = UiwizApp()
 app.include_router(router)

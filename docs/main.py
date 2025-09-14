@@ -6,8 +6,8 @@ from fastapi.responses import HTMLResponse
 
 from docs.layout import Layout, Page, pages
 from docs.page_docs import docs_router
-from uiwiz import PageDefinition, PageRouter, UiwizApp, ui
-from uiwiz.frame import Frame
+from src import PageDefinition, PageRouter, UiwizApp, ui
+from src.frame import Frame
 
 router: PageRouter = PageRouter(page_definition_class=PageDefinition)
 page_dict: dict[str, Page] = {item.path: item for item in pages}

@@ -7,7 +7,7 @@ import uvicorn
 from fastapi import Depends
 from pydantic import BaseModel
 
-from uiwiz import Element, PageDefinition, PageRouter, UiwizApp, ui
+from src import Element, PageDefinition, PageRouter, UiwizApp, ui
 
 logging.basicConfig(level=logging.INFO)
 
