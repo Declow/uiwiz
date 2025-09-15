@@ -109,7 +109,7 @@ class PageDefinition:
                 Element(
                     "link", href=f"/_static/{__version__}/libs/daisyui-themes.css", rel="stylesheet", type="text/css"
                 )
-                Element("script", uiwiz=f"/_static/{__version__}/libs/tailwind.js")
+                Element("script", src=f"/_static/{__version__}/libs/tailwind.js")
                 Element("link", href=f"/_static/{__version__}/app.css", rel="stylesheet", type="text/css")
                 self.header(header)
             with Element("body") as body:
@@ -135,9 +135,9 @@ class PageDefinition:
                 toast.attributes["id"] = "toast"
                 toast.attributes["hx-toast-delay"] = json.dumps({"delay": request.app.toast_delay})
 
-            Element("script", uiwiz=f"/_static/{__version__}/libs/htmx1.9.9.min.js")
-            Element("script", uiwiz=f"/_static/{__version__}/libs/htmx-json-enc.js")
-            Element("script", uiwiz=f"/_static/{__version__}/default.js")
+            Element("script", src=f"/_static/{__version__}/libs/htmx1.9.9.min.js")
+            Element("script", src=f"/_static/{__version__}/libs/htmx-json-enc.js")
+            Element("script", src=f"/_static/{__version__}/default.js")
 
         return result
 
