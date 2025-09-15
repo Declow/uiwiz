@@ -25,9 +25,9 @@ dev = [
     "ruff>=0.12.12",
 ]
 
-[tool.setuptools.packages.find]
-where = ["src"]
-exclude = ["tests*"]
-
 [tool.setuptools.package-data]
-uiwiz = ["static/**/*", "svg/**/*"]
+uiwiz = ["**/*"]
+
+[tool.setuptools.exclude-package-data]
+
+uiwiz = ["*.pyc", "__pycache__/*", "*/__pycache__/*"]
