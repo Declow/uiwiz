@@ -1,6 +1,6 @@
 import pytest
 
-from src import ui
+from uiwiz import ui
 
 
 def test_dict():

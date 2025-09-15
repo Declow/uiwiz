@@ -2,9 +2,9 @@ import logging
 
 import uvicorn
 
-import src.ui as ui
-from src.app import UiwizApp
-from src.svg.svg_handler import get_svg
+import uiwiz.ui as ui
+from uiwiz.app import UiwizApp
+from uiwiz.svg.svg_handler import get_svg
 
 logging.basicConfig(level=logging.INFO)
 

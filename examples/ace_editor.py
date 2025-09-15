@@ -1,7 +1,7 @@
 import uvicorn
 from pydantic import BaseModel
 
-from src import UiwizApp, ui
+from uiwiz import UiwizApp, ui
 
 app = UiwizApp()
 

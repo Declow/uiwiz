@@ -5,9 +5,9 @@ from typing import Annotated, Literal
 import uvicorn
 from pydantic import BaseModel, Field
 
-import src.ui as ui
-from src.app import UiwizApp
-from src.models.model_handler import UiAnno
+import uiwiz.ui as ui
+from uiwiz.app import UiwizApp
+from uiwiz.models.model_handler import UiAnno
 
 app = UiwizApp(auto_close_toast_error=False)
 

@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import uvicorn
 
-import src.ui as ui
-from src.app import UiwizApp
+import uiwiz.ui as ui
+from uiwiz.app import UiwizApp
 
 app = UiwizApp()
 

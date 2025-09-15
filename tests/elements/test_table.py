@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from pydantic import BaseModel
 
-from src import ui
+from uiwiz import ui
 
 
 class TableData(BaseModel):

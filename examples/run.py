@@ -5,8 +5,8 @@ from fastapi import Request
 from pydantic import BaseModel
 
 from examples.data import df
-from src import UiwizApp, ui
-from src.element import Element as element
+from uiwiz import UiwizApp, ui
+from uiwiz.element import Element as element
 
 app = UiwizApp()
 

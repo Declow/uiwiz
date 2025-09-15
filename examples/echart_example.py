@@ -2,7 +2,7 @@ from random import randint
 
 import uvicorn
 
-from src import UiwizApp, ui
+from uiwiz import UiwizApp, ui
 
 app = UiwizApp()
 

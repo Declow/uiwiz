@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 
-from src import ui
-from src.app import UiwizApp
-from src.frame import Frame
+from uiwiz import ui
+from uiwiz.app import UiwizApp
+from uiwiz.frame import Frame
 
 
 class DataInput(BaseModel):

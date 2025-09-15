@@ -1,7 +1,7 @@
 import pytest
 
-from docs.pages.docs.extract_doc import extract_text
-from src import ui
+from uiwiz.docs.pages.docs.extract_doc import extract_text
+from uiwiz import ui
 
 
 @pytest.mark.parametrize("docstring, expected_code_snippet", [
