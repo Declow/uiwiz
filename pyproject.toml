@@ -30,4 +30,4 @@ where = ["src"]
 exclude = ["tests*"]
 
 [tool.setuptools.package-data]
-uiwiz = ["static/**/*"]
+uiwiz = ["static/**/*", "svg/**/*"]
