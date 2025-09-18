@@ -81,6 +81,8 @@ function handleInvalidInputs(evt) {
                 }
             }
         });
+
+        htmx.swap(container, response, {swapStyle: "afterbegin"});
     }
 }
 

@@ -140,6 +140,6 @@ class UiwizApp(FastAPI):
 
         return HTMLResponse(
             content=html_content,
-            status_code=200,
+            status_code=400,
             headers={"cache-control": "no-store", "x-uiwiz-content": "page", "x-uiwiz-validation-error": "true"},
         )
