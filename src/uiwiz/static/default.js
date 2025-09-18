@@ -82,7 +82,7 @@ function handleInvalidInputs(evt) {
             }
         });
 
-        htmx.swap(container, response, {swapStyle: "afterbegin"});
+        htmx.swap(container, evt.detail.xhr.response, {swapStyle: "beforebegin"});
     }
 }
 
