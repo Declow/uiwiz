@@ -135,7 +135,7 @@ class PageDefinition:
                 toast.attributes["id"] = "toast"
                 toast.attributes["hx-toast-delay"] = json.dumps({"delay": request.app.toast_delay})
 
-            Element("script", src=f"/_static/{__version__}/libs/htmx1.9.9.min.js")
+            Element("script", src=f"/_static/{__version__}/libs/htmx2.0.7.min.js")
             Element("script", src=f"/_static/{__version__}/libs/htmx-json-enc.js")
             Element("script", src=f"/_static/{__version__}/default.js")
 
