@@ -31,3 +31,6 @@ uiwiz = ["**/*"]
 [tool.setuptools.exclude-package-data]
 
 uiwiz = ["*.pyc", "__pycache__/*", "*/__pycache__/*"]
+
+[tool.ruff]
+line-length = 120
