@@ -21,4 +21,4 @@ jobs:
         uv sync
     - name: Run test
       run: |
-        PYTHONPATH=. uv run pytest .
+        PYTHONPATH=src uv run pytest .

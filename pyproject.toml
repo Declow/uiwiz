@@ -25,5 +25,12 @@ dev = [
     "ruff>=0.12.12",
 ]
 
-[tool.setuptools]
-py-modules = ["uiwiz"]
+[tool.setuptools.package-data]
+uiwiz = ["**/*"]
+
+[tool.setuptools.exclude-package-data]
+
+uiwiz = ["*.pyc", "__pycache__/*", "*/__pycache__/*"]
+
+[tool.ruff]
+line-length = 120

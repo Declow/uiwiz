@@ -1,6 +1,6 @@
 import pytest
 
-from docs.pages.docs.extract_doc import extract_text
+from uiwiz.docs.pages.docs.extract_doc import extract_text
 from uiwiz import ui
 
 

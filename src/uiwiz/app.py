@@ -107,7 +107,7 @@ class UiwizApp(FastAPI):
         return PageRouter().ui(path=path, include_js=include_js, include_css=include_css, router=self.router, **kwargs)
 
     async def handle_validation_error(self, request: Request, exc: RequestValidationError):
-        fields_with_errors = [item.get("loc")[1] for item in exc.errors() if item.get("loc")[1] in exc.body]
+        fields_with_errors = [item.get("loc")[1] for item in exc.errors()]
         ok_fields = [item for item in exc.body.keys() if item not in fields_with_errors]
 
         Frame.get_stack().del_stack()
@@ -140,6 +140,10 @@ class UiwizApp(FastAPI):
 
         return HTMLResponse(
             content=html_content,
-            status_code=200,
-            headers={"cache-control": "no-store", "x-uiwiz-content": "page", "x-uiwiz-validation-error": "true"},
+            status_code=400,
+            headers={
+                "cache-control": "no-store",
+                "x-uiwiz-content": "page",
+                "x-uiwiz-validation-error": "true",
+            },
         )
