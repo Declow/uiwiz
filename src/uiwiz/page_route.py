@@ -284,9 +284,9 @@ class PageRouter(APIRouter):
                         Element("link", href=lib, rel="stylesheet", type="text/css")
             elif lib.endswith("js") and include_js:
                 if page is None:
-                    Element("script", uiwiz=lib, type="module")
+                    Element("script", src=lib, type="module")
                 else:
                     with page.html_ele:
-                        Element("script", uiwiz=lib, type="module")
+                        Element("script", src=lib, type="module")
             if not lib.endswith("js") and not lib.endswith("css"):
                 raise Exception("lib type not supported, supported types css, js")
