@@ -160,6 +160,7 @@ class PageRouter(APIRouter):
         path: str,
         *args,
         title: Optional[str] = None,
+        page_definition_class: Optional[Type[PageDefinition]] = None,
         favicon: Optional[str] = None,
         router: Optional[APIRouter] = None,
         **kwargs,
@@ -167,6 +168,7 @@ class PageRouter(APIRouter):
         def decorator(func: Callable, *args, **kwargs) -> Callable:
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
             cap_title = title
+            cap_page_definition_class = page_definition_class
 
             @functools.wraps(func)
             async def decorated(*dec_args, **dec_kwargs: DecKwargs) -> Response:
@@ -179,8 +181,9 @@ class PageRouter(APIRouter):
                 if self.page_definition_class is None:
                     self.page_definition_class = request.app.page_definition_class
 
-                # NOTE Ensure the signature matches the parameters of the function
-                page: PageDefinition = dec_kwargs.get("page") if "page" in dec_kwargs else self.page_definition_class()
+                page_class = cap_page_definition_class or self.page_definition_class
+
+                page = page_class()
 
                 dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
                 user_method = partial(func, *dec_args, **dec_kwargs)
