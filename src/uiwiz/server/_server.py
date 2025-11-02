@@ -3,11 +3,11 @@ from asyncio import Queue, Event, TimerHandle
 import re
 from typing import Any, Callable, Optional, cast
 import urllib
-from pydantic import BaseModel
 import httptools
 import http
 import importlib
 from dataclasses import dataclass
+from collections import deque
 
 from uvicorn._types import (
     ASGI3Application,
@@ -17,6 +17,9 @@ from uvicorn._types import (
     HTTPResponseStartEvent,
     HTTPScope,
 )
+from uvicorn.protocols.http.flow_control import FlowControl
+from uvicorn.protocols.http.httptools_impl import RequestResponseCycle
+from time import perf_counter
 
 from uvicorn.protocols.http.flow_control import CLOSE_HEADER, HIGH_WATER_LIMIT, FlowControl, service_unavailable
 from uiwiz.app import UiwizApp
@@ -33,18 +36,23 @@ HEADER_VALUE_RE = re.compile(b"[\x00-\x08\x0a-\x1f\x7f]")
 class Config:
     host: str
     port: int
+    root_path: str
     app: Optional[UiwizApp]
     app_instance: Optional[UiwizApp] = None
-    root_path: str
 
 
 def import_app_instance(config: Config) -> None:
+    start = perf_counter()
     if isinstance(config.app, str):
         module_name, _, app = config.app.partition(":")
+        
         module = importlib.import_module(module_name)
+        module = importlib.reload(module)
         config.app_instance = getattr(module, app)
     else:
         config.app_instance = config.app
+    end = perf_counter()
+    logger.info(f"Module reloaded in: {end - start}")
 
 
 class LifespanHandler:
@@ -61,8 +69,21 @@ class LifespanHandler:
         lifespan_task = loop.create_task(self.execute())
         await self.receive_queue.put({"type": "lifespan.startup"})
         await self.startup_done_event.wait()
+        await lifespan_task
 
         logger.info("Startup complete")
+
+    async def shutdown(self) -> None:
+        logger.info("Waiting for application shutdown.")
+        shutdown_event = {"type": "lifespan.shutdown"}
+        await self.receive_queue.put(shutdown_event)
+        await self.shutdown_done_event.wait()
+
+        # if self.shutdown_failed or (self.error_occured and self.config.lifespan == "on"):
+        #     self.logger.error("Application shutdown failed. Exiting.")
+        #     self.should_exit = True
+        # else:
+        #     self.logger.info("Application shutdown complete.")
 
     async def execute(self) -> None:
         app = self.config.app_instance
@@ -71,7 +92,7 @@ class LifespanHandler:
             "asgi": {"version": "3", "spec_version": "2.0"},
             "state": self.state,
         }
-        await app(scope, self.receive_queue, self.send)
+        await app(scope, self.receive, self.send)
 
     async def send(self, message: dict) -> None:
         task = {
@@ -82,6 +103,15 @@ class LifespanHandler:
         }
         task.get(message["type"], lambda: 1)()
 
+    async def receive(self):
+        return await self.receive_queue.get()
+
+class ServerState:
+    def __init__(self):
+        self.total_requests = 0
+        self.connections = set()
+        self.tasks: set[asyncio.Task[None]] = set()
+        self.default_headers: list[tuple[bytes, bytes]] = []
 
 class HttpToolsImpl(asyncio.Protocol):
     def __init__(self, config: Config):
@@ -96,6 +126,16 @@ class HttpToolsImpl(asyncio.Protocol):
         self.app_state = dict()
         self.root_path = config.root_path
         self.cycle: RequestResponseCycle = None
+
+        self.timeout_keep_alive = 10
+
+        self.flow: FlowControl = None  # type: ignore[assignment]
+        self.pipeline: deque[tuple[RequestResponseCycle, ASGI3Application]] = deque()
+        self.logger = logger
+        self.access_logger = logger
+        self.access_log = logger.hasHandlers()
+        self.server_state = ServerState()
+        self.tasks = self.server_state.tasks
 
     def data_received(self, data: bytes) -> None:
         self._unset_keepalive_if_required()
@@ -123,12 +163,12 @@ class HttpToolsImpl(asyncio.Protocol):
 
     def connection_made(self, transport: asyncio.Transport) -> None:
         self.transport = transport
-        # self.flow = FlowControl(transport) should not be relevant
+        self.flow = FlowControl(transport)
         self.server = self.get_local_addr()
         self.client = self.get_remote_addr()
         self.scheme = "https" if bool(transport.get_extra_info("sslcontext")) else "http"
 
-    def connection_lost(self, exc: Exception | None) -> None:
+    def connection_lost(self, exc: Optional[Exception]) -> None:
         if self.cycle and not self.cycle.response_complete:
             self.cycle.disconnected = True
         if self.cycle is not None:
@@ -169,8 +209,15 @@ class HttpToolsImpl(asyncio.Protocol):
         self.scope["raw_path"] = full_raw_path
         self.scope["query_string"] = parsed_url.query or b""
 
+        shutdown_task = None
+        if config.app_instance:
+            shutdown_task = asyncio.get_event_loop().create_task(self.lifespan.shutdown())
+        import_app_instance(config)
+        startup_task = asyncio.get_running_loop().create_task(self.lifespan.startup())
+
+
         existing_cycle = self.cycle
-        self.cycle = RequestResponseCycle(
+        self.cycle = RRCycle(
             scope=self.scope,
             transport=self.transport,
             flow=self.flow,
@@ -181,6 +228,8 @@ class HttpToolsImpl(asyncio.Protocol):
             message_event=asyncio.Event(),
             expect_100_continue=self.expect_100_continue,
             keep_alive=http_version != "1.0",
+            shutdown_task=shutdown_task,
+            startup_task=startup_task,
             on_response=self.on_response_complete,
         )
         if existing_cycle is None or existing_cycle.response_complete:
@@ -194,9 +243,6 @@ class HttpToolsImpl(asyncio.Protocol):
             self.pipeline.appendleft((self.cycle, self.config.app_instance))
 
     def on_message_begin(self) -> None:
-        import_app_instance(config)
-        # asyncio.get_running_loop().create_task(self.lifespan.startup())
-
         self.url = b""
         self.expect_100_continue = False
         self.headers = []
@@ -211,6 +257,31 @@ class HttpToolsImpl(asyncio.Protocol):
             "headers": self.headers,
             "state": self.app_state,
         }
+
+
+    def shutdown(self) -> None:
+        """
+        Called by the server to commence a graceful shutdown.
+        """
+        if self.cycle is None or self.cycle.response_complete:
+            self.transport.close()
+        else:
+            self.cycle.keep_alive = False
+
+    def on_body(self, body: bytes) -> None:
+        if (self.parser.should_upgrade() and self._should_upgrade()) or self.cycle.response_complete:
+            return
+        self.cycle.body += body
+        if len(self.cycle.body) > HIGH_WATER_LIMIT:
+            self.flow.pause_reading()
+        self.cycle.message_event.set()
+
+
+    def on_message_complete(self) -> None:
+        if (self.parser.should_upgrade() and self._should_upgrade()) or self.cycle.response_complete:
+            return
+        self.cycle.more_body = False
+        self.cycle.message_event.set()
 
     def on_response_complete(self) -> None:
         if self.transport.is_closing():
@@ -301,23 +372,38 @@ class HttpToolsImpl(asyncio.Protocol):
         self.transport.write(b"".join(message))
         self.transport.close()
 
+    def pause_writing(self) -> None:
+        """
+        Called by the transport when the write buffer exceeds the high water mark.
+        """
+        self.flow.pause_writing()  # pragma: full coverage
 
-class RequestResponseCycle:
-    def __init__(
-        self,
-        scope: dict,
-        transport: asyncio.Transport,
-        default_headers: list,
-        message_event: asyncio.Event,
-        on_response: Callable,
-    ):
-        self.scope = scope
-        self.transport = transport
-        self.default_headers = default_headers
-        self.message_event = message_event
-        self.on_response = on_response
+    def resume_writing(self) -> None:
+        """
+        Called by the transport when the write buffer drops below the low water mark.
+        """
+        self.flow.resume_writing()  # pragma: full coverage
 
+    def timeout_keep_alive_handler(self) -> None:
+        """
+        Called on a keep-alive connection if no new data is received after a short
+        delay.
+        """
+        if not self.transport.is_closing():
+            self.transport.close()
+
+class RRCycle(RequestResponseCycle):
+
+    def __init__(self, *args, **kwargs):
+        self.shutdown_task = kwargs.pop("shutdown_task")
+        self.startup_task = kwargs.pop("startup_task")
+        super().__init__(*args, **kwargs)
+
+    # ASGI exception wrapper
     async def run_asgi(self, app: ASGI3Application) -> None:
+        if self.shutdown_task:
+            await self.shutdown_task
+        await self.startup_task
         try:
             result = await app(  # type: ignore[func-returns-value]
                 self.scope, self.receive, self.send
@@ -344,143 +430,6 @@ class RequestResponseCycle:
                 self.transport.close()
         finally:
             self.on_response = lambda: None
-
-    async def send_500_response(self) -> None:
-        await self.send(
-            {
-                "type": "http.response.start",
-                "status": 500,
-                "headers": [
-                    (b"content-type", b"text/plain; charset=utf-8"),
-                    (b"content-length", b"21"),
-                    (b"connection", b"close"),
-                ],
-            }
-        )
-        await self.send({"type": "http.response.body", "body": b"Internal Server Error", "more_body": False})
-
-    # ASGI interface
-    async def send(self, message: ASGISendEvent) -> None:
-        message_type = message["type"]
-
-        if self.flow.write_paused and not self.disconnected:
-            await self.flow.drain()  # pragma: full coverage
-
-        if self.disconnected:
-            return  # pragma: full coverage
-
-        if not self.response_started:
-            # Sending response status line and headers
-            if message_type != "http.response.start":
-                msg = "Expected ASGI message 'http.response.start', but got '%s'."
-                raise RuntimeError(msg % message_type)
-            message = cast("HTTPResponseStartEvent", message)
-
-            self.response_started = True
-            self.waiting_for_100_continue = False
-
-            status_code = message["status"]
-            headers = self.default_headers + list(message.get("headers", []))
-
-            if CLOSE_HEADER in self.scope["headers"] and CLOSE_HEADER not in headers:
-                headers = headers + [CLOSE_HEADER]
-
-            if self.access_log:
-                self.access_logger.info(
-                    '%s - "%s %s HTTP/%s" %d',
-                    get_client_addr(self.scope),
-                    self.scope["method"],
-                    get_path_with_query_string(self.scope),
-                    self.scope["http_version"],
-                    status_code,
-                )
-
-            # Write response status line and headers
-            content = [STATUS_LINE[status_code]]
-
-            for name, value in headers:
-                if HEADER_RE.search(name):
-                    raise RuntimeError("Invalid HTTP header name.")  # pragma: full coverage
-                if HEADER_VALUE_RE.search(value):
-                    raise RuntimeError("Invalid HTTP header value.")
-
-                name = name.lower()
-                if name == b"content-length" and self.chunked_encoding is None:
-                    self.expected_content_length = int(value.decode())
-                    self.chunked_encoding = False
-                elif name == b"transfer-encoding" and value.lower() == b"chunked":
-                    self.expected_content_length = 0
-                    self.chunked_encoding = True
-                elif name == b"connection" and value.lower() == b"close":
-                    self.keep_alive = False
-                content.extend([name, b": ", value, b"\r\n"])
-
-            if self.chunked_encoding is None and self.scope["method"] != "HEAD" and status_code not in (204, 304):
-                # Neither content-length nor transfer-encoding specified
-                self.chunked_encoding = True
-                content.append(b"transfer-encoding: chunked\r\n")
-
-            content.append(b"\r\n")
-            self.transport.write(b"".join(content))
-
-        elif not self.response_complete:
-            # Sending response body
-            if message_type != "http.response.body":
-                msg = "Expected ASGI message 'http.response.body', but got '%s'."
-                raise RuntimeError(msg % message_type)
-
-            body = cast(bytes, message.get("body", b""))
-            more_body = message.get("more_body", False)
-
-            # Write response body
-            if self.scope["method"] == "HEAD":
-                self.expected_content_length = 0
-            elif self.chunked_encoding:
-                if body:
-                    content = [b"%x\r\n" % len(body), body, b"\r\n"]
-                else:
-                    content = []
-                if not more_body:
-                    content.append(b"0\r\n\r\n")
-                self.transport.write(b"".join(content))
-            else:
-                num_bytes = len(body)
-                if num_bytes > self.expected_content_length:
-                    raise RuntimeError("Response content longer than Content-Length")
-                else:
-                    self.expected_content_length -= num_bytes
-                self.transport.write(body)
-
-            # Handle response completion
-            if not more_body:
-                if self.expected_content_length != 0:
-                    raise RuntimeError("Response content shorter than Content-Length")
-                self.response_complete = True
-                self.message_event.set()
-                if not self.keep_alive:
-                    self.transport.close()
-                self.on_response()
-
-        else:
-            # Response already sent
-            msg = "Unexpected ASGI message '%s' sent, after response already completed."
-            raise RuntimeError(msg % message_type)
-
-    async def receive(self) -> ASGIReceiveEvent:
-        if self.waiting_for_100_continue and not self.transport.is_closing():
-            self.transport.write(b"HTTP/1.1 100 Continue\r\n\r\n")
-            self.waiting_for_100_continue = False
-
-        if not self.disconnected and not self.response_complete:
-            self.flow.resume_reading()
-            await self.message_event.wait()
-            self.message_event.clear()
-
-        if self.disconnected or self.response_complete:
-            return {"type": "http.disconnect"}
-        message: HTTPRequestEvent = {"type": "http.request", "body": self.body, "more_body": self.more_body}
-        self.body = b""
-        return message
 
 
 class Server:
