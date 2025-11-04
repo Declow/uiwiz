@@ -13,13 +13,10 @@ async def lifespan(app):
 app = UiwizApp(lifespan=lifespan)
 
 
-
-
-
 @app.page("/")
 def index():
-    ui.element(content="Memasdsade")
-    ui.element(content="Memasdsade")
+    ui.element(content="This is pretty cool")
+    ui.element(content="Custom server working")
 
     logger.info("Calling index")
     

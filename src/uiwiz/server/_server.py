@@ -69,7 +69,6 @@ class LifespanHandler:
         lifespan_task = loop.create_task(self.execute())
         await self.receive_queue.put({"type": "lifespan.startup"})
         await self.startup_done_event.wait()
-        await lifespan_task
 
         logger.info("Startup complete")
 
@@ -83,7 +82,7 @@ class LifespanHandler:
         #     self.logger.error("Application shutdown failed. Exiting.")
         #     self.should_exit = True
         # else:
-        #     self.logger.info("Application shutdown complete.")
+        logger.info("Application shutdown complete.")
 
     async def execute(self) -> None:
         app = self.config.app_instance
@@ -209,12 +208,8 @@ class HttpToolsImpl(asyncio.Protocol):
         self.scope["raw_path"] = full_raw_path
         self.scope["query_string"] = parsed_url.query or b""
 
-        shutdown_task = None
-        if config.app_instance:
-            shutdown_task = asyncio.get_event_loop().create_task(self.lifespan.shutdown())
         import_app_instance(config)
-        startup_task = asyncio.get_running_loop().create_task(self.lifespan.startup())
-
+        startup_task = self.loop.create_task(self.lifespan.startup())
 
         existing_cycle = self.cycle
         self.cycle = RRCycle(
@@ -228,19 +223,30 @@ class HttpToolsImpl(asyncio.Protocol):
             message_event=asyncio.Event(),
             expect_100_continue=self.expect_100_continue,
             keep_alive=http_version != "1.0",
-            shutdown_task=shutdown_task,
-            startup_task=startup_task,
             on_response=self.on_response_complete,
         )
         if existing_cycle is None or existing_cycle.response_complete:
             # Standard case - start processing the request.
-            task = self.loop.create_task(self.cycle.run_asgi(self.config.app_instance))
-            task.add_done_callback(self.tasks.discard)
-            self.tasks.add(task)
+            startup_task.add_done_callback(self.run_asgi_when_done)
+            self.tasks.add(startup_task)
+            pass
         else:
             # Pipelined HTTP requests need to be queued up.
             self.flow.pause_reading()
             self.pipeline.appendleft((self.cycle, self.config.app_instance))
+
+    def run_asgi_when_done(self, task):
+        task = self.loop.create_task(self.cycle.run_asgi(self.config.app_instance))
+        task.add_done_callback(self._shutdown)
+        self.tasks.add(task)
+
+    def _shutdown(self, *args):
+        task = self.loop.create_task(self.lifespan.shutdown())
+        task.add_done_callback(self.tasks.discard)
+        self.tasks.add(task)
+
+        done = {ta for ta in set(self.tasks) if ta.done()}
+        self.tasks.difference_update(done)
 
     def on_message_begin(self) -> None:
         self.url = b""
@@ -395,15 +401,11 @@ class HttpToolsImpl(asyncio.Protocol):
 class RRCycle(RequestResponseCycle):
 
     def __init__(self, *args, **kwargs):
-        self.shutdown_task = kwargs.pop("shutdown_task")
-        self.startup_task = kwargs.pop("startup_task")
         super().__init__(*args, **kwargs)
 
     # ASGI exception wrapper
     async def run_asgi(self, app: ASGI3Application) -> None:
-        if self.shutdown_task:
-            await self.shutdown_task
-        await self.startup_task
+        print("Run asgi")
         try:
             result = await app(  # type: ignore[func-returns-value]
                 self.scope, self.receive, self.send
