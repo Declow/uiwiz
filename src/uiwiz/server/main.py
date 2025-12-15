@@ -16,7 +16,7 @@ app = UiwizApp(lifespan=lifespan)
 @app.page("/")
 def index():
     ui.element(content="This is pretty cool")
-    ui.element(content="Custom server working")
+    ui.element(content="Custom server working!")
 
     logger.info("Calling index")
     

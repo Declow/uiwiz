@@ -1,7 +1,7 @@
 import asyncio
 from asyncio import Queue, Event, TimerHandle
 import re
-from typing import Any, Callable, Optional, cast
+from typing import Any, Optional
 import urllib
 import httptools
 import http
@@ -11,23 +11,25 @@ from collections import deque
 
 from uvicorn._types import (
     ASGI3Application,
-    ASGIReceiveEvent,
-    ASGISendEvent,
-    HTTPRequestEvent,
-    HTTPResponseStartEvent,
-    HTTPScope,
 )
 from uvicorn.protocols.http.flow_control import FlowControl
 from uvicorn.protocols.http.httptools_impl import RequestResponseCycle
 from time import perf_counter
 
-from uvicorn.protocols.http.flow_control import CLOSE_HEADER, HIGH_WATER_LIMIT, FlowControl, service_unavailable
+from uvicorn.protocols.http.flow_control import HIGH_WATER_LIMIT
 from uiwiz.app import UiwizApp
 import logging
 
+formatter = logging.Formatter(
+    fmt="%(asctime)s - %(levelname)s - %(name)s - %(lineno)d - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
 logging.basicConfig(level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
+sc = logging.StreamHandler()
+sc.setFormatter(formatter)
+logger.addHandler(sc)
 
 HEADER_RE = re.compile(b'[\x00-\x1f\x7f()<>@,;:[]={} \t\\"]')
 HEADER_VALUE_RE = re.compile(b"[\x00-\x08\x0a-\x1f\x7f]")
@@ -138,7 +140,6 @@ class HttpToolsImpl(asyncio.Protocol):
 
     def data_received(self, data: bytes) -> None:
         self._unset_keepalive_if_required()
-        logger.info("Got request")
 
         try:
             self.parser.feed_data(data)
@@ -451,6 +452,21 @@ class Server:
 
 
 if __name__ == "__main__":
+    import threading
+    import time
+
+    def run():
+        while True:
+            print(1)
+            time.sleep(2)
+    start = time.perf_counter()
+    t = threading.Thread(target=run)
+    t.start()
+    end = time.perf_counter()
+    print(f"thread start time: {(end - start):2f}")
+
+
+
     config = Config(host="localhost", port=8080, app="uiwiz.server.main:app", root_path="")
 
     server = Server(config)
