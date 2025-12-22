@@ -209,7 +209,7 @@ class HttpToolsImpl(asyncio.Protocol):
         self.scope["raw_path"] = full_raw_path
         self.scope["query_string"] = parsed_url.query or b""
 
-        import_app_instance(config)
+        import_app_instance(self.config)
         startup_task = self.loop.create_task(self.lifespan.startup())
 
         existing_cycle = self.cycle
@@ -406,7 +406,6 @@ class RRCycle(RequestResponseCycle):
 
     # ASGI exception wrapper
     async def run_asgi(self, app: ASGI3Application) -> None:
-        print("Run asgi")
         try:
             result = await app(  # type: ignore[func-returns-value]
                 self.scope, self.receive, self.send
@@ -441,33 +440,17 @@ class Server:
         import_app_instance(config)
 
     def run(self) -> None:
-        return asyncio.run(self._serve(), debug=True)
+        try:
+            return asyncio.run(self._serve(), debug=True)
+        except KeyboardInterrupt:
+            return
 
     async def _serve(self) -> None:
         server = await asyncio.get_running_loop().create_server(
             lambda: HttpToolsImpl(self.config), host=self.config.host, port=self.config.port
         )
         async with server:
-            await server.serve_forever()
-
-
-if __name__ == "__main__":
-    import threading
-    import time
-
-    def run():
-        while True:
-            print(1)
-            time.sleep(2)
-    start = time.perf_counter()
-    t = threading.Thread(target=run)
-    t.start()
-    end = time.perf_counter()
-    print(f"thread start time: {(end - start):2f}")
-
-
-
-    config = Config(host="localhost", port=8080, app="uiwiz.server.main:app", root_path="")
-
-    server = Server(config)
-    server.run()
+            try:
+                await server.serve_forever()
+            except asyncio.exceptions.CancelledError:
+                return
