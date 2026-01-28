@@ -1,6 +1,6 @@
 from random import randint
 
-import uvicorn
+from uiwiz import server
 
 from uiwiz import UiwizApp, ui
 
@@ -90,4 +90,4 @@ This is an example of EChart component.
 
 
 if __name__ == "__main__":
-    uvicorn.run("echart_example:app", reload=True)
+    server.run("echart_example:app")

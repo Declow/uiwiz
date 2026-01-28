@@ -1,6 +1,6 @@
 import logging
 
-import uvicorn
+from uiwiz import server
 
 import uiwiz.ui as ui
 from uiwiz.app import UiwizApp
@@ -57,4 +57,4 @@ async def test():
 
 
 if __name__ == "__main__":
-    uvicorn.run("drawer_example:app", reload=True)
+    server.run("drawer_example:app")

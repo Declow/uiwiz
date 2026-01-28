@@ -8,6 +8,7 @@ import http
 import importlib
 from dataclasses import dataclass
 from collections import deque
+from contextlib import suppress
 
 from uvicorn._types import (
     ASGI3Application,
@@ -39,7 +40,7 @@ class Config:
     host: str
     port: int
     root_path: str
-    app: Optional[UiwizApp]
+    app: Optional[str] = None
     app_instance: Optional[UiwizApp] = None
 
 
@@ -47,7 +48,6 @@ def import_app_instance(config: Config) -> None:
     start = perf_counter()
     if isinstance(config.app, str):
         module_name, _, app = config.app.partition(":")
-        
         module = importlib.import_module(module_name)
         module = importlib.reload(module)
         config.app_instance = getattr(module, app)
@@ -80,10 +80,6 @@ class LifespanHandler:
         await self.receive_queue.put(shutdown_event)
         await self.shutdown_done_event.wait()
 
-        # if self.shutdown_failed or (self.error_occured and self.config.lifespan == "on"):
-        #     self.logger.error("Application shutdown failed. Exiting.")
-        #     self.should_exit = True
-        # else:
         logger.info("Application shutdown complete.")
 
     async def execute(self) -> None:
@@ -105,19 +101,21 @@ class LifespanHandler:
         task.get(message["type"], lambda: 1)()
 
     async def receive(self):
-        return await self.receive_queue.get()
+        with suppress(asyncio.CancelledError):
+            return await self.receive_queue.get()
 
 class ServerState:
-    def __init__(self):
+    def __init__(self, config: Config):
         self.total_requests = 0
         self.connections = set()
         self.tasks: set[asyncio.Task[None]] = set()
         self.default_headers: list[tuple[bytes, bytes]] = []
+        self.init_load: bool = True
+        self.lifespan = LifespanHandler(config)
 
 class HttpToolsImpl(asyncio.Protocol):
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, server_state: ServerState):
         self.config = config
-        self.lifespan = LifespanHandler(config)
         self.app = config.app
         self.state: dict[str, Any] = {}
         self.loop = asyncio.get_event_loop()
@@ -135,7 +133,7 @@ class HttpToolsImpl(asyncio.Protocol):
         self.logger = logger
         self.access_logger = logger
         self.access_log = logger.hasHandlers()
-        self.server_state = ServerState()
+        self.server_state = server_state
         self.tasks = self.server_state.tasks
 
     def data_received(self, data: bytes) -> None:
@@ -210,7 +208,6 @@ class HttpToolsImpl(asyncio.Protocol):
         self.scope["query_string"] = parsed_url.query or b""
 
         import_app_instance(self.config)
-        startup_task = self.loop.create_task(self.lifespan.startup())
 
         existing_cycle = self.cycle
         self.cycle = RRCycle(
@@ -227,19 +224,11 @@ class HttpToolsImpl(asyncio.Protocol):
             on_response=self.on_response_complete,
         )
         if existing_cycle is None or existing_cycle.response_complete:
-            # Standard case - start processing the request.
-            startup_task.add_done_callback(self.run_asgi_when_done)
-            self.tasks.add(startup_task)
-            pass
+            self.tasks.add(self.loop.create_task(self.cycle.run_asgi(self.config.app_instance)))
         else:
             # Pipelined HTTP requests need to be queued up.
             self.flow.pause_reading()
             self.pipeline.appendleft((self.cycle, self.config.app_instance))
-
-    def run_asgi_when_done(self, task):
-        task = self.loop.create_task(self.cycle.run_asgi(self.config.app_instance))
-        task.add_done_callback(self._shutdown)
-        self.tasks.add(task)
 
     def _shutdown(self, *args):
         task = self.loop.create_task(self.lifespan.shutdown())
@@ -437,6 +426,7 @@ class RRCycle(RequestResponseCycle):
 class Server:
     def __init__(self, config: Config):
         self.config = config
+        self.server_state = None
         import_app_instance(config)
 
     def run(self) -> None:
@@ -446,11 +436,17 @@ class Server:
             return
 
     async def _serve(self) -> None:
-        server = await asyncio.get_running_loop().create_server(
-            lambda: HttpToolsImpl(self.config), host=self.config.host, port=self.config.port
+        loop = asyncio.get_running_loop()
+        self.server_state = ServerState(self.config)
+        server = await loop.create_server(
+            lambda: HttpToolsImpl(self.config, self.server_state), host=self.config.host, port=self.config.port
         )
         async with server:
+            await loop.create_task(self.server_state.lifespan.startup())
             try:
                 await server.serve_forever()
             except asyncio.exceptions.CancelledError:
+                await self.server_state.lifespan.shutdown()
                 return
+            await self.server_state.lifespan.shutdown()
+

@@ -1,5 +1,4 @@
 from contextlib import asynccontextmanager
-import uvicorn
 from pydantic import BaseModel
 
 from uiwiz import UiwizApp, ui
