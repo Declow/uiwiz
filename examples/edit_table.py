@@ -1,6 +1,6 @@
 from typing import Annotated
 
-import uvicorn
+from uiwiz import server
 from fastapi import Request
 from pydantic import BaseModel, Field
 
@@ -79,4 +79,4 @@ async def test(request: Request):
 
 
 if __name__ == "__main__":
-    uvicorn.run("edit_table:app", reload=True)
+    server.run("edit_table:app")

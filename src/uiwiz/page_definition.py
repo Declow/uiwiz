@@ -10,6 +10,7 @@ from uiwiz.frame import Frame
 from uiwiz.version import __version__
 
 
+
 class PageDefinition:
     html_ele: Element
     header_ele: Element
@@ -51,6 +52,7 @@ class PageDefinition:
 
         """
         self._lang: str = "en"
+        self._title_ele: Optional[Element] = None
 
     @property
     def lang(self) -> str:
@@ -63,11 +65,11 @@ class PageDefinition:
 
     @property
     def title(self) -> str:
-        return self.title_ele.content
+        return self._title_ele.content
 
     @title.setter
     def title(self, value: str) -> None:
-        self.title_ele.content = value
+        self._title_ele.content = value
 
     async def render(
         self,
@@ -102,7 +104,7 @@ class PageDefinition:
                 Element("meta", charset="utf-8")
                 Element("meta", description=frame.meta_description_content)
 
-                self.title_ele = Element("title", content=page_title)
+                self._title_ele = Element("title", content=page_title)
 
                 Element("link", href=f"/_static/{__version__}/libs/output.css", rel="stylesheet", type="text/css")
                 Element("link", href=f"/_static/{__version__}/libs/daisyui.css", rel="stylesheet", type="text/css")

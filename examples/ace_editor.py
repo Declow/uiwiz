@@ -1,10 +1,18 @@
-import uvicorn
+from contextlib import asynccontextmanager
 from pydantic import BaseModel
 
 from uiwiz import UiwizApp, ui
+from uiwiz.server import run
 
-app = UiwizApp()
 
+
+@asynccontextmanager
+async def lifespan(app):
+    print("")
+    yield
+    print("")
+
+app = UiwizApp(lifespan=lifespan)
 
 class DataInput(BaseModel):
     ace_data: str
@@ -35,4 +43,4 @@ async def home_page():
 
 
 if __name__ == "__main__":
-    uvicorn.run("ace_editor:app", reload=True)
+    run("ace_editor:app")

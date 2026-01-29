@@ -1,4 +1,4 @@
-import uvicorn
+from uiwiz import server
 
 from uiwiz import UiwizApp, ui
 
@@ -42,4 +42,4 @@ async def test():
 
 
 if __name__ == "__main__":
-    uvicorn.run("dict_example:app", reload=True)
+    server.run("dict_example:app")

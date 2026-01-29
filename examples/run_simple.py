@@ -1,11 +1,11 @@
 from io import BytesIO
 
 import pandas as pd
-import uvicorn
 from fastapi import Request, UploadFile
 
 import uiwiz.ui as ui
 from uiwiz.app import UiwizApp
+from uiwiz import server
 
 app = UiwizApp(theme="aqua")
 
@@ -62,4 +62,4 @@ async def test(request: Request):
 
 
 if __name__ == "__main__":
-    uvicorn.run("run_simple:app", reload=True)
+    server.run("run_simple:app")

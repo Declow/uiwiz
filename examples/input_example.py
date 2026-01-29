@@ -3,8 +3,8 @@ import logging
 from typing import Annotated, Optional
 
 import pandas as pd
-import uvicorn
-from fastapi import Depends
+from uiwiz import server
+from fastapi import Depends, Request
 from pydantic import BaseModel
 
 from uiwiz import Element, PageDefinition, PageRouter, UiwizApp, ui
@@ -59,12 +59,10 @@ class MyDefinition(PageDefinition):
 
 route = PageRouter(page_definition_class=MyDefinition)
 
-PageRouter()
-
 
 # set static page title
 @route.page("/", title="Input Example")
-async def test(page: Annotated[MyDefinition, Depends()]):
+async def test(page: Annotated[MyDefinition, Depends()], req: Request):
     # set dynamic page title
     page.title = "Dynamic title"
     # set dynamic page lang
@@ -152,4 +150,4 @@ app.include_router(route)
 
 
 if __name__ == "__main__":
-    uvicorn.run("input_example:app", reload=True)
+    server.run("input_example:app")

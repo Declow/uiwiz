@@ -175,8 +175,13 @@ class PageRouter(APIRouter):
                 Frame.get_stack().del_stack()
                 # Create frame before function is called
 
-                request = dec_kwargs["request"]
-                response = dec_kwargs["response"]
+                request = None
+                response = None
+                for value in dec_kwargs.values():
+                    if isinstance(value, Request):
+                        request = value
+                    if isinstance(value, Response):
+                        response = value
 
                 if self.page_definition_class is None:
                     self.page_definition_class = request.app.page_definition_class
@@ -185,7 +190,7 @@ class PageRouter(APIRouter):
 
                 page = page_class()
 
-                dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
+                dec_kwargs = {k: v if not isinstance(v, PageDefinition) else page for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
                 user_method = partial(func, *dec_args, **dec_kwargs)
                 result = await page.render(user_method=user_method, request=request, title=cap_title)
                 if isinstance(result, Response):
