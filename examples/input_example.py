@@ -62,7 +62,7 @@ route = PageRouter(page_definition_class=MyDefinition)
 
 # set static page title
 @route.page("/", title="Input Example")
-async def test(page: Annotated[MyDefinition, Depends()], request):
+async def test(page: Annotated[MyDefinition, Depends()], req: Request):
     # set dynamic page title
     page.title = "Dynamic title"
     # set dynamic page lang

@@ -1,7 +1,4 @@
-import uvicorn
-
-from uiwiz import ui
-from uiwiz.app import UiwizApp
+from uiwiz import ui, UiwizApp, server
 
 app = UiwizApp()
 
@@ -12,4 +9,4 @@ async def home_page():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app)
+    server.run(app)

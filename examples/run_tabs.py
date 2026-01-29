@@ -1,7 +1,5 @@
-import uvicorn
-
 import uiwiz.ui as ui
-from uiwiz.app import UiwizApp
+from uiwiz import UiwizApp, server
 
 app = UiwizApp()
 
@@ -35,4 +33,4 @@ async def test():
 
 
 if __name__ == "__main__":
-    uvicorn.run("run_tabs:app", reload=True)
+    server.run("run_tabs:app")

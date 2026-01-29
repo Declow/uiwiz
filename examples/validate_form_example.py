@@ -2,11 +2,10 @@ import os
 from datetime import date
 from typing import Annotated, Literal
 
-import uvicorn
 from pydantic import BaseModel, Field
 
 import uiwiz.ui as ui
-from uiwiz.app import UiwizApp
+from uiwiz import UiwizApp, server
 from uiwiz.models.model_handler import UiAnno
 
 app = UiwizApp(auto_close_toast_error=False)
@@ -90,4 +89,4 @@ async def test():
 
 if __name__ == "__main__":
     app_name = os.path.basename(__file__).replace(".py", "")
-    uvicorn.run(app=f"{app_name}:app", host="0.0.0.0", port=8080, workers=1, reload=True)
+    server.run(app=f"{app_name}:app")
