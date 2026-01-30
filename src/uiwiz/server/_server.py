@@ -425,6 +425,7 @@ class RRCycle(RequestResponseCycle):
 
 class Server:
     def __init__(self, config: Config):
+        logger.warning("Development server. Do not use in production!")
         self.config = config
         self.server_state = None
         import_app_instance(config)
