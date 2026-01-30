@@ -9,7 +9,7 @@ page_map: Dict[Callable, str] = {}
 
 
 @lru_cache(maxsize=None)
-def hash_function_extended(func):
+def hash_function_extended(func) -> str:
     """
     This was an interesting problem. I needed to hash the function
     to be able to store the route in a dictionary. Nothing special
@@ -26,11 +26,11 @@ def hash_function_extended(func):
     return hashlib.sha256(source.encode("utf-8")).hexdigest()
 
 
-def register_resource(key: str, resource: Path):
+def register_resource(key: str, resource: Path) -> None:
     resources[key] = resource
 
 
-def register_path(key: str, func: Callable):
+def register_path(key: str, func: Callable) -> None:
     page_map[hash_function_extended(func)] = key
 
 
@@ -38,7 +38,7 @@ def fetch_route(func: Callable) -> Optional[str]:
     return page_map.get(hash_function_extended(func))
 
 
-def reset_resources():
+def reset_resources() -> None:
     resources.clear()
     page_map.clear()
 
