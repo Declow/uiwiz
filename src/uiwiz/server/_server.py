@@ -9,6 +9,7 @@ import importlib
 from dataclasses import dataclass
 from collections import deque
 from contextlib import suppress
+import copy
 
 from uvicorn._types import (
     ASGI3Application,
@@ -19,6 +20,7 @@ from time import perf_counter
 
 from uvicorn.protocols.http.flow_control import HIGH_WATER_LIMIT
 from uiwiz.app import UiwizApp
+from uiwiz import shared
 import logging
 
 formatter = logging.Formatter(
@@ -47,10 +49,23 @@ class Config:
 def import_app_instance(config: Config) -> None:
     start = perf_counter()
     if isinstance(config.app, str):
+        routes = []
+        if config.app_instance is not None:
+            # As the user can register new endpoints with a lambda function and this can happen inside of an endpoint
+            # i.e not when the application is first loaded but during the exeuction of the endpoint. It is nesscary to
+            # save the endpoint data and transfer it to the newly created application
+            routes = copy.copy(config.app_instance.router.routes)
+            _page_map = copy.copy(shared.page_map)
+            _resources = copy.copy(shared.resources)
+
         module_name, _, app = config.app.partition(":")
         module = importlib.import_module(module_name)
         module = importlib.reload(module)
         config.app_instance = getattr(module, app)
+        if routes:
+            config.app_instance.router.routes = routes
+            shared.page_map = _page_map
+            shared.resources = _resources
     else:
         config.app_instance = config.app
     end = perf_counter()

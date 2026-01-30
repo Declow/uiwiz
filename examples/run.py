@@ -1,11 +1,10 @@
 from datetime import date, datetime, timezone
 
-import uvicorn
 from fastapi import Request
 from pydantic import BaseModel
 
-from examples.data import df
-from uiwiz import UiwizApp, ui
+from data import df
+from uiwiz import UiwizApp, ui, server
 from uiwiz.element import Element as element
 
 app = UiwizApp()
@@ -94,4 +93,4 @@ if True:
 
 
 if __name__ == "__main__":
-    uvicorn.run("run:app", reload=True)
+    server.run("run:app")

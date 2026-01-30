@@ -7,9 +7,8 @@ from typing import Callable, Dict, Optional
 resources: Dict[str, Path] = {}
 page_map: Dict[Callable, str] = {}
 
-
 @lru_cache(maxsize=None)
-def hash_function_extended(func) -> str:
+def _hash_function_extended(func) -> str:
     """
     This was an interesting problem. I needed to hash the function
     to be able to store the route in a dictionary. Nothing special
@@ -31,11 +30,11 @@ def register_resource(key: str, resource: Path) -> None:
 
 
 def register_path(key: str, func: Callable) -> None:
-    page_map[hash_function_extended(func)] = key
+    page_map[_hash_function_extended(func)] = key
 
 
 def fetch_route(func: Callable) -> Optional[str]:
-    return page_map.get(hash_function_extended(func))
+    return page_map.get(_hash_function_extended(func))
 
 
 def reset_resources() -> None:
