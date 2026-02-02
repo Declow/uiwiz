@@ -1,7 +1,11 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from uiwiz.element import Element
-from uiwiz.event import FUNC_TYPE, ON_EVENTS, SWAP_EVENTS, TARGET_TYPE
+
+if TYPE_CHECKING:
+    from uiwiz.event import FUNC_TYPE, ON_EVENTS, SWAP_EVENTS, TARGET_TYPE
 
 
 class OnEvent(Element):
@@ -11,10 +15,9 @@ class OnEvent(Element):
         func: FUNC_TYPE,
         target: TARGET_TYPE = None,
         swap: SWAP_EVENTS = None,
-        params: Optional[dict[str, str]] = None,
-    ) -> "OnEvent":
-        """
-        Register the type of event to listen for and the function to call when the event is triggered.
+        params: dict[str, str] | None = None,
+    ) -> OnEvent:
+        """Register the type of event to listen for and the function to call when the event is triggered.
 
         :param trigger: The type of event to listen for. This can be any valid html event type.
         :param func: The function/endpoint to call when the event is triggered.

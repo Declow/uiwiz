@@ -1,7 +1,11 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from uiwiz.element import Element
-from uiwiz.event import FUNC_TYPE, SWAP_EVENTS, TARGET_TYPE
+
+if TYPE_CHECKING:
+    from uiwiz.event import FUNC_TYPE, SWAP_EVENTS, TARGET_TYPE
 
 
 class Form(Element):
@@ -30,7 +34,7 @@ class Form(Element):
         func: FUNC_TYPE = None,
         target: TARGET_TYPE = None,
         swap: SWAP_EVENTS = "none",
-        params: Optional[dict[str, str]] = None,
+        params: dict[str, str] | None = None,
     ):
         self.event = {"func": func, "trigger": "submit", "target": target, "swap": swap, "params": params}
         return self

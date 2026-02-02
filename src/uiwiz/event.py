@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Callable, Literal, Optional, TypedDict, Union
 
 if TYPE_CHECKING:
@@ -57,6 +59,6 @@ class Event(TypedDict):
     trigger: ON_EVENTS
     target: TARGET_TYPE
     swap: SWAP_EVENTS
-    include: Optional[str]
-    vals: Optional[str]
-    params: Optional[dict]
+    include: str | None
+    vals: str | None
+    params: dict | None

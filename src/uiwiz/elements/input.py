@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from uiwiz.element import Element
 from uiwiz.elements.extensions.on_event import OnEvent
@@ -10,7 +10,10 @@ class Input(OnEvent):
     _classes: str = "input-bordered w-full"
 
     def __init__(
-        self, name: Optional[str] = None, value: Optional[str] = None, placeholder: Optional[str] = None
+        self,
+        name: str | None = None,
+        value: str | None = None,
+        placeholder: str | None = None,
     ) -> None:
         """Input
 
@@ -37,20 +40,20 @@ class Input(OnEvent):
         self.attributes["autocomplete"] = "off"
 
     @property
-    def placeholder(self) -> Optional[str]:
+    def placeholder(self) -> str | None:
         return self.attributes.get("placeholder")
 
     @placeholder.setter
-    def placeholder(self, value: Optional[str]):
+    def placeholder(self, value: str | None):
         if value:
             self.attributes["placeholder"] = value
         return self
 
-    def set_placeholder(self, value: str) -> "Input":
+    def set_placeholder(self, value: str) -> Input:
         self.placeholder = value
         return self
 
-    def set_floating_label(self, label: Optional[str] = None) -> "Input":
+    def set_floating_label(self, label: str | None = None) -> Input:
         if self.placeholder is None:
             raise ValueError("Placeholder must be set before floating label")
 

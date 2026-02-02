@@ -13,23 +13,23 @@ from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from starlette.requests import Request
 
-from uiwiz.middleware.asgi_request_middleware import AsgiRequestMiddleware
 from uiwiz.element import Element
 from uiwiz.elements.button import Button
 from uiwiz.elements.col import Col
 from uiwiz.elements.html import Html
 from uiwiz.frame import Frame
+from uiwiz.middleware.asgi_request_middleware import AsgiRequestMiddleware
+from uiwiz.middleware.static_middleware import AsgiTtlMiddleware
 from uiwiz.page_route import PageDefinition, PageRouter
 from uiwiz.shared import register_path, resources
-from uiwiz.middleware.static_middleware import AsgiTtlMiddleware
 from uiwiz.version import __version__
 
 logger = logging.getLogger("uiwiz")
 logger.addHandler(logging.NullHandler())
 
 
-class CustomList(list):
-    def append(self, route: APIRoute):
+class _CustomList(list):
+    def append(self, route: APIRoute) -> None:
         if getattr(route, "endpoint", None):
             register_path(route.path, route.endpoint)
         return super().append(route)
@@ -48,7 +48,7 @@ class UiwizApp(FastAPI):
         *args,
         **kwargs,
     ) -> None:
-        """App used for asgi applications
+        """App used for asgi applications.
 
         See fastapi documentation for more *args and **kwargs
 
@@ -63,7 +63,7 @@ class UiwizApp(FastAPI):
         :param kwargs: FastAPI kwargs
         """
         super().__init__(*args, **kwargs)
-        self.router.routes = CustomList()
+        self.router.routes = _CustomList()
         self.toast_delay = toast_delay
         self.error_classes = error_classes
         self.auto_close_toast_error = auto_close_toast_error
@@ -82,7 +82,7 @@ class UiwizApp(FastAPI):
         self.exception_handler(RequestValidationError)(self.handle_validation_error)
 
         @self.get("/_static/extension/{__version__}/{extension}/{filename}", include_in_schema=False)
-        def get_extension(extension: str, filename: str):
+        def get_extension(extension: str, filename: str) -> Response:
             resource_key = f"{extension}/{filename}"
             if resource_key not in resources:
                 return Response(status_code=404)
@@ -97,16 +97,26 @@ class UiwizApp(FastAPI):
         self.mount(url_path, StaticFiles(directory=str(local_directory)))
 
     def page(
-        self, path: str, *args, title: Optional[str] = None, favicon: Optional[str] = None, **kwargs
+        self,
+        path: str,
+        *args,
+        title: Optional[str] = None,
+        favicon: Optional[str] = None,
+        **kwargs,
     ) -> PageRouter:
         return PageRouter(page_definition_class=self.page_definition_class).page(
-            path, *args, title=title, favicon=favicon, router=self.router, **kwargs
+            path,
+            *args,
+            title=title,
+            favicon=favicon,
+            router=self.router,
+            **kwargs,
         )
 
     def ui(self, path: str, *args, include_js: bool = True, include_css: bool = True, **kwargs) -> PageRouter:
         return PageRouter().ui(path=path, include_js=include_js, include_css=include_css, router=self.router, **kwargs)
 
-    async def handle_validation_error(self, request: Request, exc: RequestValidationError):
+    async def handle_validation_error(self, request: Request, exc: RequestValidationError) -> Response:
         fields_with_errors = [item.get("loc")[1] for item in exc.errors()]
         ok_fields = [item for item in exc.body.keys() if item not in fields_with_errors]
 
@@ -122,8 +132,8 @@ class UiwizApp(FastAPI):
                         "detail": exc.errors(),
                         "fieldErrors": fields_with_errors,
                         "fieldOk": ok_fields,
-                    }
-                )
+                    },
+                ),
             )
             html = Html("").classes("alert alert-error relative")
             html.tag = "span"

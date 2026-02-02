@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from uiwiz.elements.extensions.on_event import OnEvent
 
@@ -10,9 +10,9 @@ class TextArea(OnEvent):
 
     def __init__(
         self,
-        name: Optional[str] = None,
-        value: Optional[str] = None,
-        placeholder: Optional[str] = None,
+        name: str | None = None,
+        value: str | None = None,
+        placeholder: str | None = None,
     ) -> None:
         """TextArea
 
@@ -37,7 +37,7 @@ class TextArea(OnEvent):
         self.size(self._size)
 
     @property
-    def placeholder(self) -> Optional[str]:
+    def placeholder(self) -> str | None:
         return self.attributes["placeholder"]
 
     @placeholder.setter

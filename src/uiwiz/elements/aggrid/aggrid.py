@@ -1,26 +1,30 @@
+from __future__ import annotations
+
 import html
 import json
 from enum import Enum
 from pathlib import Path
-from typing import Any, Tuple
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
-import pandas as pd
 from fastapi.responses import JSONResponse
 
 from uiwiz.element import Element
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 LIB_PATH = Path(__file__).parent / "aggrid-community.min.js"
 CSS_PATH = Path(__file__).parent / "aggridtheme.css"
 JS_PATH = Path(__file__).parent / "aggrid.js"
 
+
 class OPTIONS(str, Enum):
     autoSizeColumn = "autoSizeAll"
     fitColumnContent = "sizeToFit"
 
+
 class Aggrid(Element, extensions=[CSS_PATH, LIB_PATH, JS_PATH]):
-
-
     _classes: str = "ag-theme-quartz ag-theme-uiwiz w-full"
 
     def __init__(self, df: pd.DataFrame) -> None:
@@ -31,7 +35,7 @@ class Aggrid(Element, extensions=[CSS_PATH, LIB_PATH, JS_PATH]):
 
         Example:
         .. code-block:: python
-        
+
             from uiwiz import ui
             import pandas as pd
 
@@ -40,9 +44,10 @@ class Aggrid(Element, extensions=[CSS_PATH, LIB_PATH, JS_PATH]):
                 "Age": [25, 30, 35],
                 "City": ["New York", "Los Angeles", "Chicago"]
             })
-            ui.aggrid(df) 
+            ui.aggrid(df)
 
         :param df: The DataFrame to display in the grid
+
         """
         super().__init__("div")
         self.classes(Aggrid._classes)
@@ -55,7 +60,7 @@ class Aggrid(Element, extensions=[CSS_PATH, LIB_PATH, JS_PATH]):
         self.attributes["hx-aggrid"] = "/data"
 
     @staticmethod
-    def create_cols_and_rows(df: pd.DataFrame, escape: bool = True) -> Tuple[list[Any], list[Any]]:
+    def create_cols_and_rows(df: pd.DataFrame, escape: bool = True) -> tuple[list[Any], list[Any]]:
         cols = []
         rows = []
 

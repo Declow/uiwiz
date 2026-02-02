@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from uiwiz.elements.extensions.on_event import OnEvent
 
@@ -7,9 +7,15 @@ class Number(OnEvent):
     root_class: str = "input "
 
     def __init__(
-        self, name: str, value: int, min: int, max: int, step: Optional[int] = None, placeholder: Optional[str] = None
+        self,
+        name: str,
+        value: int,
+        min: int,
+        max: int,
+        step: int | None = None,
+        placeholder: str | None = None,
     ) -> None:
-        """number
+        """Number
 
         This element is used for number inputs
 

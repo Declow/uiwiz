@@ -1,7 +1,11 @@
-from datetime import date, datetime
-from typing import Optional, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from uiwiz.elements.extensions.on_event import OnEvent
+
+if TYPE_CHECKING:
+    from datetime import date, datetime
 
 
 class Datepicker(OnEvent):
@@ -10,7 +14,7 @@ class Datepicker(OnEvent):
     def __init__(
         self,
         name: str,
-        value: Optional[datetime] = None,
+        value: datetime | None = None,
     ) -> None:
         """Datepicker element
 
@@ -33,7 +37,7 @@ class Datepicker(OnEvent):
         if value:
             self.default_date(value)
 
-    def default_date(self, date: Union[datetime, date]) -> "Datepicker":
+    def default_date(self, date: datetime | date) -> Datepicker:
         if date is None:
             raise ValueError("Date cannot be None")
         self.value = date.strftime("%Y-%m-%d")

@@ -34,7 +34,6 @@ ELEMENT_TYPES = Literal[
     "blockquote",
     "body",
     "br",
-    "body",
     "button",
     "canvas",
     "caption",

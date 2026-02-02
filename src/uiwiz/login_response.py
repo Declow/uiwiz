@@ -1,14 +1,18 @@
+from __future__ import annotations
+
 import typing
-from datetime import datetime
 
 from fastapi import Response
+
+if typing.TYPE_CHECKING:
+    from datetime import datetime
 
 
 class LoginResponse(Response):
     def __init__(
         self,
         url: str = "/",
-        headers: typing.Optional[typing.Mapping[str, str]] = None,
+        headers: typing.Mapping[str, str] | None = None,
     ) -> None:
         super().__init__("", 200, headers)
         self.headers["Hx-Redirect"] = url
@@ -18,6 +22,6 @@ class LoginResponse(Response):
         self,
         session_id: str,
         session_token: str,
-        expires: typing.Union[datetime, str, int],
-    ):
+        expires: datetime | str | int,
+    ) -> None:
         self.set_cookie(session_id, session_token, expires=expires, secure=True, samesite="strict", httponly=True)

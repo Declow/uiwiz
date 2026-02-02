@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from uiwiz.element import Element
 
@@ -48,7 +48,7 @@ class Tabs(Element):
 class Tab(Element):
     _classes: str = "tab"
 
-    def __init__(self, title: str, active: Optional[bool] = None) -> None:
+    def __init__(self, title: str, active: bool | None = None) -> None:
         """Tab
 
         This element is used for tab navigation
@@ -81,6 +81,6 @@ class Tab(Element):
         self.classes("tab-content bg-base-100 border-base-300 p-4")
         self.attributes["role"] = "tabpanel"
 
-    def active(self) -> "Tab":
+    def active(self) -> Tab:
         self.selector.attributes["checked"] = ""
         return self

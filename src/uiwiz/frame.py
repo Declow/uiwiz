@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import asyncio
 import os
+from collections.abc import Iterable
 from pathlib import Path
-from typing import TYPE_CHECKING, Iterable, List, Optional, Union
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from uiwiz.middleware.asgi_request_middleware import get_request
@@ -19,14 +22,14 @@ def get_task_id() -> int:
 
 
 class Frame:
-    stacks: dict[int, "Frame"] = {}
+    stacks: dict[int, Frame] = {}
 
     def __init__(self) -> None:
-        self.root: List["Element"] = []
-        self.current_element: Optional["Element"] = None
+        self.root: list[Element] = []
+        self.current_element: Element | None = None
         self.id_count: int = 0  # used for element id
         self.scripts: list[str] = []
-        self.extensions: List[str] = []
+        self.extensions: list[str] = []
         self.app = get_request().app
         self.last_id = None
         self.meta_description_content: str = ""
@@ -50,8 +53,8 @@ class Frame:
         content = "".join([el.render() for el in self.root])
         self.del_stack()
         return content
-    
-    def add_extension(self, cls, extensions: Optional[Union[List[Path], Path]]) -> None:
+
+    def add_extension(self, cls, extensions: list[Path] | Path | None) -> None:
         if extensions is None:
             return
         if not isinstance(extensions, Iterable):
@@ -65,7 +68,7 @@ class Frame:
                 self.extensions.append(endpoint)
 
     @classmethod
-    def get_stack(cls) -> "Frame":
+    def get_stack(cls) -> Frame:
         _id = get_task_id()
         if _id not in cls.stacks:
             cls.stacks[_id] = Frame()

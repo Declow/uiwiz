@@ -1,4 +1,6 @@
-from typing import Any, Optional
+from __future__ import annotations
+
+from typing import Any
 
 from uiwiz.element import Element
 
@@ -9,7 +11,7 @@ class HiddenInput(Element):
     def __init__(
         self,
         name: str,
-        value: Optional[Any] = None,
+        value: Any | None = None,
     ) -> None:
         """HiddenInput
 
@@ -25,7 +27,7 @@ class HiddenInput(Element):
             class HiddenInputExample(BaseModel):
                 csrf_token: str
                 age: int
-                
+
 
             @app.ui("/ui/hiddeninput/submit")
             async def ui_hiddeninput_submit(data_input: HiddenInputExample):
@@ -41,6 +43,7 @@ class HiddenInput(Element):
         :type name: str
         :param value: The value to send back
         :type value: Any
+
         """
         super().__init__("input")
         self.attributes["name"] = name

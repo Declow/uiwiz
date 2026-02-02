@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from uiwiz.element import Element
 from uiwiz.elements.checkbox import Checkbox
@@ -77,7 +77,7 @@ class Drawer(Element):
         """
         super().__init__()
         self.classes(Drawer._classes)
-        self.__drawer_button_menu__: Optional[Element] = None
+        self.__drawer_button_menu__: Element | None = None
 
         self.always_open(always_open)
         self.right(right)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 import markdown2
@@ -10,7 +12,7 @@ CODE_HIGHLIGHT = Path(__file__).parent / "codehighlight.css"
 
 
 class Markdown(Element, extensions=[MARKDOWN, CODE_HIGHLIGHT]):
-    def __init__(self, content="", extras=["fenced-code-blocks", "markdown-in-html"]) -> None:
+    def __init__(self, content: str = "", extras: list[str] | None = None) -> None:
         """Markdown
 
         This element is used to render markdown content.
@@ -25,6 +27,8 @@ class Markdown(Element, extensions=[MARKDOWN, CODE_HIGHLIGHT]):
         :param extras: Extra options for markdown2, defaults to ["fenced-code-blocks", "markdown-in-html"]
         :type extras: list, optional
         """
+        if extras is None:
+            extras = ["fenced-code-blocks", "markdown-in-html"]
         super().__init__()
         self.classes("markdown-body")
         self.extras = extras

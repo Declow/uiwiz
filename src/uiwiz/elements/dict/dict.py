@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import json
 import numbers
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Union
 
 from uiwiz.element import Element
 from uiwiz.elements.button import Button
@@ -12,7 +14,7 @@ JS_PATH = Path(__file__).parent / "copy.js"
 
 
 class Dict(Element, extensions=[JS_PATH]):
-    def __init__(self, data: Union[Iterable[dict], dict], copy_to_clipboard: bool = False) -> None:
+    def __init__(self, data: Iterable[dict] | dict, copy_to_clipboard: bool = False) -> None:
         """Dict element
 
         Will render a dict or list data as a formatted json in the browser
@@ -38,11 +40,11 @@ class Dict(Element, extensions=[JS_PATH]):
         self._border_classes = "border border-base-content rounded-lg shadow-lg w-96 shadow-md w-full mb-5"
         self.copy_to_clipboard = copy_to_clipboard
 
-    def key_classes(self, classes):
+    def key_classes(self, classes: str):
         self.key_class = classes
         return self
 
-    def value_classes(self, classes):
+    def value_classes(self, classes: str):
         self.value_class = classes
         return self
 
@@ -56,9 +58,9 @@ class Dict(Element, extensions=[JS_PATH]):
             self.did_render = True
             self.generate(self.data)
 
-    def generate(self, data):
+    def generate(self, data: Iterable[dict] | dict):
         def format_data(
-            data: Union[dict, list],
+            data: dict | list,
             depth: int = 0,
             is_last_item: bool = False,
             do_indent: bool = False,

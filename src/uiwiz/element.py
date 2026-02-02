@@ -1,13 +1,18 @@
+from __future__ import annotations
+
 import html
-from pathlib import Path
-from typing import Any, Callable, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable
 
 from typing_extensions import Self
 
 from uiwiz.element_types import ELEMENT_SIZE, ELEMENT_TYPES, VOID_ELEMENTS
-from uiwiz.event import FUNC_TYPE, TARGET_TYPE, Event
 from uiwiz.frame import Frame
 from uiwiz.shared import fetch_route, register_resource, route_exists
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from uiwiz.event import FUNC_TYPE, TARGET_TYPE, Event
 
 
 class _Attributes(dict):
@@ -27,9 +32,9 @@ class Element:
         content: str = "",
         render_html: bool = True,
         oob: bool = False,
-        **kwargs: Optional[dict[str, str]],
+        **kwargs: dict[str, str] | None,
     ) -> None:
-        """Element
+        """Element.
 
         Represents an HTML element. This class is used to create HTML elements.
 
@@ -62,12 +67,13 @@ class Element:
         :type oob: bool, optional
         :param kwargs: The attributes of the element
         :type kwargs: dict[str, str], optional
+
         """
         self.stack = Frame.get_stack()
         if hasattr(self.__class__, "extensions") and self.__class__.extensions:
             for extension in self.__class__.extensions:
                 self.stack.add_extension(self.__class__, extension)
-        self.attributes: dict[str, Union[str, Callable[[], str]]] = _Attributes()
+        self.attributes: dict[str, str | Callable[[], str]] = _Attributes()
         if kwargs:
             self.attributes.update(kwargs)
         self.attributes["id"] = self.stack.get_id()
@@ -76,12 +82,12 @@ class Element:
         self._size: str = "md"
 
         self.event: Event = {}
-        self.parent_element: Optional[Element] = self.stack.current_element
-        self.external_tree_element: Optional[Element] = None
+        self.parent_element: Element | None = self.stack.current_element
+        self.external_tree_element: Element | None = None
         self.children: list[Element] = []
-        self.script: Optional[str] = None
+        self.script: str | None = None
         self.render_html: bool = render_html
-        self.target: Optional[str] = None
+        self.target: str | None = None
 
         self.__content__: str = ""
         self.content: str = content
@@ -99,21 +105,21 @@ class Element:
             self.stack.current_element.children.append(self)
             self.parent_element = self.stack.current_element
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         if self.stack.current_element and self.parent_element and self.stack.current_element != self.parent_element:
             self.external_tree_element = self.stack.current_element
         self.stack.current_element = self
 
         return self
 
-    def __exit__(self, *_):
+    def __exit__(self, *_) -> None:
         if self.external_tree_element:
             self.stack.current_element = self.external_tree_element
             self.external_tree_element = None
         else:
             self.stack.current_element = self.parent_element
 
-    def __init_subclass__(cls, extensions: List[Path] = None, **kwargs) -> None:
+    def __init_subclass__(cls, extensions: list[Path] | None = None, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
         cls.extensions = extensions
         if extensions:
@@ -121,20 +127,20 @@ class Element:
                 register_resource(f"{cls.__name__}/{extension.name}", extension)
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Get the id of the element."""
         return self.attributes.get("id")
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.attributes.get("name")
 
     @property
-    def value(self):
+    def value(self) -> str:
         return self.attributes.get("value")
 
     @value.setter
-    def value(self, value):
+    def value(self, value) -> None:
         self.attributes["value"] = value
 
     @property
@@ -142,14 +148,12 @@ class Element:
         return self.__content__
 
     @content.setter
-    def content(self, content):
+    def content(self, content) -> None:
         self.__content__ = html.escape(str(content))
 
     @property
     def is_void_element(self) -> bool:
-        if self.tag in VOID_ELEMENTS:
-            return True
-        return False
+        return self.tag in VOID_ELEMENTS
 
     def get_classes(self) -> str:
         """Get html classes of the element.
@@ -160,13 +164,11 @@ class Element:
         return self.attributes["class"]
 
     def classes(self, input: str = "") -> Self:
-        """
-        Set tailwind classes for the element.
+        """Set tailwind classes for the element.
 
         :param input: The tailwind classes to apply to the element.
         :return: The current instance of the element.
         """
-
         clazz = (
             getattr(self, "__root_class__", "")
             if hasattr(self, "__root_class__")
@@ -182,47 +184,45 @@ class Element:
         return self
 
     def size(self, size: ELEMENT_SIZE) -> Self:
-        """
-        Set the size of the element.
+        """Set the size of the element.
 
         :param size: The size of the element.
         :return: The current instance of the element.
         """
-        format = getattr(self.__class__, "root_size", "")
-        if format:
-            old_size = format.format(size=self._size)
+        _format = getattr(self.__class__, "root_size", "")
+        if _format:
+            old_size = _format.format(size=self._size)
             if old_size in self.attributes["class"]:
                 self.attributes["class"] = self.attributes["class"].replace(
-                    f"{old_size}", f"{format.format(size=size)}"
+                    f"{old_size}",
+                    f"{_format.format(size=size)}",
                 )
             else:
                 clazz = self.attributes["class"]
                 if clazz == "":
-                    self.attributes["class"] = format.format(size=size)
+                    self.attributes["class"] = _format.format(size=size)
                 else:
-                    self.attributes["class"] = f"{self.attributes['class']} {format.format(size=size)}"
+                    self.attributes["class"] = f"{self.attributes['class']} {_format.format(size=size)}"
             self._size = size
         return self
 
     def render(self, render_script: bool = True) -> str:
-        """
-        Render the element as HTML.
+        """Render the element as HTML.
         :param render_script: If any element has a javascript script, it will be rendered as well.
-        :type render_script: bool
+        :type render_script: bool.
         """
         lst = []
         lst.append(self.__render_self__())
         if render_script:
             for script in self.stack.scripts:
-                lst.append(
-                    """
+                lst.append(  # noqa: PERF401
+                    f"""
                     <script>
-                    (function() {
-                    %s
-                    }());
+                    (function() {{
+                    {script}
+                    }}());
                     </script>
-                    """
-                    % script
+                    """,
                 )
         return "".join(lst)
 
@@ -234,29 +234,29 @@ class Element:
         if self.render_html:
             self.__add_event_to_attributes__()
 
-            lst.append("<%s %s>" % (self.tag, self.__dict_to_attrs__()))
+            lst.append(f"<{self.tag} {self.__dict_to_attrs__()}>")
             lst.append(self.content)
             lst.extend([child.__render_self__() if child.oob is False else "" for child in self.children])
 
             if not self.is_void_element:
-                lst.append("</%s>" % self.tag)
+                lst.append(f"</{self.tag}>")
 
         html = "".join(lst)
         return self.after_render(html)
 
     def before_render(self):
         """This method is called before the element is rendered."""
-        pass
 
     def after_render(self, html: str) -> str:
         """This method is called after the element is rendered.
 
-        :param html: The rendered HTML of the element."""
+        :param html: The rendered HTML of the element.
+        """
         return html
 
     def __add_event_to_attributes__(self) -> None:
         if self.event == {}:
-            return None
+            return
 
         self.attributes["hx-target"] = self.__get_target__(self.event.get("target"))
         self.attributes["hx-swap"] = self.event.get("swap") if self.event.get("swap") is not None else "outerHTML"
@@ -277,7 +277,7 @@ class Element:
         if isinstance(func, str):
             return func
 
-        endpoint: Optional[str] = fetch_route(func)
+        endpoint: str | None = fetch_route(func)
         if endpoint:
             if params := self.event.get("params"):
                 return endpoint.format(**params)
@@ -294,10 +294,10 @@ class Element:
             return _target
 
         if isinstance(target, Callable):
-            return "#%s" % str(target())
+            return f"#{target()!s}"
 
         if isinstance(target, Element):
-            return "#%s" % target.id
+            return f"#{target.id}"
 
         if target != "this" and "#" not in target:
             return "#" + target
@@ -307,7 +307,7 @@ class Element:
     def __str__(self) -> str:
         return self.render()
 
-    def __set_frame__(self, frame: Frame):
+    def __set_frame__(self, frame: Frame) -> None:
         self.stack = frame
         for child in self.children:
             child.__set_frame__(frame)
@@ -316,13 +316,9 @@ class Element:
         self.__set_frame__(Frame.get_stack())
         self.stack.root.append(self)
 
-    def __dict_to_attrs__(self):
-        ATTR_NO_VALUE = object()
+    def __dict_to_attrs__(self) -> str:
+        attr_no_value = object()
         return " ".join(
-            (
-                key
-                if value is ATTR_NO_VALUE
-                else ('%s="%s"' % (key, value()) if callable(value) else '%s="%s"' % (key, value))
-            )
+            (key if value is attr_no_value else (f'{key}="{value()}"' if callable(value) else f'{key}="{value}"'))
             for key, value in self.attributes.items()
         )

@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import inspect
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Annotated, Literal, Optional, Tuple, Union, get_args, get_origin, get_type_hints
+from typing import Annotated, Literal, get_args, get_origin, get_type_hints
 
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
@@ -25,9 +27,9 @@ from uiwiz.models.display import display_name
 
 @dataclass
 class UiAnno:
-    type: Union[Input, HiddenInput, Toggle, Datepicker, Dropdown, TextArea, Checkbox] = None
-    placeholder: Optional[str] = None
-    classes: Optional[str] = None
+    type: Input | HiddenInput | Toggle | Datepicker | Dropdown | TextArea | Checkbox = None
+    placeholder: str | None = None
+    classes: str | None = None
 
 
 switch = {
@@ -46,7 +48,7 @@ class ModelForm(Form):
     compact: bool
     button: Button
     label_classes: str
-    instance: Optional[BaseModel]
+    instance: BaseModel | None
 
     def __init__(
         self,
@@ -84,6 +86,7 @@ class ModelForm(Form):
         :param label_classes: The classes to apply to the label element
         :param size: The size of the input elements
         :param kwargs: Override the fields with custom ui elements
+
         """
         super().__init__()
         self.model = model
@@ -99,7 +102,7 @@ class ModelForm(Form):
         self.render_model(**kwargs)
         self.button.render_html = False
 
-    def on_submit(self, *args, **kwargs) -> "ModelForm":
+    def on_submit(self, *args, **kwargs) -> ModelForm:
         self.button.render_html = True
         super().on_submit(*args, **kwargs)
         return self
@@ -114,7 +117,7 @@ class ModelForm(Form):
                 self.render_model_attributes(key, field_type, **kwargs)
             self.button = Button("Save")
 
-    def render_model_attributes(self, key, field_type, **kwargs) -> "ModelForm":
+    def render_model_attributes(self, key, field_type, **kwargs) -> ModelForm:
         args = get_args(field_type)
         annotated = Annotated == get_origin(field_type)
         if key in kwargs:
@@ -123,7 +126,7 @@ class ModelForm(Form):
             self.render_type_hint_without_args(args, annotated, field_type, key)
             self.render_with_args_annotated(args, annotated, field_type, key)
 
-    def render_key_override(self, args: Tuple, key: str, **kwargs) -> None:
+    def render_key_override(self, args: tuple, key: str, **kwargs) -> None:
         if key in kwargs:
             model_args: dict = kwargs[key]
             model = model_args.pop("ui")
@@ -141,14 +144,14 @@ class ModelForm(Form):
         else:
             raise ValueError("key not found in kwargs. Unable to render")
 
-    def render_type_hint_without_args(self, args: Tuple, annotated: bool, field_type, key) -> Element:
+    def render_type_hint_without_args(self, args: tuple, annotated: bool, field_type, key) -> Element:
         if len(args) == 0:
             if annotated:
                 self.render_element(switch.get(field_type), key, placeholder=key)
 
             self.render_element(switch.get(field_type), key, placeholder=key)
 
-    def render_with_args_annotated(self, args: Tuple, annotated: bool, field_type: Tuple, key: str) -> Element:
+    def render_with_args_annotated(self, args: tuple, annotated: bool, field_type: tuple, key: str) -> Element:
         if len(args) > 0:
             if annotated:
                 field_type, ele = self.get_type_and_uianno(args)
@@ -163,7 +166,7 @@ class ModelForm(Form):
                 if ele:
                     self.render_element_dropdown(field_type, key, self.model.model_fields[key].default)
 
-    def get_type_and_uianno(self, args: Tuple) -> Optional[Tuple[type, Optional[UiAnno]]]:
+    def get_type_and_uianno(self, args: tuple) -> tuple[type, UiAnno | None] | None:
         if args:
             field_type = args[0]
             for arg in args:
@@ -176,11 +179,11 @@ class ModelForm(Form):
         self,
         ele: Element,
         key: str,
-        classes: Optional[str] = None,
-        field_arg: Optional[str] = None,
+        classes: str | None = None,
+        field_arg: str | None = None,
         **kwargs,
     ) -> None:
-        kwargs = {**{"name": key}, **kwargs}
+        kwargs = {"name": key, **kwargs}
         placeholder = "placeholder"
         kwargs[placeholder] = display_name(kwargs[placeholder])
         compact = self.compact
@@ -188,7 +191,7 @@ class ModelForm(Form):
             ele_args = [item[0] for item in inspect.signature(ele.__init__).parameters.items()]
             compact = self.extend_kwargs(kwargs, ele_args, key, field_arg, ele)
 
-            label: Optional[Label] = None
+            label: Label | None = None
             if ele is not HiddenInput:
                 label = Label(display_name(key))
 
@@ -215,10 +218,7 @@ class ModelForm(Form):
             kwargs["value"] = getattr(self.instance, key)
 
         # radio button
-        if self.instance and isinstance(ele, Radio):
-            kwargs["checked"] = "checked"
-            compact = False
-        elif self.instance and isinstance(ele, Toggle):
+        if (self.instance and isinstance(ele, Radio)) or (self.instance and isinstance(ele, Toggle)):
             kwargs["checked"] = "checked"
             compact = False
         return compact
@@ -227,14 +227,14 @@ class ModelForm(Form):
         self,
         ele: UiAnno,
         key: str,
-        field_args: Tuple,
+        field_args: tuple,
     ) -> None:
         Divider()
         for arg in field_args:
             self.render_element(Radio, key, ele.classes, placeholder=arg, field_arg=arg)
         Divider()
 
-    def render_element_dropdown(self, field_class: type, key: str, placeholder: Optional[str]) -> None:
+    def render_element_dropdown(self, field_class: type, key: str, placeholder: str | None) -> None:
         if isinstance(placeholder, PydanticUndefinedType):
             placeholder = display_name(key)
 

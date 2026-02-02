@@ -2,7 +2,7 @@ from uiwiz.element import Element
 
 
 class Html(Element):
-    def __init__(self, content) -> None:
+    def __init__(self, content: str) -> None:
         """Html element
 
         Will render a raw htlm string. This is useful for embedding custom HTML content directly into the UI.
@@ -23,5 +23,5 @@ class Html(Element):
         return self.__content__
 
     @content.setter
-    def content(self, content):
+    def content(self, content: str):
         self.__content__ = content

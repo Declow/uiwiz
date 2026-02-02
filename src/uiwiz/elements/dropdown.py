@@ -1,17 +1,24 @@
-from typing import Optional, Union
+from __future__ import annotations
+
+from collections import namedtuple
 
 from uiwiz.element import Element
 from uiwiz.elements.extensions.on_event import OnEvent
-from collections import namedtuple
 
 DropdownItem = namedtuple("DropdownItem", ["name", "value"])
+
 
 class Dropdown(OnEvent):
     root_class: str = "select "
     root_size: str = "select-{size}"
     _classes: str = "select-bordered w-full max-w-xs"
 
-    def __init__(self, name: str, items: Union[list[str], list[DropdownItem]], placeholder: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        name: str,
+        items: list[str] | list[DropdownItem],
+        placeholder: str | None = None,
+    ) -> None:
         """Dropdown
 
         A dropdown is a list in which the selected item is always visible, and the others are visible on demand.

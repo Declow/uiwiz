@@ -3,13 +3,13 @@ from unittest import mock
 import pytest
 
 from uiwiz import UiwizApp
-from uiwiz.middleware.asgi_request_middleware import get_request
 from uiwiz.frame import Frame
+from uiwiz.middleware.asgi_request_middleware import get_request  # noqa: F401
 from uiwiz.shared import reset_resources
 
 
-@pytest.fixture(autouse=True, scope="function")
-def setup_app():
+@pytest.fixture(autouse=True)
+def setup_app() -> UiwizApp:
     app = UiwizApp()
 
     with mock.patch("uiwiz.frame.get_request") as api_mock:

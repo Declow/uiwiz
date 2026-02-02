@@ -1,14 +1,15 @@
+from __future__ import annotations
+
 import inspect
 import json
 from html import escape
-from typing import Annotated, Callable, Optional
+from typing import Annotated, Callable
 
 from fastapi import Depends, Request, Response
 
 from uiwiz.element import Element
 from uiwiz.frame import Frame
 from uiwiz.version import __version__
-
 
 
 class PageDefinition:
@@ -20,8 +21,7 @@ class PageDefinition:
     lang: str
 
     def __init__(self):
-        """
-        The PageDefinition class is designed to be subclassed, allowing
+        """The PageDefinition class is designed to be subclassed, allowing
         developers to override the `header`, `body`, and `content` methods
         to customize the HTML structure and content as needed. The `footer`
         method can also be overridden to add custom footer content.
@@ -52,7 +52,7 @@ class PageDefinition:
 
         """
         self._lang: str = "en"
-        self._title_ele: Optional[Element] = None
+        self._title_ele: Element | None = None
 
     @property
     def lang(self) -> str:
@@ -73,10 +73,10 @@ class PageDefinition:
 
     async def render(
         self,
-        user_method: Optional[Callable],
+        user_method: Callable | None,
         request: Request,
-        title: Optional[str] = None,
-    ) -> Optional[Response]:
+        title: str | None = None,
+    ) -> Response | None:
         frame = Frame.get_stack()
 
         theme = request.app.theme
@@ -109,7 +109,10 @@ class PageDefinition:
                 Element("link", href=f"/_static/{__version__}/libs/output.css", rel="stylesheet", type="text/css")
                 Element("link", href=f"/_static/{__version__}/libs/daisyui.css", rel="stylesheet", type="text/css")
                 Element(
-                    "link", href=f"/_static/{__version__}/libs/daisyui-themes.css", rel="stylesheet", type="text/css"
+                    "link",
+                    href=f"/_static/{__version__}/libs/daisyui-themes.css",
+                    rel="stylesheet",
+                    type="text/css",
                 )
                 Element("script", src=f"/_static/{__version__}/libs/tailwind.js")
                 Element("link", href=f"/_static/{__version__}/app.css", rel="stylesheet", type="text/css")
@@ -149,7 +152,7 @@ class PageDefinition:
     def body(self, body: Element) -> None:
         pass
 
-    def content(self, content: Element) -> Optional[Element]:
+    def content(self, content: Element) -> Element | None:
         pass
 
     def footer(self, content: Element) -> None:

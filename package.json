@@ -1,5 +1,5 @@
 {
-  "name": "uiwis",
+  "name": "uiwiz",
   "version": "1.0.0",
   "description": "UiWizard is a python-based ui-framework for the web. It was inspired by the great framework [NiceGui](https://github.com/zauberzeug/nicegui). Why create this project that is very similar to NiceGui?\r - The first reason was that NiceGui requires websockets to work and when experimenting with the framework it caused some issues on my hosting platform.\r - Learning. I wanted to figure out how to do something simillar but without using websockets\r   - I wanted to try out HTMX\r - Limited control over the underlaying tech stack but mainly just learning",
   "main": "index.js",

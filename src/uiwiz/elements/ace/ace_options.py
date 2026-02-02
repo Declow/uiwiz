@@ -1,4 +1,6 @@
-from typing import Any, List, Literal, Optional, TypedDict, Union
+from __future__ import annotations
+
+from typing import Any, Literal, TypedDict
 
 
 class SqlOptions(TypedDict):
@@ -7,72 +9,72 @@ class SqlOptions(TypedDict):
 
 
 class AceOptions(TypedDict):
-    animated_scroll: Optional[bool]
-    auto_scroll_editor_into_view: Optional[bool]
-    behaviours_enabled: Optional[bool]
-    copy_with_empty_selection: Optional[bool]
-    cursor_style: Optional[Literal["ace", "slim", "smooth", "wide"]]
-    custom_scrollbar: Optional[bool]
-    display_indent_guides: Optional[bool]
-    drag_delay: Optional[int]
-    drag_enabled: Optional[bool]
-    enable_auto_indent: Optional[bool]
-    enable_basic_autocompletion: Optional[Union[bool, List[Any]]]
-    enable_codeLens: Optional[bool]
-    enable_keyboard_accessibility: Optional[bool]
-    enable_live_autocompletion: Optional[Union[bool, List[Any]]]
-    enable_mobile_menu: Optional[bool]
-    enable_multiselect: Optional[bool]
-    enable_snippets: Optional[bool]
-    fade_fold_widgets: Optional[bool]
-    first_line_number: Optional[int]
-    fixed_width_gutter: Optional[bool]
-    focus_timeout: Optional[int]
-    fold_style: Optional[Literal["markbegin", "markbeginend", "manual"]]
-    font_family: Optional[str]
-    font_size: Optional[Union[str, int]]
-    h_scroll_bar_always_visible: Optional[bool]
-    has_css_transforms: Optional[bool]
-    highlight_active_line: Optional[bool]
-    highlight_gutter_line: Optional[bool]
-    highlight_indent_guides: Optional[bool]
-    highlight_selected_word: Optional[bool]
-    indented_soft_wrap: Optional[bool]
-    keyboard_handler: Optional[str]
-    live_autocompletion_delay: Optional[int]
-    live_autocompletion_threshold: Optional[int]
-    max_lines: Optional[int]
-    max_pixel_height: Optional[int]
-    merge_undo_deltas: Optional[Union[bool, Literal["always"]]]
-    min_lines: Optional[int]
-    mode: Optional[str]
-    navigate_within_soft_tabs: Optional[bool]
-    newLine_mode: Optional[Literal["auto", "windows", "unix"]]
-    overwrite: Optional[bool]
-    placeholder: Optional[str]
-    print_margin: Optional[Union[int, bool]]
-    print_margin_column: Optional[int]
-    read_only: Optional[bool]
-    relative_line_numbers: Optional[bool]
-    scroll_past_end: Optional[int]
-    scroll_speed: Optional[int]
-    selection_style: Optional[Literal["line", "text", "fullLine", "screenLine"]]
-    show_fold_widgets: Optional[bool]
-    show_folded_annotations: Optional[bool]
-    show_gutter: Optional[bool]
-    show_invisibles: Optional[bool]
-    show_line_numbers: Optional[bool]
-    show_print_margin: Optional[bool]
-    tab_size: Optional[int]
-    text_input_aria_label: Optional[str]
-    theme: Optional[str]
-    tooltip_follows_mouse: Optional[bool]
-    use_resize_observer: Optional[bool]
-    use_soft_tabs: Optional[bool]
-    use_svg_gutter_icons: Optional[bool]
-    use_worker: Optional[bool]
-    v_scroll_bar_always_visible: Optional[bool]
-    value: Optional[str]
-    wrap: Optional[Union[int, float, bool, Literal["off", "free", "printmargin"]]]
-    wrap_behaviours_enabled: Optional[bool]
-    wrap_method: Optional[Literal["code", "text", "auto"]]
+    animated_scroll: bool | None
+    auto_scroll_editor_into_view: bool | None
+    behaviours_enabled: bool | None
+    copy_with_empty_selection: bool | None
+    cursor_style: Literal["ace", "slim", "smooth", "wide"] | None
+    custom_scrollbar: bool | None
+    display_indent_guides: bool | None
+    drag_delay: int | None
+    drag_enabled: bool | None
+    enable_auto_indent: bool | None
+    enable_basic_autocompletion: bool | list[Any] | None
+    enable_codeLens: bool | None
+    enable_keyboard_accessibility: bool | None
+    enable_live_autocompletion: bool | list[Any] | None
+    enable_mobile_menu: bool | None
+    enable_multiselect: bool | None
+    enable_snippets: bool | None
+    fade_fold_widgets: bool | None
+    first_line_number: int | None
+    fixed_width_gutter: bool | None
+    focus_timeout: int | None
+    fold_style: Literal["markbegin", "markbeginend", "manual"] | None
+    font_family: str | None
+    font_size: str | int | None
+    h_scroll_bar_always_visible: bool | None
+    has_css_transforms: bool | None
+    highlight_active_line: bool | None
+    highlight_gutter_line: bool | None
+    highlight_indent_guides: bool | None
+    highlight_selected_word: bool | None
+    indented_soft_wrap: bool | None
+    keyboard_handler: str | None
+    live_autocompletion_delay: int | None
+    live_autocompletion_threshold: int | None
+    max_lines: int | None
+    max_pixel_height: int | None
+    merge_undo_deltas: bool | Literal["always"] | None
+    min_lines: int | None
+    mode: str | None
+    navigate_within_soft_tabs: bool | None
+    newLine_mode: Literal["auto", "windows", "unix"] | None
+    overwrite: bool | None
+    placeholder: str | None
+    print_margin: int | bool | None
+    print_margin_column: int | None
+    read_only: bool | None
+    relative_line_numbers: bool | None
+    scroll_past_end: int | None
+    scroll_speed: int | None
+    selection_style: Literal["line", "text", "fullLine", "screenLine"] | None
+    show_fold_widgets: bool | None
+    show_folded_annotations: bool | None
+    show_gutter: bool | None
+    show_invisibles: bool | None
+    show_line_numbers: bool | None
+    show_print_margin: bool | None
+    tab_size: int | None
+    text_input_aria_label: str | None
+    theme: str | None
+    tooltip_follows_mouse: bool | None
+    use_resize_observer: bool | None
+    use_soft_tabs: bool | None
+    use_svg_gutter_icons: bool | None
+    use_worker: bool | None
+    v_scroll_bar_always_visible: bool | None
+    value: str | None
+    wrap: int | float | bool | Literal["off", "free", "printmargin"] | None
+    wrap_behaviours_enabled: bool | None
+    wrap_method: Literal["code", "text", "auto"] | None

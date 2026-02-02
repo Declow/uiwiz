@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Callable
 
 from typing_extensions import override
 
@@ -11,15 +13,13 @@ pages = []
 
 
 class Page:
-    def __init__(self, path: str, title: str, file: Union[Path, str, Callable[[], str], None] = None) -> None:
+    def __init__(self, path: str, title: str, file: Path | str | Callable[[], str] | None = None) -> None:
         self.path = path
         self.title = title
         if isinstance(file, Path):
             with file.open("r") as f:
                 self.content = f.read()
-        elif isinstance(file, str):
-            self.content = file
-        elif callable(file):
+        elif isinstance(file, str) or callable(file):
             self.content = file
         else:
             self.content = None
@@ -51,19 +51,18 @@ class Layout(PageDefinition):
         self.hide_on = "md"
 
     @override
-    def content(self, _: ui.element) -> Optional[ui.element]:
+    def content(self, _: ui.element) -> ui.element | None:
         self.drawer = ui.drawer()
         with self.drawer:
             with self.drawer.drawer_content() as content:
                 self.nav(self.drawer)
 
-            with self.drawer.drawer_side():
-                with ui.element("ul").classes("flex-none block md:hidden w-full"):
-                    for page in pages:
-                        with ui.element("li"):
-                            ui.link(page.title, page.path)
+            with self.drawer.drawer_side(), ui.element("ul").classes("flex-none block md:hidden w-full"):
+                for page in pages:
                     with ui.element("li"):
-                        ui.themeSelector()
+                        ui.link(page.title, page.path)
+                with ui.element("li"):
+                    ui.themeSelector()
 
         return content
 
@@ -76,7 +75,7 @@ class Layout(PageDefinition):
 
     def nav(self, drawer):
         with ui.element().classes(
-            "sticky top-0 flex h-16 justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm z-40"
+            "sticky top-0 flex h-16 justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm z-40",
         ):
             with ui.nav().classes("bg-base-200"):
                 with ui.element().classes("flex-1"):

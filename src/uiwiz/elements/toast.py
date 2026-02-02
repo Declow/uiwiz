@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import json
-from typing import Optional
 
 from uiwiz import ui
 from uiwiz.element import Element
@@ -38,7 +39,7 @@ class Toast(Element):
         self._svg: _type = svg
         self.message: str = message
         self.context_manager_used: bool = False
-        self.inner_element: Optional[Element] = None
+        self.inner_element: Element | None = None
         self._auto_close: bool = True
 
     @property
@@ -49,7 +50,7 @@ class Toast(Element):
     def auto_close(self, auto_close: bool) -> None:
         self._auto_close = auto_close
 
-    def set_auto_close(self, auto_close: bool) -> "Toast":
+    def set_auto_close(self, auto_close: bool) -> Toast:
         """Set auto close
 
         :param auto_close: True or False. Auto close False will keep the toast open until the user closes it
@@ -78,30 +79,30 @@ class Toast(Element):
         self.inner_element.__enter__()
         return self
 
-    def svg(self, svg: _type) -> "Toast":
+    def svg(self, svg: _type) -> Toast:
         self._svg = svg
         return self
 
-    def classes(self, input: str = "") -> "Toast":
+    def classes(self, input: str = "") -> Toast:
         self.inner_class = self.inner_class + input
         return self
 
-    def info(self) -> "Toast":
+    def info(self) -> Toast:
         self.classes("alert")
         self.svg("info")
         return self
 
-    def warning(self) -> "Toast":
+    def warning(self) -> Toast:
         self.classes("alert-warning")
         self.svg("warning")
         return self
 
-    def success(self) -> "Toast":
+    def success(self) -> Toast:
         self.classes("alert-success")
         self.svg("success")
         return self
 
-    def error(self) -> "Toast":
+    def error(self) -> Toast:
         self.classes("alert-error")
         self.svg("error")
         self.auto_close = False

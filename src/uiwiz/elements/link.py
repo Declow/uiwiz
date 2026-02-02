@@ -1,4 +1,6 @@
-from typing import Callable, Union
+from __future__ import annotations
+
+from typing import Callable
 
 from uiwiz.element import Element
 
@@ -7,7 +9,7 @@ class Link(Element):
     root_class: str = "link "
     _classes: str = "link-hover"
 
-    def __init__(self, text: str, link: Union[Callable[[], str], str]) -> None:
+    def __init__(self, text: str, link: Callable[[], str] | str) -> None:
         """Link element
 
         Link element that can be used to navigate to a different page.
@@ -15,15 +17,16 @@ class Link(Element):
 
         Example:
         .. code-block:: python
-        
+
             from uiwiz import ui
 
-            ui.link("Click me", "/some/path").classes("btn btn-primary") 
+            ui.link("Click me", "/some/path").classes("btn btn-primary")
 
         :param text: The text to display
         :type text: str
         :param link: The link to navigate to when clicked. Can be a callable that returns a string
         :type link: Union[Callable[[], str], str]
+
         """
         super().__init__("a")
         self.content = text

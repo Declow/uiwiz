@@ -1,15 +1,20 @@
-from typing import Callable, List, Optional, get_type_hints
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Callable, Optional, get_type_hints
 
 import numpy as np
-import pandas as pd
 from pydantic import BaseModel
 
 from uiwiz.element import Element
-from uiwiz.element_types import ELEMENT_SIZE
 from uiwiz.elements.button import Button
-from uiwiz.elements.form import Form
-from uiwiz.event import FUNC_TYPE
 from uiwiz.models.model_handler import ModelForm
+
+if TYPE_CHECKING:
+    import pandas as pd
+
+    from uiwiz.element_types import ELEMENT_SIZE
+    from uiwiz.elements.form import Form
+    from uiwiz.event import FUNC_TYPE
 
 
 class ModelFormRender(ModelForm):
@@ -25,9 +30,8 @@ class Table(Element):
         "table table-zebra table-auto bg-base-300 overflow-scroll w-full whitespace-nowrap pr-4 pt-2 pb-2"
     )
 
-    def __init__(self, data: List[BaseModel], id_column_name: Optional[str] = None) -> None:
-        """
-        Creates a table from a list of pydantic models
+    def __init__(self, data: list[BaseModel], id_column_name: str | None = None) -> None:
+        """Creates a table from a list of pydantic models
 
         Example:
         .. code-block:: python
@@ -48,6 +52,7 @@ class Table(Element):
         :param data: A list of pydantic models
         :param id_column_name: The name of the Pydantic attribute to be used with the path param endpoint. An endpoint like /path/{id} should have a attribute "id" on the class
         :return: The current instance of the element.
+
         """
         container = Element("div").classes("w-full")
         with container:
@@ -66,9 +71,8 @@ class Table(Element):
         self.create: Optional[FUNC_TYPE] = None
         self.id_column_name: Optional[str] = id_column_name
 
-    def set_border(self, border_classes: str = "border border-base-content") -> "Table":
-        """
-        Set the border classes for the table
+    def set_border(self, border_classes: str = "border border-base-content") -> Table:
+        """Set the border classes for the table
 
         :param border_classes: The border classes to set
         :return: The current instance of the element.
@@ -76,9 +80,8 @@ class Table(Element):
         self.classes(Table._classes_container + border_classes)
         return self
 
-    def edit_row(self, edit: FUNC_TYPE) -> "Table":
-        """
-        Enable editing functionality for a table row.
+    def edit_row(self, edit: FUNC_TYPE) -> Table:
+        """Enable editing functionality for a table row.
 
         This method assigns the endpoint to handle the "Edit" action for rows
         in the table. It requires that `id_column_name` be set to identify rows uniquely.
@@ -93,15 +96,15 @@ class Table(Element):
 
         Example:
             >>> table = Table(data, id_column_name="id").edit_row(edit=edit_endpoint)
+
         """
         if self.id_column_name is None:
             raise ValueError("When using edit id_column_name is required")
         self.edit = edit
         return self
 
-    def delete_row(self, delete: FUNC_TYPE) -> "Table":
-        """
-        Enable deletion functionality for a table row.
+    def delete_row(self, delete: FUNC_TYPE) -> Table:
+        """Enable deletion functionality for a table row.
 
         This method assigns the endpoint to handle the "Delete" action for rows
         in the table. It requires that `id_column_name` be set to identify rows uniquely.
@@ -116,15 +119,15 @@ class Table(Element):
 
         Example:
             >>> table = Table(data, id_column_name="id").delete_row(delete=delete_endpoint)
+
         """
         if self.id_column_name is None:
             raise ValueError("When using delete id_column_name is required")
         self.delete = delete
         return self
 
-    def create_row(self, create: FUNC_TYPE) -> "Table":
-        """
-        Enable creation functionality for a table row.
+    def create_row(self, create: FUNC_TYPE) -> Table:
+        """Enable creation functionality for a table row.
 
         This method assigns the endpoint to handle the "Create" action for a row
         in the table.
@@ -136,6 +139,7 @@ class Table(Element):
 
         Example:
             >>> table = Table(data).create_row(create=create_endpoint)
+
         """
         self.create = create
         return self
@@ -150,8 +154,7 @@ class Table(Element):
         size: ELEMENT_SIZE = "sm",
         **kwargs,
     ) -> Element:
-        """
-        Render a table row with inputs and cancel/save button
+        """Render a table row with inputs and cancel/save button
 
         :param model: The Pydantic model to render
         :param id_column_name: The column that should be used with edit or delete as path param
@@ -192,7 +195,7 @@ class Table(Element):
                         model.__getattribute__(id_column_name)
                         if isinstance(model, BaseModel)
                         else kwargs.get(id_column_name, {}).get("value")
-                    )
+                    ),
                 },
             ).classes("btn-warning border border-base-content join-item flex-1 flex-initial").attributes[
                 "hx-include"
@@ -207,7 +210,7 @@ class Table(Element):
                         model.__getattribute__(id_column_name)
                         if isinstance(model, BaseModel)
                         else kwargs.get(id_column_name, {}).get("value")
-                    )
+                    ),
                 },
             ).classes("btn-success border border-base-content join-item flex-1 flex-initial").attributes[
                 "hx-include"
@@ -216,38 +219,34 @@ class Table(Element):
     def before_render(self) -> None:
         super().before_render()
         if self.did_render:
-            return None
+            return
 
-        with self:
-            with Element("table").classes(Table._classes_table):
-                # columns
-                with Element("thead"):
-                    with Element("tr"):
-                        for col in self.schema:
-                            Element("th", content=col)
-                        if self.edit:
-                            Element("th")
-                # rows
-                with Element("tbody") as container:
-                    for row in self.data:
-                        self.render_row(row, self.id_column_name, self.edit, self.delete)
+        with self, Element("table").classes(Table._classes_table):
+            # columns
+            with Element("thead"), Element("tr"):
+                for col in self.schema:
+                    Element("th", content=col)
+                if self.edit:
+                    Element("th")
+            # rows
+            with Element("tbody") as container:
+                for row in self.data:
+                    self.render_row(row, self.id_column_name, self.edit, self.delete)
         if self.create:
-            with self.container:
-                with Element().classes("pt-2 pb-2"):
-                    Button("Add").on_click(self.create, container, swap="beforeend")
+            with self.container, Element().classes("pt-2 pb-2"):
+                Button("Add").on_click(self.create, container, swap="beforeend")
         self.did_render = True
 
     @classmethod
     def render_row(
         cls,
         row: BaseModel,
-        id_column_name: Optional[str] = None,
-        edit: Optional[FUNC_TYPE] = None,
-        delete: Optional[FUNC_TYPE] = None,
+        id_column_name: str | None = None,
+        edit: FUNC_TYPE | None = None,
+        delete: FUNC_TYPE | None = None,
         size: ELEMENT_SIZE = "sm",
     ) -> Element:
-        """
-        Render a table row
+        """Render a table row
 
         :param row: The instance Pydantic model to render
         :param id_column_name: The optional column that should be used with edit or delete
@@ -268,7 +267,7 @@ class Table(Element):
                         params={id_column_name: row.__getattribute__(id_column_name)},
                     )
                     Button("Delete").classes("btn-error border border-base-content join-item flex-1 flex-initial").size(
-                        size
+                        size,
                     ).on(
                         "click",
                         delete,
@@ -298,8 +297,7 @@ class Table(Element):
 
     @classmethod
     def from_dataframe(cls, df: pd.DataFrame) -> Element:
-        """
-        Render a pandas.DataFrame
+        """Render a pandas.DataFrame
 
         :param df: The DataFrame to render
         :return: The container element
@@ -309,14 +307,13 @@ class Table(Element):
         with Element().classes(Table._classes_container) as container:
             with Element("table").classes(Table._classes_table):
                 # columns
-                with Element("thead"):
-                    with Element("tr"):
-                        for col in df.columns:
-                            Element("th", content=col)
+                with Element("thead"), Element("tr"):
+                    for col in df.columns:
+                        Element("th", content=col)
                 # rows
                 with Element("tbody"):
                     for _, row in df.iterrows():
                         with Element("tr"):
-                            for _, val in row.items():
+                            for val in row.values():
                                 Element("td", content=val)
         return container

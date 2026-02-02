@@ -1,18 +1,23 @@
+from __future__ import annotations
+
 import functools
 import inspect
+from collections.abc import Sequence
 from functools import partial
-from typing import Annotated, Any, Callable, Optional, Sequence, Type, TypedDict
+from typing import TYPE_CHECKING, Annotated, Any, Callable, Optional, TypedDict
 
 from fastapi import APIRouter, Request, Response, params
 from fastapi.datastructures import Default
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.routing import APIRoute
-from starlette.types import ASGIApp, Lifespan
 from typing_extensions import Doc
 
 from uiwiz.element import Element
 from uiwiz.frame import Frame
 from uiwiz.page_definition import PageDefinition
+
+if TYPE_CHECKING:
+    from starlette.types import ASGIApp, Lifespan
 
 
 class DecKwargs(TypedDict):
@@ -22,8 +27,7 @@ class DecKwargs(TypedDict):
 
 
 class PageRouter(APIRouter):
-    """
-    `PageRouter` class, used to group *path operations*, for example to structure
+    """`PageRouter` class, used to group *path operations*, for example to structure
     an app in multiple files. It would then be included in the `UiWizard` app, or
     in another `PageRouter` (ultimately included in the app).
 
@@ -48,7 +52,7 @@ class PageRouter(APIRouter):
         *,
         prefix: Annotated[str, Doc("An optional path prefix for the router.")] = "",
         dependencies: Annotated[
-            Optional[Sequence[params.Depends]],
+            Sequence[params.Depends] | None,
             Doc(
                 """
                 A list of dependencies (using `Depends()`) to be applied to all the
@@ -56,18 +60,18 @@ class PageRouter(APIRouter):
 
                 Read more about it in the
                 [FastAPI docs for Bigger Applications - Multiple Files](https://fastapi.tiangolo.com/tutorial/bigger-applications/#include-an-apirouter-with-a-custom-prefix-tags-responses-and-dependencies).
-                """
+                """,
             ),
         ] = None,
         default_response_class: Annotated[
-            Type[Response],
+            type[Response],
             Doc(
                 """
                 The default response class to be used.
 
                 Read more in the
                 [FastAPI docs for Custom Response - HTML, Stream, File, others](https://fastapi.tiangolo.com/advanced/custom-response/#default-response-class).
-                """
+                """,
             ),
         ] = Default(JSONResponse),
         redirect_slashes: Annotated[
@@ -76,32 +80,32 @@ class PageRouter(APIRouter):
                 """
                 Whether to detect and redirect slashes in URLs when the client doesn't
                 use the same format.
-                """
+                """,
             ),
         ] = True,
         default: Annotated[
-            Optional[ASGIApp],
+            ASGIApp | None,
             Doc(
                 """
                 Default function handler for this router. Used to handle
                 404 Not Found errors.
-                """
+                """,
             ),
         ] = None,
         route_class: Annotated[
-            Type[APIRoute],
+            type[APIRoute],
             Doc(
                 """
                 Custom route (*path operation*) class to be used by this router.
 
                 Read more about it in the
                 [FastAPI docs for Custom Request and APIRoute class](https://fastapi.tiangolo.com/how-to/custom-request-and-route/#custom-apiroute-class-in-a-router).
-                """
+                """,
             ),
         ] = APIRoute,
         # which the router cannot know statically, so we use typing.Any
         lifespan: Annotated[
-            Optional[Lifespan[Any]],
+            Lifespan[Any] | None,
             Doc(
                 """
                 A `Lifespan` context manager handler. This replaces `startup` and
@@ -109,11 +113,11 @@ class PageRouter(APIRouter):
 
                 Read more in the
                 [FastAPI docs for `lifespan`](https://fastapi.tiangolo.com/advanced/events/).
-                """
+                """,
             ),
         ] = None,
         page_definition_class: Annotated[
-            Optional[Type[PageDefinition]],
+            type[PageDefinition] | None,
             Doc("""
                 The page definition class to use for this router.
                 
@@ -159,10 +163,10 @@ class PageRouter(APIRouter):
         self,
         path: str,
         *args,
-        title: Optional[str] = None,
-        page_definition_class: Optional[Type[PageDefinition]] = None,
-        favicon: Optional[str] = None,
-        router: Optional[APIRouter] = None,
+        title: str | None = None,
+        page_definition_class: type[PageDefinition] | None = None,
+        favicon: str | None = None,
+        router: APIRouter | None = None,
         **kwargs,
     ) -> Callable:
         def decorator(func: Callable, *args, **kwargs) -> Callable:
@@ -190,7 +194,11 @@ class PageRouter(APIRouter):
 
                 page = page_class()
 
-                dec_kwargs = {k: v if not isinstance(v, PageDefinition) else page for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
+                dec_kwargs = {
+                    k: v if not isinstance(v, PageDefinition) else page
+                    for k, v in dec_kwargs.items()
+                    if k in parameters_of_decorated_func
+                }
                 user_method = partial(func, *dec_args, **dec_kwargs)
                 result = await page.render(user_method=user_method, request=request, title=cap_title)
                 if isinstance(result, Response):
@@ -263,7 +271,7 @@ class PageRouter(APIRouter):
     def __ensure_request_response_signature__(self, func: Callable):
         data = {"request": Request, "response": Response}
 
-        params = [p for p in inspect.signature(func).parameters.values()]
+        params = list(inspect.signature(func).parameters.values())
         for key, value in data.items():
             if key not in {p.name for p in params}:
                 parm = inspect.Parameter(key, inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=value)
@@ -273,7 +281,7 @@ class PageRouter(APIRouter):
 
     def add_ext(
         self,
-        page: Optional["PageDefinition"] = None,
+        page: Optional[PageDefinition] = None,
         include_js: bool = False,
         include_css: bool = False,
     ) -> None:

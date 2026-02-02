@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import json
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal
 
 import humps
 
@@ -47,11 +49,11 @@ class Ace(
 
     def __init__(
         self,
-        name: Optional[str] = None,
-        content: str = None,
+        name: str | None = None,
+        content: str | None = None,
         lang: Literal["sql", "python"] = "python",
-        sql_options: Optional[SqlOptions] = None,
-        ace_options: Optional[AceOptions] = None,
+        sql_options: SqlOptions | None = None,
+        ace_options: AceOptions | None = None,
     ) -> None:
         """Ace Editor
 
@@ -59,7 +61,7 @@ class Ace(
 
         Example:
         .. code-block:: python
-        
+
             from uiwiz import ui
 
             ui.ace(name="editor")
@@ -69,6 +71,7 @@ class Ace(
         :param lang: The language mode to use. One of "sql" or "python"
         :param sql_options: Options for the SQL language mode. Tables and columns to be used for autocompletion
         :param ace_options: Options for the Ace Editor
+
         """
         hidden_text = Element("textarea")
         hidden_text.attributes["hidden"] = "true"
@@ -86,11 +89,10 @@ class Ace(
         self.attributes["hx-ace-editor-form"] = self.__find_parent_form__()
         self.attributes["hx-ace-editor-content"] = content
 
-
         self.attributes["hx-ace-editor-options"] = json.dumps(humps.camelize(self.options))
         self.attributes["hx-ace-editor-sql-options"] = json.dumps(self.sql_options)
 
-    def __find_parent_form__(self) -> Optional[str]:
+    def __find_parent_form__(self) -> str | None:
         parent = self.parent_element
         while parent:
             if isinstance(parent, Form):

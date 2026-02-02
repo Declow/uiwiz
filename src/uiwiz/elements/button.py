@@ -1,12 +1,11 @@
-from typing import Optional
+from __future__ import annotations
 
-from uiwiz import ui
+from typing import TYPE_CHECKING
+
 from uiwiz.elements.extensions.on_event import OnEvent
-from uiwiz.event import FUNC_TYPE, SWAP_EVENTS, TARGET_TYPE
 
-
-def some_function():
-    ui.toast("Button clicked").success()
+if TYPE_CHECKING:
+    from uiwiz.event import FUNC_TYPE, SWAP_EVENTS, TARGET_TYPE
 
 
 class Button(OnEvent):
@@ -14,8 +13,7 @@ class Button(OnEvent):
     root_size: str = "btn-{size}"
 
     def __init__(self, title: str) -> None:
-        """
-        Create a button element, with the given title.
+        """Create a button element, with the given title.
         Can be used to trigger events.
 
         Example:
@@ -31,6 +29,7 @@ class Button(OnEvent):
 
         :param title: The title of the button
         :type title: str
+
         """
         super().__init__(tag="button")
         self.content = title
@@ -40,7 +39,7 @@ class Button(OnEvent):
         func: FUNC_TYPE = None,
         target: TARGET_TYPE = None,
         swap: SWAP_EVENTS = None,
-        params: Optional[dict[str, str]] = None,
-    ) -> "Button":
+        params: dict[str, str] | None = None,
+    ) -> Button:
         self.event = {"func": func, "trigger": "click", "target": target, "swap": swap, "params": params}
         return self

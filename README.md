@@ -60,9 +60,34 @@ HTMX works with input fields in HTML and forms. To make it a bit easier to work 
 ## Tests
 
 ```bash
-poetry run coverage run -m pytest .
+uv run coverage run -m pytest .
 ```
 
 ```bash
-poetry run coverage html
+uv run coverage html
+```
+
+## Custom development server
+
+A custom server has been developed to improve reload speed. Uvicorn has a builtin feature to reload the application
+this however requires a full process to be restarted, which on some operation systems might take >2s to complete.
+The custom server can reload only the nesscary part of the application in milliseconds.
+Instead of a process it uses a thread to achive the same result.
+One should know that it does not run the life-cycle start/stop. This will require a full reload of the application. It 
+reloads the endpoints on every request.
+
+Example
+```python
+from uiwiz import ui, UiwizApp, server
+
+app = UiwizApp()
+
+
+@app.page("/")
+async def home_page():
+    ui.label("Hello world")
+
+
+if __name__ == "__main__":
+    server.run("main:app")
 ```
