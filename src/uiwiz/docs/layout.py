@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Callable
+from typing import TYPE_CHECKING
 
 from typing_extensions import override
 
 from uiwiz import PageDefinition, ui
 from uiwiz.svg.svg_handler import get_svg
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 parent = Path(__file__).parent
 pages = []
@@ -27,7 +30,7 @@ class Page:
         if path not in [page.path for page in pages]:
             pages.append(self)
 
-    async def render(self):
+    async def render(self) -> None:
         """Render the page content."""
         with ui.container(padding="p-4"):
             if callable(self.content):
@@ -41,7 +44,7 @@ Page(path="/", title="Home", file=parent / "pages/index.md")
 
 class Layout(PageDefinition):
     def __init__(self) -> None:
-        """Layout
+        """Layout.
 
         A layout element that provides a consistent structure for the application.
         """
@@ -67,13 +70,13 @@ class Layout(PageDefinition):
         return content
 
     @override
-    def footer(self, _: ui.element):
+    def footer(self, _: ui.element) -> None:
         with ui.footer().classes("footer mx-auto footer-center p-4 text-base-content"):
             with ui.element("div").classes("flex flex-col items-center justify-center"):
                 ui.label("Made with ❤️ by Uiwiz").classes("text-sm")
                 ui.link("GitHub", "https://github.com/declow/uiwizard")
 
-    def nav(self, drawer):
+    def nav(self, drawer: ui.drawer) -> None:
         with ui.element().classes(
             "sticky top-0 flex h-16 justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm z-40",
         ):

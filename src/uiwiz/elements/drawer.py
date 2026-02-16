@@ -49,7 +49,7 @@ class Drawer(Element):
     _classes: str = "drawer bg-base-100"
 
     def __init__(self, always_open: bool = False, right: bool = False) -> None:
-        """Drawer
+        """Drawer.
 
         A drawer is a panel that slides in from the side of the screen. It can be used to display additional content or controls.
 
@@ -100,14 +100,14 @@ class Drawer(Element):
         with self.__drawer_button_menu__:
             Html(get_svg("menu"))
 
-    def always_open(self, value: bool) -> None:
+    def always_open(self, value: bool) -> None:  # noqa: FBT001
         """Set the drawer to always open until the screen size is too small."""
         if value:
             self.classes(self.attributes["class"] + " lg:drawer-open")
         else:
             self.classes(self.attributes["class"].replace("lg:drawer-open", ""))
 
-    def right(self, value: bool) -> None:
+    def right(self, value: bool) -> None:  # noqa: FBT001
         """Set the drawer to open from the right side of the screen."""
         if value:
             self.classes(self.attributes["class"] + " drawer-end")

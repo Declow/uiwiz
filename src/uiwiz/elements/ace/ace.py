@@ -55,7 +55,7 @@ class Ace(
         sql_options: SqlOptions | None = None,
         ace_options: AceOptions | None = None,
     ) -> None:
-        """Ace Editor
+        """Ace Editor.
 
         Use the Ace Editor to edit code in a textarea element.
 

@@ -54,7 +54,7 @@ def extract_text(docstring: str) -> tuple[str, str, dict[str, str]]:
     # Build the description by excluding the code block and param lines
     description_lines = []
     in_code_block = False
-    for i, line in enumerate(lines):
+    for line in lines:
         stripped = line.strip()
         if re.match(r"\..\s*code-block", stripped, re.IGNORECASE):
             in_code_block = True
@@ -65,8 +65,7 @@ def extract_text(docstring: str) -> tuple[str, str, dict[str, str]]:
             indent = len(line) - len(line.lstrip())
             if indent >= (code_block_indent or 1):
                 continue
-            else:
-                in_code_block = False
+            in_code_block = False
         if re.match(r":param(?:\s+\w+)?\s+\w+\s*:", stripped):
             continue
         if not in_code_block:
