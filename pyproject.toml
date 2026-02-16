@@ -3,15 +3,16 @@ name = "uiwiz"
 version = "0.2.1"
 description = "UiWiz is a framework to develop web applications"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "fastapi>=0.115.1",
     "markdown2[all]>=2.5.3",
     "openpyxl>=3.1.5",
     "pandas>=2.2.3",
     "pyhumps>=3.8.0",
-    "python-multipart>=0.0.20",
-    "starlette-authlib>=0.3.12",
+    "python-multipart>=0.0.22",
+    "starlette>=0.49.1",
+    "starlette-authlib>=0.3.15",
     "uvicorn[standard]>=0.12.0",
 ]
 
@@ -99,5 +100,7 @@ select = [
 ]
 ignore = [
     "D101",
+    "D102",
     "EM101",
+    "PLR0913",
 ]

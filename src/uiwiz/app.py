@@ -1,17 +1,17 @@
+from __future__ import annotations
+
 import json
 import logging
 from mimetypes import guess_type
 from pathlib import Path
-from typing import Optional, Type, Union
+from typing import TYPE_CHECKING
 
 from fastapi import FastAPI, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import HTMLResponse
-from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
-from starlette.requests import Request
 
 from uiwiz.element import Element
 from uiwiz.elements.button import Button
@@ -23,6 +23,10 @@ from uiwiz.middleware.static_middleware import AsgiTtlMiddleware
 from uiwiz.page_route import PageDefinition, PageRouter
 from uiwiz.shared import register_path, resources
 from uiwiz.version import __version__
+
+if TYPE_CHECKING:
+    from fastapi.routing import APIRoute
+    from starlette.requests import Request
 
 logger = logging.getLogger("uiwiz")
 logger.addHandler(logging.NullHandler())
@@ -41,12 +45,12 @@ class UiwizApp(FastAPI):
         toast_delay: int = 2500,
         error_classes: str = "alert alert-error",
         cache_age: int = 14400,
-        theme: Optional[str] = None,
-        title: Optional[str] = "UiWiz",
+        theme: str | None = None,
+        title: str | None = "UiWiz",
+        page_definition_class: PageDefinition = PageDefinition,
+        *args,  # noqa: ANN002
         auto_close_toast_error: bool = False,
-        page_definition_class: Type[PageDefinition] = PageDefinition,
-        *args,
-        **kwargs,
+        **kwargs,  # noqa: ANN003
     ) -> None:
         """App used for asgi applications.
 
@@ -93,16 +97,17 @@ class UiwizApp(FastAPI):
             content_type, _ = guess_type(resource_key)
             return Response(content, media_type=content_type)
 
-    def add_static_files(self, url_path: str, local_directory: Union[str, Path]) -> None:
+    def add_static_files(self, url_path: str, local_directory: str | Path) -> None:
+        """Add local folder as static files and make them public from UiWizard."""
         self.mount(url_path, StaticFiles(directory=str(local_directory)))
 
     def page(
         self,
         path: str,
-        *args,
-        title: Optional[str] = None,
-        favicon: Optional[str] = None,
-        **kwargs,
+        *args,  # noqa: ANN002
+        title: str | None = None,
+        favicon: str | None = None,
+        **kwargs,  # noqa: ANN003
     ) -> PageRouter:
         return PageRouter(page_definition_class=self.page_definition_class).page(
             path,
@@ -118,7 +123,7 @@ class UiwizApp(FastAPI):
 
     async def handle_validation_error(self, request: Request, exc: RequestValidationError) -> Response:
         fields_with_errors = [item.get("loc")[1] for item in exc.errors()]
-        ok_fields = [item for item in exc.body.keys() if item not in fields_with_errors]
+        ok_fields = [item for item in exc.body if item not in fields_with_errors]
 
         Frame.get_stack().del_stack()
         Frame.get_stack()

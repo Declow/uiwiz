@@ -1,31 +1,30 @@
 import asyncio
-from asyncio import Queue, Event, TimerHandle
-import re
-from typing import Any, Optional
-import urllib
-import httptools
+import copy
 import http
 import importlib
-from dataclasses import dataclass
+import logging
+import re
+import urllib
+from asyncio import Event, Queue, TimerHandle
 from collections import deque
 from contextlib import suppress
-import copy
+from dataclasses import dataclass
+from time import perf_counter
+from typing import Any
 
+import httptools
 from uvicorn._types import (
     ASGI3Application,
 )
-from uvicorn.protocols.http.flow_control import FlowControl
+from uvicorn.protocols.http.flow_control import HIGH_WATER_LIMIT, FlowControl
 from uvicorn.protocols.http.httptools_impl import RequestResponseCycle
-from time import perf_counter
 
-from uvicorn.protocols.http.flow_control import HIGH_WATER_LIMIT
-from uiwiz.app import UiwizApp
 from uiwiz import shared
-import logging
+from uiwiz.app import UiwizApp
 
 formatter = logging.Formatter(
     fmt="%(asctime)s - %(levelname)s - %(name)s - %(lineno)d - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
 logging.basicConfig(level=logging.DEBUG)
 
@@ -37,13 +36,14 @@ logger.addHandler(sc)
 HEADER_RE = re.compile(b'[\x00-\x1f\x7f()<>@,;:[]={} \t\\"]')
 HEADER_VALUE_RE = re.compile(b"[\x00-\x08\x0a-\x1f\x7f]")
 
+
 @dataclass
 class Config:
     host: str
     port: int
     root_path: str
-    app: Optional[str] = None
-    app_instance: Optional[UiwizApp] = None
+    app: str | None = None
+    app_instance: UiwizApp | None = None
 
 
 def import_app_instance(config: Config) -> None:
@@ -73,7 +73,7 @@ def import_app_instance(config: Config) -> None:
 
 
 class LifespanHandler:
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.config = config
         self.receive_queue: Queue = Queue()
         self.state: dict[str, Any] = {}
@@ -83,7 +83,7 @@ class LifespanHandler:
     async def startup(self) -> None:
         logger.info("Calling lifespan")
         loop = asyncio.get_running_loop()
-        lifespan_task = loop.create_task(self.execute())
+        lifespan_task = loop.create_task(self.execute())  # noqa: F841, RUF006
         await self.receive_queue.put({"type": "lifespan.startup"})
         await self.startup_done_event.wait()
 
@@ -119,8 +119,9 @@ class LifespanHandler:
         with suppress(asyncio.CancelledError):
             return await self.receive_queue.get()
 
+
 class ServerState:
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.total_requests = 0
         self.connections = set()
         self.tasks: set[asyncio.Task[None]] = set()
@@ -128,8 +129,9 @@ class ServerState:
         self.init_load: bool = True
         self.lifespan = LifespanHandler(config)
 
+
 class HttpToolsImpl(asyncio.Protocol):
-    def __init__(self, config: Config, server_state: ServerState):
+    def __init__(self, config: Config, server_state: ServerState) -> None:
         self.config = config
         self.app = config.app
         self.state: dict[str, Any] = {}
@@ -137,7 +139,7 @@ class HttpToolsImpl(asyncio.Protocol):
         self.parser = httptools.HttpRequestParser(self)
         self.timeout_keep_alive_task: TimerHandle | None = None
         self.transport: asyncio.Transport = None
-        self.app_state = dict()
+        self.app_state = {}
         self.root_path = config.root_path
         self.cycle: RequestResponseCycle = None
 
@@ -181,7 +183,7 @@ class HttpToolsImpl(asyncio.Protocol):
         self.client = self.get_remote_addr()
         self.scheme = "https" if bool(transport.get_extra_info("sslcontext")) else "http"
 
-    def connection_lost(self, exc: Optional[Exception]) -> None:
+    def connection_lost(self, exc: Exception | None) -> None:
         if self.cycle and not self.cycle.response_complete:
             self.cycle.disconnected = True
         if self.cycle is not None:
@@ -245,7 +247,7 @@ class HttpToolsImpl(asyncio.Protocol):
             self.flow.pause_reading()
             self.pipeline.appendleft((self.cycle, self.config.app_instance))
 
-    def _shutdown(self, *args):
+    def _shutdown(self, *args) -> None:
         task = self.loop.create_task(self.lifespan.shutdown())
         task.add_done_callback(self.tasks.discard)
         self.tasks.add(task)
@@ -269,11 +271,8 @@ class HttpToolsImpl(asyncio.Protocol):
             "state": self.app_state,
         }
 
-
     def shutdown(self) -> None:
-        """
-        Called by the server to commence a graceful shutdown.
-        """
+        """Called by the server to commence a graceful shutdown."""
         if self.cycle is None or self.cycle.response_complete:
             self.transport.close()
         else:
@@ -286,7 +285,6 @@ class HttpToolsImpl(asyncio.Protocol):
         if len(self.cycle.body) > HIGH_WATER_LIMIT:
             self.flow.pause_reading()
         self.cycle.message_event.set()
-
 
     def on_message_complete(self) -> None:
         if (self.parser.should_upgrade() and self._should_upgrade()) or self.cycle.response_complete:
@@ -312,10 +310,11 @@ class HttpToolsImpl(asyncio.Protocol):
             self.tasks.add(task)
         else:
             self.timeout_keep_alive_task = self.loop.call_later(
-                self.timeout_keep_alive, self.timeout_keep_alive_handler
+                self.timeout_keep_alive,
+                self.timeout_keep_alive_handler,
             )
 
-    def _get_upgrade(self) -> Optional[bytes]:
+    def _get_upgrade(self) -> bytes | None:
         connection = []
         upgrade = None
         for name, value in self.headers:
@@ -328,9 +327,7 @@ class HttpToolsImpl(asyncio.Protocol):
         return None  # pragma: full coverage
 
     def _should_upgrade_to_ws(self) -> bool:
-        if self.ws_protocol_class is None:
-            return False
-        return True
+        return self.ws_protocol_class is not None
 
     def _unsupported_upgrade_warning(self) -> None:
         logger.warning("Unsupported upgrade request.")
@@ -342,7 +339,7 @@ class HttpToolsImpl(asyncio.Protocol):
         upgrade = self._get_upgrade()
         return upgrade == b"websocket" and self._should_upgrade_to_ws()
 
-    def get_local_addr(self) -> Optional[tuple[str, int]]:
+    def get_local_addr(self) -> tuple[str, int] | None:
         socket_info = self.transport.get_extra_info("socket")
         if socket_info is not None:
             info = socket_info.getsockname()
@@ -353,7 +350,7 @@ class HttpToolsImpl(asyncio.Protocol):
             return (str(info[0]), int(info[1]))
         return None
 
-    def get_remote_addr(self) -> Optional[tuple[str, int]]:
+    def get_remote_addr(self) -> tuple[str, int] | None:
         socket_info = self.transport.get_extra_info("socket")
         if socket_info is not None:
             try:
@@ -369,8 +366,7 @@ class HttpToolsImpl(asyncio.Protocol):
 
     def send_400_response(self, msg: str) -> None:
         message = [http.HTTPStatus(400).phrase.encode()]
-        # for name, value in self.server_state.default_headers:
-        #     message.extend([name, b": ", value, b"\r\n"])  # pragma: full coverage
+
         message.extend(
             [
                 b"content-type: text/plain; charset=utf-8\r\n",
@@ -378,33 +374,28 @@ class HttpToolsImpl(asyncio.Protocol):
                 b"connection: close\r\n",
                 b"\r\n",
                 msg.encode("ascii"),
-            ]
+            ],
         )
         self.transport.write(b"".join(message))
         self.transport.close()
 
     def pause_writing(self) -> None:
-        """
-        Called by the transport when the write buffer exceeds the high water mark.
-        """
+        """Called by the transport when the write buffer exceeds the high water mark."""
         self.flow.pause_writing()  # pragma: full coverage
 
     def resume_writing(self) -> None:
-        """
-        Called by the transport when the write buffer drops below the low water mark.
-        """
+        """Called by the transport when the write buffer drops below the low water mark."""
         self.flow.resume_writing()  # pragma: full coverage
 
     def timeout_keep_alive_handler(self) -> None:
-        """
-        Called on a keep-alive connection if no new data is received after a short
+        """Called on a keep-alive connection if no new data is received after a short
         delay.
         """
         if not self.transport.is_closing():
             self.transport.close()
 
-class RRCycle(RequestResponseCycle):
 
+class RRCycle(RequestResponseCycle):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -412,7 +403,9 @@ class RRCycle(RequestResponseCycle):
     async def run_asgi(self, app: ASGI3Application) -> None:
         try:
             result = await app(  # type: ignore[func-returns-value]
-                self.scope, self.receive, self.send
+                self.scope,
+                self.receive,
+                self.send,
             )
         except BaseException as exc:
             msg = "Exception in ASGI application\n"
@@ -439,7 +432,7 @@ class RRCycle(RequestResponseCycle):
 
 
 class Server:
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         logger.warning("Development server. Do not use in production!")
         self.config = config
         self.server_state = None
@@ -449,13 +442,15 @@ class Server:
         try:
             return asyncio.run(self._serve(), debug=True)
         except KeyboardInterrupt:
-            return
+            return None
 
     async def _serve(self) -> None:
         loop = asyncio.get_running_loop()
         self.server_state = ServerState(self.config)
         server = await loop.create_server(
-            lambda: HttpToolsImpl(self.config, self.server_state), host=self.config.host, port=self.config.port
+            lambda: HttpToolsImpl(self.config, self.server_state),
+            host=self.config.host,
+            port=self.config.port,
         )
         async with server:
             await loop.create_task(self.server_state.lifespan.startup())
@@ -465,4 +460,3 @@ class Server:
                 await self.server_state.lifespan.shutdown()
                 return
             await self.server_state.lifespan.shutdown()
-

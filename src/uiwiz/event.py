@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Literal, Optional, TypedDict, Union
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Literal, Optional, TypedDict, Union
 
 if TYPE_CHECKING:
     from uiwiz.element import Element

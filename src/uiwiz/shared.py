@@ -3,9 +3,10 @@ from __future__ import annotations
 import hashlib
 import inspect
 from functools import cache
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
 
 resources: dict[str, Path] = {}
@@ -13,8 +14,9 @@ page_map: dict[Callable, str] = {}
 
 
 @cache
-def _hash_function_extended(func) -> str:
-    """This was an interesting problem. I needed to hash the function
+def _hash_function_extended(func: Callable) -> str:
+    """This was an interesting problem. I needed to hash the function.
+
     to be able to store the route in a dictionary. Nothing special
     but the reason for using the source code has to do with
     uvicorn and multiple workers. The function object is not the

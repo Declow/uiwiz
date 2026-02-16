@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import inspect
 import json
+from collections.abc import Callable
 from html import escape
-from typing import Annotated, Callable
+from typing import Annotated
 
 from fastapi import Depends, Request, Response
 
@@ -20,8 +21,9 @@ class PageDefinition:
     title_ele: Element
     lang: str
 
-    def __init__(self):
-        """The PageDefinition class is designed to be subclassed, allowing
+    def __init__(self) -> None:
+        """The PageDefinition class is designed to be subclassed, allowing.
+
         developers to override the `header`, `body`, and `content` methods
         to customize the HTML structure and content as needed. The `footer`
         method can also be overridden to add custom footer content.

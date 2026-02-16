@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import functools
 import inspect
-from collections.abc import Sequence
 from functools import partial
-from typing import TYPE_CHECKING, Annotated, Any, Callable, Optional, TypedDict
+from typing import TYPE_CHECKING, Annotated, Any, TypedDict
 
 from fastapi import APIRouter, Request, Response, params
 from fastapi.datastructures import Default
@@ -17,6 +16,8 @@ from uiwiz.frame import Frame
 from uiwiz.page_definition import PageDefinition
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+
     from starlette.types import ASGIApp, Lifespan
 
 
@@ -27,7 +28,8 @@ class DecKwargs(TypedDict):
 
 
 class PageRouter(APIRouter):
-    """`PageRouter` class, used to group *path operations*, for example to structure
+    """`PageRouter` class, used to group *path operations*, for example to structure.
+
     an app in multiple files. It would then be included in the `UiWizard` app, or
     in another `PageRouter` (ultimately included in the app).
 
@@ -227,9 +229,10 @@ class PageRouter(APIRouter):
     def ui(
         self,
         path: str,
+        router: APIRouter | None = None,
+        *args,
         include_js: bool = False,
         include_css: bool = False,
-        router: Optional[APIRouter] = None,
         **kwargs,
     ) -> Callable:
         def decorator(func: Callable) -> Callable:
@@ -268,7 +271,7 @@ class PageRouter(APIRouter):
 
         return decorator
 
-    def __ensure_request_response_signature__(self, func: Callable):
+    def __ensure_request_response_signature__(self, func: Callable) -> None:
         data = {"request": Request, "response": Response}
 
         params = list(inspect.signature(func).parameters.values())
@@ -281,7 +284,8 @@ class PageRouter(APIRouter):
 
     def add_ext(
         self,
-        page: Optional[PageDefinition] = None,
+        page: PageDefinition | None = None,
+        *args,
         include_js: bool = False,
         include_css: bool = False,
     ) -> None:

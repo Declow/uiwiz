@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import html
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Self
 
@@ -208,6 +209,7 @@ class Element:
 
     def render(self, render_script: bool = True) -> str:
         """Render the element as HTML.
+
         :param render_script: If any element has a javascript script, it will be rendered as well.
         :type render_script: bool.
         """
