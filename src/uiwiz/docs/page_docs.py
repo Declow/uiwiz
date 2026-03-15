@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from docs.layout import Layout, Page
-from docs.pages.docs.elements import create_docs_element, create_elements
 from uiwiz import PageRouter, ui
+from uiwiz.docs.layout import Layout, Page
+from uiwiz.docs.pages.docs.elements import create_docs_element, create_elements
 
 parent = Path(__file__).parent
 

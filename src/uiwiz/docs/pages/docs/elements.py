@@ -2,8 +2,8 @@ import inspect
 import typing
 from pathlib import Path
 
-from docs.pages.docs.extract_doc import extract_text
 from uiwiz import PageRouter, elements, ui
+from uiwiz.docs.pages.docs.extract_doc import extract_text
 
 
 def get_class_properties(cls):
@@ -16,16 +16,15 @@ def get_class_properties(cls):
         and not isinstance(prop, (property, staticmethod, classmethod))
     ]
 
+
 def get_clean_annotation_name(annotation):
-    import typing
     if hasattr(annotation, "__name__"):
         return annotation.__name__
-    elif hasattr(annotation, "_name") and annotation._name:
+    if hasattr(annotation, "_name") and annotation._name:
         return annotation._name
-    elif hasattr(typing, "ForwardRef") and isinstance(annotation, typing.ForwardRef):
+    if hasattr(typing, "ForwardRef") and isinstance(annotation, typing.ForwardRef):
         return annotation.__forward_arg__
-    else:
-        return str(annotation).replace("typing.", "")
+    return str(annotation).replace("typing.", "")
 
 
 def extract_param_annotations(cls):
@@ -52,7 +51,7 @@ def create_elements(router: PageRouter):
 
 
 def create_docs_element(element: ui.element, router: PageRouter):
-    app = router # noqa
+    app = router  # noqa
     with ui.container(space_y="").classes("prose rounded-lg"):
         with ui.element().classes("flex flex-row"):
             ui.element("h2", f"ui.{element.__name__.lower()}")
@@ -61,8 +60,13 @@ def create_docs_element(element: ui.element, router: PageRouter):
         ui.markdown(des).classes("text-content")
         with ui.element().classes("not-prose"):
             try:
-                ui.markdown("""```python
-""" + cb + " " + """```""")
+                ui.markdown(
+                    """```python
+"""
+                    + cb
+                    + " "
+                    + """```""",
+                )
             except Exception:
                 pass
             try:
@@ -80,8 +84,12 @@ def create_docs_element(element: ui.element, router: PageRouter):
                         ui.element("span", f"= {details['default']}").classes("text-gray-500 ml-2")
                     else:
                         ui.element("span", "No default required argument").classes("text-gray-500 ml-2")
-            
-            methods = [method for method in inspect.getmembers(element, predicate=inspect.isfunction) if not method[0].startswith("_")]
+
+            methods = [
+                method
+                for method in inspect.getmembers(element, predicate=inspect.isfunction)
+                if not method[0].startswith("_")
+            ]
 
             if methods:
                 with ui.element("h3").classes("mt-4"):
@@ -91,7 +99,11 @@ def create_docs_element(element: ui.element, router: PageRouter):
                         sig = inspect.signature(method)
                         # Use get_type_hints to resolve forward references
                         try:
-                            type_hints = typing.get_type_hints(method, globalns=method.__globals__, localns=vars(element))
+                            type_hints = typing.get_type_hints(
+                                method,
+                                globalns=method.__globals__,
+                                localns=vars(element),
+                            )
                         except Exception:
                             type_hints = {}
                         params = []
@@ -99,12 +111,18 @@ def create_docs_element(element: ui.element, router: PageRouter):
                             if name == "self":
                                 continue
                             annotation = type_hints.get(name, param.annotation)
-                            param_type = get_clean_annotation_name(annotation) if annotation is not inspect.Parameter.empty else 'Any'
+                            param_type = (
+                                get_clean_annotation_name(annotation)
+                                if annotation is not inspect.Parameter.empty
+                                else "Any"
+                            )
                             params.append(f"{name}: {param_type}")
                         param_str = ", ".join(params)
                         # Return type
-                        ret_anno = type_hints.get('return', sig.return_annotation)
-                        return_type = get_clean_annotation_name(ret_anno) if ret_anno is not inspect.Signature.empty else "Any"
+                        ret_anno = type_hints.get("return", sig.return_annotation)
+                        return_type = (
+                            get_clean_annotation_name(ret_anno) if ret_anno is not inspect.Signature.empty else "Any"
+                        )
                         # Method name in bold, params in blue, return type in green
                         ui.element("span", f"{method_name}(").classes("font-bold pl-4")
                         if param_str:

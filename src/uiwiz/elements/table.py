@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Optional, get_type_hints
+from collections.abc import Callable
+from typing import TYPE_CHECKING, get_type_hints
 
 import numpy as np
 from pydantic import BaseModel
@@ -66,10 +67,10 @@ class Table(Element):
         self.container = container
         self.data = data
         self.did_render: bool = False
-        self.edit: Optional[FUNC_TYPE] = None
-        self.delete: Optional[FUNC_TYPE] = None
-        self.create: Optional[FUNC_TYPE] = None
-        self.id_column_name: Optional[str] = id_column_name
+        self.edit: FUNC_TYPE | None = None
+        self.delete: FUNC_TYPE | None = None
+        self.create: FUNC_TYPE | None = None
+        self.id_column_name: str | None = id_column_name
 
     def set_border(self, border_classes: str = "border border-base-content") -> Table:
         """Set the border classes for the table
@@ -314,6 +315,6 @@ class Table(Element):
                 with Element("tbody"):
                     for _, row in df.iterrows():
                         with Element("tr"):
-                            for val in row.values():
+                            for val in row.to_numpy():
                                 Element("td", content=val)
         return container

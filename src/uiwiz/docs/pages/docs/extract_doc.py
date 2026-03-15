@@ -11,10 +11,10 @@ def extract_text(docstring: str) -> tuple[str, str, dict[str, str]]:
     code_block_lines = []
     in_code_block = False
     code_block_indent = None
-    for i, line in enumerate(lines):
+    for idx, line in enumerate(lines):
         if not in_code_block and re.match(r"\..\s*code-block", line.strip(), re.IGNORECASE):
             # Find the first non-blank, indented line after the marker
-            for j in range(i + 1, len(lines)):
+            for j in range(idx + 1, len(lines)):
                 if lines[j].strip() == "":
                     continue
                 indent = len(lines[j]) - len(lines[j].lstrip())
@@ -54,7 +54,7 @@ def extract_text(docstring: str) -> tuple[str, str, dict[str, str]]:
     # Build the description by excluding the code block and param lines
     description_lines = []
     in_code_block = False
-    for i, line in enumerate(lines):
+    for line in lines:
         stripped = line.strip()
         if re.match(r"\..\s*code-block", stripped, re.IGNORECASE):
             in_code_block = True
@@ -65,8 +65,7 @@ def extract_text(docstring: str) -> tuple[str, str, dict[str, str]]:
             indent = len(line) - len(line.lstrip())
             if indent >= (code_block_indent or 1):
                 continue
-            else:
-                in_code_block = False
+            in_code_block = False
         if re.match(r":param(?:\s+\w+)?\s+\w+\s*:", stripped):
             continue
         if not in_code_block:
