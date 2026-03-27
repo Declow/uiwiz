@@ -1,6 +1,6 @@
 from io import BytesIO
 
-import pandas as pd
+import polars as pl
 from fastapi import Request, UploadFile
 
 import uiwiz.ui as ui
@@ -19,8 +19,8 @@ def create_nav():
 @app.ui("/some/comnponent")
 async def handle_upload(file: UploadFile):
     file_output = await file.read()
-    df = pd.read_excel(BytesIO(file_output), engine="openpyxl")
-    ui.table(df)
+    df = pl.read_excel(BytesIO(file_output))
+    ui.table.from_dataframe(df)
 
 
 @app.page("/second")
@@ -50,7 +50,7 @@ async def test(request: Request):
 
         ui.upload(name="file").on_upload(on_upload=handle_upload, target=lambda: table.id)
         ui.checkbox("check")
-        table = ui.table.from_dataframe(pd.DataFrame())
+        table = ui.table.from_dataframe(pl.DataFrame())
         ui.dropdown("select", ["item 1", "item 2"], "Pick item")
         ui.toggle("val")
         ui.toggle("val2", True)
