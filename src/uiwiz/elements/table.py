@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable, Optional, get_type_hints
 
-import numpy as np
 from pydantic import BaseModel
 
 from uiwiz.element import Element
@@ -10,7 +9,7 @@ from uiwiz.elements.button import Button
 from uiwiz.models.model_handler import ModelForm
 
 if TYPE_CHECKING:
-    import pandas as pd
+    import polars as pl
 
     from uiwiz.element_types import ELEMENT_SIZE
     from uiwiz.elements.form import Form
@@ -296,13 +295,13 @@ class Table(Element):
         return container
 
     @classmethod
-    def from_dataframe(cls, df: pd.DataFrame) -> Element:
-        """Render a pandas.DataFrame
+    def from_dataframe(cls, df: pl.DataFrame) -> Element:
+        """Render a polars.DataFrame
 
         :param df: The DataFrame to render
         :return: The container element
         """
-        df = df.replace({np.nan: "None"})
+        df = df.fill_null("None")
 
         with Element().classes(Table._classes_container) as container:
             with Element("table").classes(Table._classes_table):
@@ -312,8 +311,8 @@ class Table(Element):
                         Element("th", content=col)
                 # rows
                 with Element("tbody"):
-                    for _, row in df.iterrows():
+                    for row in df.iter_rows():
                         with Element("tr"):
-                            for val in row.values():
+                            for val in row:
                                 Element("td", content=val)
         return container

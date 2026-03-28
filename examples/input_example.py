@@ -2,7 +2,7 @@ import asyncio
 import logging
 from typing import Annotated, Optional
 
-import pandas as pd
+import polars as pl
 from uiwiz import server
 from fastapi import Depends, Request
 from pydantic import BaseModel
@@ -43,7 +43,7 @@ def get_log():
 
 @app.post("/data")
 def get_data():
-    df = pd.DataFrame([{"asd": "val"}, {"asd": "val2", "col2": 12}])
+    df = pl.DataFrame([{"asd": "val"}, {"asd": "val2", "col2": 12}])
     return ui.aggrid.response(df)
 
 
@@ -115,7 +115,7 @@ async def test(page: Annotated[MyDefinition, Depends()], req: Request):
                 ui.spinner().ball().large()
 
                 g = ui.aggrid(
-                    pd.DataFrame(
+                    pl.DataFrame(
                         [
                             {
                                 "asd": 2,

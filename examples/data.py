@@ -1,6 +1,6 @@
-import pandas as pd
+import polars as pl
 
-df = pd.DataFrame(
+df = pl.DataFrame(
     [
         {
             "col1": "val1",

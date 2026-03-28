@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import polars as pl
 from pydantic import BaseModel
 
 from uiwiz import ui
@@ -73,3 +74,12 @@ def test_table_edit_row(setup_app):
     assert render_endpoint == soup.select("button")[1].attrs["hx-post"]
     assert "outerHTML" == soup.select("button")[1].attrs["hx-swap"]
     assert "Save" == soup.select("button")[1].contents[0]
+
+
+def test_table_from_dataframe_polars():
+    output = str(ui.table.from_dataframe(pl.DataFrame([{"input": "data"}, {"input": None}])))
+    soup = BeautifulSoup(output, "html.parser")
+
+    assert soup.select("th")[0].contents[0] == "input"
+    assert soup.select("td")[0].contents[0] == "data"
+    assert soup.select("td")[1].contents[0] == "None"
