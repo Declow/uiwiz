@@ -79,9 +79,6 @@ class UiwizApp(FastAPI):
         self.add_middleware(AsgiRequestMiddleware)
         self.add_middleware(GZipMiddleware)
         self.add_middleware(AsgiTtlMiddleware, cache_age=cache_age)
-        # self.add_middleware(StripHiddenFormFieldMiddleware)  # noqa: ERA001
-        self.extensions: dict[str, Path] = {}
-        self.app_paths: dict[str, Path] = {}
 
         self.exception_handler(RequestValidationError)(self.handle_validation_error)
 
@@ -104,14 +101,12 @@ class UiwizApp(FastAPI):
     def page(
         self,
         path: str,
-        *args,  # noqa: ANN002
         title: str | None = None,
         favicon: str | None = None,
         **kwargs,  # noqa: ANN003
     ) -> PageRouter:
         return PageRouter(page_definition_class=self.page_definition_class).page(
             path,
-            *args,
             title=title,
             favicon=favicon,
             router=self.router,

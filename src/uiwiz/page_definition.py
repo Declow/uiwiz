@@ -80,6 +80,7 @@ class PageDefinition:
         user_method: Callable | None,
         request: Request,
         title: str | None = None,
+        favicon: str | None = None,
     ) -> Response | None:
         frame = Frame.get_stack()
 
@@ -120,6 +121,8 @@ class PageDefinition:
                 )
                 Element("script", src=f"/_static/{__version__}/libs/tailwind.js")
                 Element("link", href=f"/_static/{__version__}/app.css", rel="stylesheet", type="text/css")
+                if favicon:
+                    Element("link", href=favicon, rel="icon")
                 self.header(header)
             with Element("body") as body:
                 self.body_ele = body

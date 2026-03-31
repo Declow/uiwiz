@@ -27,12 +27,12 @@ formatter = logging.Formatter(
     fmt="%(asctime)s - %(levelname)s - %(name)s - %(lineno)d - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-logging.basicConfig(level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
-sc = logging.StreamHandler()
-sc.setFormatter(formatter)
-logger.addHandler(sc)
+if not logger.handlers:
+    sc = logging.StreamHandler()
+    sc.setFormatter(formatter)
+    logger.addHandler(sc)
 
 HEADER_RE = re.compile(b'[\x00-\x1f\x7f()<>@,;:[]={} \t\\"]')
 HEADER_VALUE_RE = re.compile(b"[\x00-\x08\x0a-\x1f\x7f]")

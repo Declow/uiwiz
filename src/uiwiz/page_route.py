@@ -164,65 +164,72 @@ class PageRouter(APIRouter):
     def page(
         self,
         path: str,
-        *args,  # noqa: ANN002, ARG002
         title: str | None = None,
         page_definition_class: type[PageDefinition] | None = None,
-        favicon: str | None = None,  # noqa: ARG002
+        favicon: str | None = None,
         router: APIRouter | None = None,
-        **kwargs,  # noqa: ANN003, ARG002
+        **kwargs,  # noqa: ANN003
     ) -> Callable:
-        def decorator(func: Callable, *args, **kwargs) -> Callable:  # noqa: ANN002, ANN003
+        def decorator(func: Callable) -> Callable:
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
             cap_title = title
             cap_page_definition_class = page_definition_class
+            cap_favicon = favicon
 
             @functools.wraps(func)
             async def decorated(*dec_args, **dec_kwargs: DecKwargs) -> Response:  # noqa: ANN002
-                Frame.get_stack().del_stack()
-                # Create frame before function is called
+                Frame.del_stack()
+                Frame.get_stack()  # Create frame before function is called
+                try:
+                    request: Request | None = None
+                    response: Response | None = None
+                    for value in dec_kwargs.values():
+                        if isinstance(value, Request):
+                            request = value
+                        if isinstance(value, Response):
+                            response = value
 
-                request = None
-                response = None
-                for value in dec_kwargs.values():
-                    if isinstance(value, Request):
-                        request = value
-                    if isinstance(value, Response):
-                        response = value
+                    if self.page_definition_class is None:
+                        self.page_definition_class = request.app.page_definition_class
 
-                if self.page_definition_class is None:
-                    self.page_definition_class = request.app.page_definition_class
+                    page_class = cap_page_definition_class or self.page_definition_class
 
-                page_class = cap_page_definition_class or self.page_definition_class
+                    page = page_class()
 
-                page = page_class()
+                    dec_kwargs = {
+                        k: v if not isinstance(v, PageDefinition) else page
+                        for k, v in dec_kwargs.items()
+                        if k in parameters_of_decorated_func
+                    }
+                    user_method = partial(func, *dec_args, **dec_kwargs)
+                    result = await page.render(
+                        user_method=user_method,
+                        request=request,
+                        title=cap_title,
+                        favicon=cap_favicon,
+                    )
+                    if isinstance(result, Response):
+                        return result
+                    standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "page"}
 
-                dec_kwargs = {
-                    k: v if not isinstance(v, PageDefinition) else page
-                    for k, v in dec_kwargs.items()
-                    if k in parameters_of_decorated_func
-                }
-                user_method = partial(func, *dec_args, **dec_kwargs)
-                result = await page.render(user_method=user_method, request=request, title=cap_title)
-                if isinstance(result, Response):
-                    return self.return_function_response(result)
-                standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "page"}
+                    if response:
+                        standard_headers.update(response.headers)
 
-                if response:
-                    standard_headers.update(response.headers)
+                    self.add_ext(page, include_js=True, include_css=True)
 
-                self.add_ext(page, include_js=True, include_css=True)
-
-                return HTMLResponse(
-                    content=Frame.get_stack().render(),
-                    status_code=200,
-                    media_type="text/html",
-                )
+                    return HTMLResponse(
+                        content=Frame.get_stack().render(),
+                        status_code=200,
+                        media_type="text/html",
+                    )
+                finally:
+                    Frame.del_stack()
 
             self.__ensure_request_response_signature__(decorated)
 
             _router = router or self
 
-            return _router.get(path, *args, include_in_schema=False, **kwargs)(decorated)
+            return _router.get(path, include_in_schema=False, **kwargs)(decorated)
 
         return decorator
 
@@ -230,7 +237,7 @@ class PageRouter(APIRouter):
         self,
         path: str,
         router: APIRouter | None = None,
-        *args,  # noqa: ANN002, ARG002
+        *,
         include_js: bool = False,
         include_css: bool = False,
         **kwargs,  # noqa: ANN003
@@ -243,27 +250,29 @@ class PageRouter(APIRouter):
 
             @functools.wraps(func)
             async def decorated(*dec_args, **dec_kwargs) -> Response:  # noqa: ANN002, ANN003
-                Frame.get_stack().del_stack()
+                Frame.del_stack()
                 Frame.get_stack()  # Create frame before function is called
-                response = dec_kwargs["response"]
+                try:
+                    response = dec_kwargs["response"]
 
-                # Ensure the signature matches the parameters of the function
-                dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
-                result = func(*dec_args, **dec_kwargs)
-                if inspect.isawaitable(result):
-                    result = await result
+                    # Ensure the signature matches the parameters of the function
+                    dec_kwargs = {k: v for k, v in dec_kwargs.items() if k in parameters_of_decorated_func}
+                    result = func(*dec_args, **dec_kwargs)
+                    if inspect.isawaitable(result):
+                        result = await result
 
-                if isinstance(result, Response):
-                    Frame.get_stack().del_stack()
-                    return result
+                    if isinstance(result, Response):
+                        return result
 
-                standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "partial-ui"}
-                standard_headers.update(response.headers)
+                    standard_headers = {"cache-control": "no-store", "x-uiwiz-content": "partial-ui"}
+                    standard_headers.update(response.headers)
 
-                self.add_ext(page=None, include_js=cap_include_js, include_css=cap_include_css)
+                    self.add_ext(page=None, include_js=cap_include_js, include_css=cap_include_css)
 
-                content = Frame.get_stack().render()
-                return HTMLResponse(content=content, headers=standard_headers)
+                    content = Frame.get_stack().render()
+                    return HTMLResponse(content=content, headers=standard_headers)
+                finally:
+                    Frame.del_stack()
 
             self.__ensure_request_response_signature__(decorated)
             _router = router or self
@@ -285,7 +294,7 @@ class PageRouter(APIRouter):
     def add_ext(
         self,
         page: PageDefinition | None = None,
-        *args,  # noqa: ANN002, ARG002
+        *,
         include_js: bool = False,
         include_css: bool = False,
     ) -> None:

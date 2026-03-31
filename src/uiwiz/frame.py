@@ -77,7 +77,7 @@ class Frame:
 
     @classmethod
     def del_stack(cls) -> None:
-        del cls.stacks[get_task_id()]
+        cls.stacks.pop(get_task_id(), None)
 
     @classmethod
     def set_meta_description_content(cls, content: str) -> None:
