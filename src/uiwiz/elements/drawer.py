@@ -32,8 +32,11 @@ class DrawerSide(Element):
         if not hasattr(self, "setup"):
             self.setup = DrawerSetup()
         self.setup.__enter__()
+        return self
 
     def __exit__(self, *_):
+        if hasattr(self, "setup"):
+            self.setup.__exit__(*_)  # noqa: SLF001
         return super().__exit__(*_)
 
 

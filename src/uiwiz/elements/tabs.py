@@ -31,7 +31,7 @@ class Tabs(Element):
     def __exit__(self, *_):
         super().__exit__(*_)
         has_active = False
-        first_child_tab = None
+        first_child_tab: Tab | None = None
         for child in self.children:
             if not isinstance(child, Tab):
                 continue
@@ -41,7 +41,7 @@ class Tabs(Element):
 
             if "checked" in child.attributes:
                 has_active = True
-        if not has_active:
+        if not has_active and first_child_tab is not None:
             first_child_tab.active()
 
 
@@ -70,7 +70,11 @@ class Tab(Element):
         :param active: If the tab should be active by default. Defaults to None, which will make the first tab active.
         """
         self.selector = Element("input")
-        self.selector.attributes["name"] = self.selector.parent_element.id
+        parent = self.selector.parent_element
+        if parent is None:
+            self.selector.attributes["name"] = self.selector.id
+        else:
+            self.selector.attributes["name"] = parent.id
         self.selector.attributes["type"] = "radio"
         self.selector.attributes["aria-label"] = title
         self.selector.classes(self._classes)

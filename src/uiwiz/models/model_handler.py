@@ -27,7 +27,16 @@ from uiwiz.models.display import display_name
 
 @dataclass
 class UiAnno:
-    type: Input | HiddenInput | Toggle | Datepicker | Dropdown | TextArea | Checkbox = None
+    type: (
+        type[Input]
+        | type[HiddenInput]
+        | type[Toggle]
+        | type[Datepicker]
+        | type[Dropdown]
+        | type[TextArea]
+        | type[Checkbox]
+        | None
+    ) = None
     placeholder: str | None = None
     classes: str | None = None
 
@@ -148,8 +157,8 @@ class ModelForm(Form):
         if len(args) == 0:
             if annotated:
                 self.render_element(switch.get(field_type), key, placeholder=key)
-
-            self.render_element(switch.get(field_type), key, placeholder=key)
+            else:
+                self.render_element(switch.get(field_type), key, placeholder=key)
 
     def render_with_args_annotated(self, args: tuple, annotated: bool, field_type: tuple, key: str) -> Element:
         if len(args) > 0:

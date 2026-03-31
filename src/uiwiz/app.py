@@ -122,8 +122,20 @@ class UiwizApp(FastAPI):
         return PageRouter().ui(path=path, include_js=include_js, include_css=include_css, router=self.router, **kwargs)
 
     async def handle_validation_error(self, request: Request, exc: RequestValidationError) -> Response:
-        fields_with_errors = [item.get("loc")[1] for item in exc.errors()]
-        ok_fields = [item for item in exc.body if item not in fields_with_errors]
+        error_details = exc.errors()
+        fields_with_errors: list[str] = []
+        for item in error_details:
+            loc = item.get("loc") or ()
+            if len(loc) > 1:
+                field = str(loc[1])
+            elif len(loc) == 1:
+                field = str(loc[0])
+            else:
+                field = "body"
+            fields_with_errors.append(field)
+
+        body = exc.body if isinstance(exc.body, dict) else {}
+        ok_fields = [item for item in body if item not in fields_with_errors]
 
         Frame.get_stack().del_stack()
         Frame.get_stack()
@@ -133,11 +145,7 @@ class UiwizApp(FastAPI):
             toast.attributes["hx-swap-oob"] = "afterbegin"
             toast.attributes["hx-toast-data"] = json.dumps(
                 jsonable_encoder(
-                    {
-                        "detail": exc.errors(),
-                        "fieldErrors": fields_with_errors,
-                        "fieldOk": ok_fields,
-                    },
+                    {"detail": error_details, "fieldErrors": fields_with_errors, "fieldOk": ok_fields},
                 ),
             )
             html = Html("").classes("alert alert-error relative")
@@ -146,8 +154,10 @@ class UiwizApp(FastAPI):
             html.attributes["hx-toast-delete-button"] = lambda: btn.id
             with html:
                 with Col(gap="").classes("relative"):
-                    for item in exc.errors():
-                        Element(content=f"{item.get('loc')[1]}: {item.get('msg')}")
+                    for item in error_details:
+                        loc = item.get("loc") or ()
+                        loc_text = str(loc[1]) if len(loc) > 1 else str(loc[0]) if len(loc) == 1 else "body"
+                        Element(content=f"{loc_text}: {item.get('msg')}")
                 if not self.auto_close_toast_error:
                     btn = Button("✕").classes("btn btn-sm btn-circle btn-ghost absolute right-2 top-2")
 
