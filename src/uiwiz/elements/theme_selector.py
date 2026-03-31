@@ -53,7 +53,7 @@ class ThemeSelector(Element):
             from uiwiz import ui
 
             ui.themeSelector(["light", "dark", "nord", "cupcake", "pastel", "bumblebee"])
-        
+
         """
         super().__init__()
         self.render_html = False
@@ -72,13 +72,12 @@ class ThemeSelector(Element):
     def setup_listener(self):
         self.script = f"""
 function selectTheme(value) {{
-    console.log(value);
-    element = document.getElementById("html");
-    element.setAttribute("data-theme", value);
-    document.cookie = `data-theme=${{value}}; Path=/`; 
+    element = document.getElementById(\"html\");
+    element.setAttribute(\"data-theme\", value);
+    document.cookie = `data-theme=${{value}}; Path=/; SameSite=Lax`;
 }}
 
-document.getElementById("{self.theme_selector.id}").addEventListener('change', function() {{
+document.getElementById(\"{self.theme_selector.id}\").addEventListener('change', function() {{
     selectTheme(this.value);
 }});
 """
