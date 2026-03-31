@@ -10,7 +10,7 @@ class AsgiTtlMiddleware:
         self.app = app
         self.cache_age = cache_age
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> Any:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> Any:  # noqa: RET503
         if scope["type"] != "http":
             return await self.app(scope, receive, send)
 
@@ -20,7 +20,7 @@ class AsgiTtlMiddleware:
                 return
 
             request = Request(scope)
-            if "static/" in str(request.url):
+            if request.url.path.startswith("/_static/"):
                 headers = MutableHeaders(scope=message)
                 headers["Cache-Control"] = f"max-age={self.cache_age}"
 
