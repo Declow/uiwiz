@@ -41,6 +41,5 @@ class TextArea(OnEvent):
         return self.attributes["placeholder"]
 
     @placeholder.setter
-    def placeholder(self, value: str):
+    def placeholder(self, value: str | None) -> None:
         self.attributes["placeholder"] = value
-        return self

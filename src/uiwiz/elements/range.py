@@ -37,15 +37,13 @@ class Range(OnEvent):
         return self.attributes["min"]
 
     @min.setter
-    def min(self, value: int):
+    def min(self, value: int) -> None:
         self.attributes["min"] = value
-        return self
 
     @property
     def max(self) -> int:
         return self.attributes["max"]
 
     @max.setter
-    def max(self, value: int):
+    def max(self, value: int) -> None:
         self.attributes["max"] = value
-        return self

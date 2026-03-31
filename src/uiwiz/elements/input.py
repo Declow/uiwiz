@@ -44,10 +44,9 @@ class Input(OnEvent):
         return self.attributes.get("placeholder")
 
     @placeholder.setter
-    def placeholder(self, value: str | None):
+    def placeholder(self, value: str | None) -> None:
         if value:
             self.attributes["placeholder"] = value
-        return self
 
     def set_placeholder(self, value: str) -> Input:
         self.placeholder = value
