@@ -6,11 +6,14 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 REQUEST_CTX_KEY = "_request"
 
-_request_ctx_var: ContextVar[dict[str, Request]] = ContextVar(REQUEST_CTX_KEY, default=None)
+_request_ctx_var: ContextVar[Request | None] = ContextVar(REQUEST_CTX_KEY, default=None)
 
 
 def get_request() -> Request:
-    return _request_ctx_var.get()
+    request = _request_ctx_var.get()
+    if request is None:
+        raise RuntimeError("Request context is not available")
+    return request
 
 
 class AsgiRequestMiddleware:
