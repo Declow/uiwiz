@@ -12,7 +12,7 @@ class Form(Element):
     root_class: str = "flex flex-col items-start gap-4 p-4 "
 
     def __init__(self) -> None:
-        """Form
+        """Form.
 
         A form is a section of a document containing input elements.
 
@@ -35,6 +35,6 @@ class Form(Element):
         target: TARGET_TYPE = None,
         swap: SWAP_EVENTS = "none",
         params: dict[str, str] | None = None,
-    ):
+    ) -> Form:
         self.event = {"func": func, "trigger": "submit", "target": target, "swap": swap, "params": params}
         return self

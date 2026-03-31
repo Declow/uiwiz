@@ -10,7 +10,7 @@ class Col(Element):
         gap: str = "gap-4",
         padding: str = "p-4",
     ) -> None:
-        """Col
+        """Col.
 
         Align children elements vertically in a column layout.
 
@@ -28,6 +28,7 @@ class Col(Element):
         :type gap: str, optional
         :param padding: The padding of the column.
         :type padding: str, optional
+
         """
         super().__init__()
         self.__root_class__ = Col.root_class.format(item_position=item_position, gap=gap, padding=padding)

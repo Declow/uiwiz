@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from uiwiz.element import Element
 
 
@@ -6,8 +8,7 @@ class Avatar(Element):
     _classes_inner: str = "w-{size} rounded-full"
 
     def __init__(self, path: str, size: int = 12) -> None:
-        """
-        Display an avatar image.
+        """Display an avatar image.
 
         :param path: The path to the image to display.
         :type path: str
@@ -21,7 +22,7 @@ class Avatar(Element):
                 img = Element("img")
                 img.attributes["src"] = path
 
-    def classes(self, input: str = ""):
+    def classes(self, _input: str = "") -> Avatar:
         if hasattr(self, "container"):
-            self.container.classes(input)
+            self.container.classes(_input)
         return self

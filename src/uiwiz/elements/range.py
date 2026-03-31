@@ -7,8 +7,8 @@ class Range(OnEvent):
     root_class: str = "range "
     root_size: str = "range-{size}"
 
-    def __init__(self, name: str, value: int, min: int, max: int, step: int | None = None) -> None:
-        """Range
+    def __init__(self, name: str, value: int, min: int, max: int, step: int | None = None) -> None:  # noqa: A002
+        """Range.
 
         This element is used for range inputs
 
@@ -36,7 +36,7 @@ class Range(OnEvent):
     def min(self) -> int:
         return self.attributes["min"]
 
-    @min.setter
+    @min.setter  # noqa: A003
     def min(self, value: int) -> None:
         self.attributes["min"] = value
 
@@ -44,6 +44,6 @@ class Range(OnEvent):
     def max(self) -> int:
         return self.attributes["max"]
 
-    @max.setter
+    @max.setter  # noqa: A003
     def max(self, value: int) -> None:
         self.attributes["max"] = value

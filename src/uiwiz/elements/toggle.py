@@ -5,8 +5,8 @@ class Toggle(OnEvent):
     root_class: str = "toggle"
     root_size: str = "toggle-{size}"
 
-    def __init__(self, name: str, checked: bool = False) -> None:
-        """Toggle
+    def __init__(self, name: str, *, checked: bool = False) -> None:
+        """Toggle.
 
         This element is used for toggle inputs
 

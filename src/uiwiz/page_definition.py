@@ -2,15 +2,17 @@ from __future__ import annotations
 
 import inspect
 import json
-from collections.abc import Callable
 from html import escape
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from fastapi import Depends, Request, Response
 
 from uiwiz.element import Element
 from uiwiz.frame import Frame
 from uiwiz.version import __version__
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class PageDefinition:
@@ -22,7 +24,7 @@ class PageDefinition:
     lang: str
 
     def __init__(self) -> None:
-        """The PageDefinition class is designed to be subclassed, allowing.
+        """PageDefinition class is designed to be subclassed, allowing.
 
         developers to override the `header`, `body`, and `content` methods
         to customize the HTML structure and content as needed. The `footer`
@@ -45,7 +47,7 @@ class PageDefinition:
             def body(self, body: Element) -> None:
                 Element("div", content="Custom Body").classes("custom-body")
 
-            def content(self, content: Element) -> Optional[Element]:
+            def content(self, content: Element) -> Element | None:
                 return Element("h1", content="Custom Content").classes("custom-content")
 
             def footer(self, content: Element) -> None:
@@ -86,7 +88,7 @@ class PageDefinition:
             theme = escape(cookie_theme)
 
         class RenderDoctype:
-            def render(self):
+            def render(self) -> str:
                 return "<!DOCTYPE html>"
 
         frame.root.append(RenderDoctype())  # funky way to add doctype

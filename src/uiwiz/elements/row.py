@@ -11,7 +11,7 @@ class Row(Element):
         gap: str = "gap-4",
         padding: str = "",
     ) -> None:
-        """Row
+        """Row.
 
         Align children elements vertically.
 

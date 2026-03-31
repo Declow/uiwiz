@@ -19,15 +19,15 @@ JS_PATH = Path(__file__).parent / "aggrid.js"
 
 
 class OPTIONS(str, Enum):
-    autoSizeColumn = "autoSizeAll"
-    fitColumnContent = "sizeToFit"
+    autoSizeColumn = "autoSizeAll"  # noqa: N815
+    fitColumnContent = "sizeToFit"  # noqa: N815
 
 
 class Aggrid(Element, extensions=[CSS_PATH, LIB_PATH, JS_PATH]):
     _classes: str = "ag-theme-quartz ag-theme-uiwiz w-full"
 
     def __init__(self, df: pl.DataFrame | None) -> None:
-        """Aggrid
+        """Aggrid.
 
         Use aggrid to display a DataFrame in a grid format.
         Can be used anywhere in a @page_router.ui("<path>") or @app.ui("<path>")
@@ -54,13 +54,14 @@ class Aggrid(Element, extensions=[CSS_PATH, LIB_PATH, JS_PATH]):
         cols, rows = Aggrid.create_cols_and_rows(df)
 
         self.attributes["hx-ext"] = "hx-aggrid"
-        self.attributes.__setitem__("hx-aggrid-cols", cols, False)
-        self.attributes.__setitem__("hx-aggrid-rows", rows, False)
+        self.attributes.__setitem__("hx-aggrid-cols", cols, False)  # noqa: FBT003
+        self.attributes.__setitem__("hx-aggrid-rows", rows, False)  # noqa: FBT003
         self.attributes["hx-aggrid"] = "/data"
 
     @staticmethod
     def create_cols_and_rows(
         df: pl.DataFrame | None,
+        *,
         escape: bool = True,
     ) -> tuple[list[Any] | str, list[Any] | str]:
         cols = []
@@ -76,7 +77,9 @@ class Aggrid(Element, extensions=[CSS_PATH, LIB_PATH, JS_PATH]):
         return cols, rows
 
     @staticmethod
-    def response(df: pl.DataFrame | None, headers: dict[str, str] = {}) -> JSONResponse:
+    def response(df: pl.DataFrame | None, headers: dict[str, str] | None = None) -> JSONResponse:
+        if headers is None:
+            headers = {}
         _headers = {"HX-Trigger": "aggridUpdate"} | headers
-        cols, rows = Aggrid.create_cols_and_rows(df, False)
+        cols, rows = Aggrid.create_cols_and_rows(df, escape=False)
         return JSONResponse({"cols": cols, "rows": rows}, headers=_headers)

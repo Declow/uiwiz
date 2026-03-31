@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from pathlib import Path
 
@@ -15,7 +17,7 @@ class EChart(Element, extensions=[LIB_PATH, THEME_PATH, JS_PATH]):
     name: str = "data-wz-echart"
 
     def __init__(self, options: dict, height: str = "h-80") -> None:
-        """EChart element
+        """EChart element.
 
         See https://echarts.apache.org/examples/en/index.html for examples
         on how to use ECharts
@@ -48,11 +50,13 @@ class EChart(Element, extensions=[LIB_PATH, THEME_PATH, JS_PATH]):
         self.attributes["hx-ext"] = EChart.name
         self.classes("w-full h-full")
 
-    def container_classes(self, input: str) -> "EChart":
-        self.parent_element.classes(input)
+    def container_classes(self, _input: str) -> EChart:
+        self.parent_element.classes(_input)
         return self
 
     @staticmethod
-    def response(data: dict, headers: dict[str, str] = {}) -> JSONResponse:
+    def response(data: dict, headers: dict[str, str] | None = None) -> JSONResponse:
+        if headers is None:
+            headers = {}
         _headers = {"HX-Trigger": json.dumps({"uiwizUpdateEChart": data})} | headers
         return JSONResponse(data, headers=_headers)

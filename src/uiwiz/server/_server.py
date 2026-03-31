@@ -10,6 +10,7 @@ from collections import deque
 from contextlib import suppress
 from dataclasses import dataclass
 from time import perf_counter
+from types import CoroutineType
 from typing import Any
 
 import httptools
@@ -108,14 +109,14 @@ class LifespanHandler:
 
     async def send(self, message: dict) -> None:
         task = {
-            "lifespan.startup.complete": lambda: self.startup_done_event.set(),
-            "lifespan.startup.failed": lambda: self.startup_done_event.set(),
-            "lifespan.shutdown.complete": lambda: self.shutdown_done_event.set(),
-            "lifespan.shutdown.failed": lambda: self.shutdown_done_event.set(),
+            "lifespan.startup.complete": self.startup_done_event.set,
+            "lifespan.startup.failed": self.startup_done_event.set,
+            "lifespan.shutdown.complete": self.shutdown_done_event.set,
+            "lifespan.shutdown.failed": self.shutdown_done_event.set,
         }
         task.get(message["type"], lambda: 1)()
 
-    async def receive(self):
+    async def receive(self) -> CoroutineType[Any, Any, Any]:
         with suppress(asyncio.CancelledError):
             return await self.receive_queue.get()
 
@@ -247,7 +248,7 @@ class HttpToolsImpl(asyncio.Protocol):
             self.flow.pause_reading()
             self.pipeline.appendleft((self.cycle, self.config.app_instance))
 
-    def _shutdown(self, *args) -> None:
+    def _shutdown(self, *args) -> None:  # noqa: ANN002, ARG002
         task = self.loop.create_task(self.lifespan.shutdown())
         task.add_done_callback(self.tasks.discard)
         self.tasks.add(task)
@@ -272,7 +273,7 @@ class HttpToolsImpl(asyncio.Protocol):
         }
 
     def shutdown(self) -> None:
-        """Called by the server to commence a graceful shutdown."""
+        """Call by the server to commence a graceful shutdown."""
         if self.cycle is None or self.cycle.response_complete:
             self.transport.close()
         else:
@@ -332,7 +333,7 @@ class HttpToolsImpl(asyncio.Protocol):
     def _unsupported_upgrade_warning(self) -> None:
         logger.warning("Unsupported upgrade request.")
         if not self._should_upgrade_to_ws():
-            msg = "No supported WebSocket library detected. Please use \"pip install 'uvicorn[standard]'\", or install 'websockets' or 'wsproto' manually."  # noqa: E501
+            msg = "No supported WebSocket library detected. Please use \"pip install 'uvicorn[standard]'\", or install 'websockets' or 'wsproto' manually."
             logger.warning(msg)
 
     def _should_upgrade(self) -> bool:
@@ -346,7 +347,7 @@ class HttpToolsImpl(asyncio.Protocol):
 
             return (str(info[0]), int(info[1])) if isinstance(info, tuple) else None
         info = self.transport.get_extra_info("sockname")
-        if info is not None and isinstance(info, (list, tuple)) and len(info) == 2:
+        if info is not None and isinstance(info, (list, tuple)) and len(info) == 2:  # noqa: PLR2004
             return (str(info[0]), int(info[1]))
         return None
 
@@ -360,7 +361,7 @@ class HttpToolsImpl(asyncio.Protocol):
                 return None
 
         info = self.transport.get_extra_info("peername")
-        if info is not None and isinstance(info, (list, tuple)) and len(info) == 2:
+        if info is not None and isinstance(info, (list, tuple)) and len(info) == 2:  # noqa: PLR2004
             return (str(info[0]), int(info[1]))
         return None
 
@@ -380,23 +381,21 @@ class HttpToolsImpl(asyncio.Protocol):
         self.transport.close()
 
     def pause_writing(self) -> None:
-        """Called by the transport when the write buffer exceeds the high water mark."""
+        """Call by the transport when the write buffer exceeds the high water mark."""
         self.flow.pause_writing()  # pragma: full coverage
 
     def resume_writing(self) -> None:
-        """Called by the transport when the write buffer drops below the low water mark."""
+        """Call by the transport when the write buffer drops below the low water mark."""
         self.flow.resume_writing()  # pragma: full coverage
 
     def timeout_keep_alive_handler(self) -> None:
-        """Called on a keep-alive connection if no new data is received after a short
-        delay.
-        """
+        """Call keep-alive connection if no new data is received after a shortdelay."""
         if not self.transport.is_closing():
             self.transport.close()
 
 
 class RRCycle(RequestResponseCycle):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):  # noqa: ANN002, ANN003
         super().__init__(*args, **kwargs)
 
     # ASGI exception wrapper

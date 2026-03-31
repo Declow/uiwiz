@@ -8,7 +8,8 @@ class Tabs(Element):
     _classes: str = "tabs-box"
 
     def __init__(self) -> None:
-        """Tabs
+        """Tabs.
+
         This element is used for tab navigation.
         It should be used as a context manager to create tabs.
 
@@ -28,8 +29,8 @@ class Tabs(Element):
         self.classes(Tabs.root_class + Tabs._classes)
         self.attributes["role"] = "tablist"
 
-    def __exit__(self, *_):
-        super().__exit__(*_)
+    def __exit__(self, *args: object, **kwargs: dict) -> None:
+        super().__exit__(*args, **kwargs)
         has_active = False
         first_child_tab: Tab | None = None
         for child in self.children:
@@ -48,8 +49,8 @@ class Tabs(Element):
 class Tab(Element):
     _classes: str = "tab"
 
-    def __init__(self, title: str, active: bool | None = None) -> None:
-        """Tab
+    def __init__(self, title: str, *, active: bool | None = None) -> None:
+        """Tab.
 
         This element is used for tab navigation
         and should be used inside a :class:`Tabs` element.

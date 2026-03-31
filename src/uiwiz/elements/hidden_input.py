@@ -11,9 +11,9 @@ class HiddenInput(Element):
     def __init__(
         self,
         name: str,
-        value: Any | None = None,
+        value: Any | None = None,  # noqa: ANN401
     ) -> None:
-        """HiddenInput
+        """HiddenInput.
 
         This element is used for hidden input data that should not be visible to the user.
         But it will be sent back to the server when the form is submitted.

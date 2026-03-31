@@ -1,7 +1,9 @@
+# ruff :noqa
+import json
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.types import ASGIApp
-import json
 
 
 class StripHiddenFormFieldMiddleware(BaseHTTPMiddleware):
@@ -11,7 +13,7 @@ class StripHiddenFormFieldMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         if request.method in ("POST", "PUT", "PATCH") and request.headers.get("content-type", "").startswith(
-            "application/json"
+            "application/json",
         ):
             body: dict = await request.json()
             body.pop(self.field_name)

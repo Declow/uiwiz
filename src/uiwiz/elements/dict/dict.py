@@ -14,8 +14,8 @@ JS_PATH = Path(__file__).parent / "copy.js"
 
 
 class Dict(Element, extensions=[JS_PATH]):
-    def __init__(self, data: Iterable[dict] | dict, copy_to_clipboard: bool = False) -> None:
-        """Dict element
+    def __init__(self, data: Iterable[dict] | dict, *, copy_to_clipboard: bool = False) -> None:
+        """Element.
 
         Will render a dict or list data as a formatted json in the browser
 
@@ -40,32 +40,33 @@ class Dict(Element, extensions=[JS_PATH]):
         self._border_classes = "border border-base-content rounded-lg shadow-lg w-96 shadow-md w-full mb-5"
         self.copy_to_clipboard = copy_to_clipboard
 
-    def key_classes(self, classes: str):
+    def key_classes(self, classes: str) -> Dict:
         self.key_class = classes
         return self
 
-    def value_classes(self, classes: str):
+    def value_classes(self, classes: str) -> Dict:
         self.value_class = classes
         return self
 
-    def border_classes(self, classes: str):
+    def border_classes(self, classes: str) -> Dict:
         self._border_classes = classes
         return self
 
-    def before_render(self):
+    def before_render(self) -> None:
         super().before_render()
         if not self.did_render:
             self.did_render = True
             self.generate(self.data)
 
-    def generate(self, data: Iterable[dict] | dict):
-        def format_data(
+    def generate(self, data: Iterable[dict] | dict) -> None:  # noqa: C901, PLR0915
+        def format_data(  # noqa: C901, PLR0912
             data: dict | list,
             depth: int = 0,
+            *,
             is_last_item: bool = False,
             do_indent: bool = False,
             obj: bool = False,
-        ):
+        ) -> None:
             indent = " " * depth
 
             if isinstance(data, list):

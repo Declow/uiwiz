@@ -6,7 +6,7 @@ class Footer(Element):
     _classes: str = "items-center p-4 bg-neutral text-neutral-content"
 
     def __init__(self) -> None:
-        """Footer
+        """Footer.
 
         A footer is a section at the bottom of a page that contains information about the page.
 

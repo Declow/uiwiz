@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING
 
 from uiwiz.element import Element
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class Link(Element):
@@ -10,7 +13,7 @@ class Link(Element):
     _classes: str = "link-hover"
 
     def __init__(self, text: str, link: Callable[[], str] | str) -> None:
-        """Link element
+        """Link element.
 
         Link element that can be used to navigate to a different page.
         Can be used as a button or a link.

@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class _Attributes(dict):
-    def __setitem__(self, key: Any, value: Any, escape: bool = True) -> None:
+    def __setitem__(self, key: Any, value: Any, escape: bool = True) -> None:  # noqa: ANN401
         if escape:
             if isinstance(value, str):
                 value = html.escape(value)
@@ -31,6 +31,7 @@ class Element:
         self,
         tag: ELEMENT_TYPES = "div",
         content: str = "",
+        *,
         render_html: bool = True,
         oob: bool = False,
         **kwargs: dict[str, str] | None,
@@ -113,14 +114,14 @@ class Element:
 
         return self
 
-    def __exit__(self, *_) -> None:
+    def __exit__(self, *_: object) -> None:
         if self.external_tree_element:
             self.stack.current_element = self.external_tree_element
             self.external_tree_element = None
         else:
             self.stack.current_element = self.parent_element
 
-    def __init_subclass__(cls, extensions: list[Path] | None = None, **kwargs) -> None:
+    def __init_subclass__(cls, extensions: list[Path] | None = None, **kwargs: dict) -> None:
         super().__init_subclass__(**kwargs)
         cls.extensions = extensions
         if extensions:
@@ -141,7 +142,7 @@ class Element:
         return self.attributes.get("value")
 
     @value.setter
-    def value(self, value) -> None:
+    def value(self, value: str) -> None:
         self.attributes["value"] = value
 
     @property
@@ -149,7 +150,7 @@ class Element:
         return self.__content__
 
     @content.setter
-    def content(self, content) -> None:
+    def content(self, content: str) -> None:
         self.__content__ = html.escape(str(content))
 
     @property
@@ -164,7 +165,7 @@ class Element:
         """
         return self.attributes["class"]
 
-    def classes(self, input: str = "") -> Self:
+    def classes(self, _input: str = "") -> Element:
         """Set tailwind classes for the element.
 
         :param input: The tailwind classes to apply to the element.
@@ -176,9 +177,9 @@ class Element:
             else getattr(self.__class__, "root_class", "")
         )
         if clazz == "":
-            clazz = input
-        elif input:
-            clazz += f" {input}"
+            clazz = _input
+        elif _input:
+            clazz += f" {_input}"
         if clazz:
             self.attributes["class"] = clazz
             self.size(self._size)
@@ -207,7 +208,7 @@ class Element:
             self._size = size
         return self
 
-    def render(self, render_script: bool = True) -> str:
+    def render(self, *, render_script: bool = True) -> str:
         """Render the element as HTML.
 
         :param render_script: If any element has a javascript script, it will be rendered as well.
@@ -246,14 +247,14 @@ class Element:
         html = "".join(lst)
         return self.after_render(html)
 
-    def before_render(self):
-        """This method is called before the element is rendered."""
+    def before_render(self) -> None:
+        """This method is called before the element is rendered."""  # noqa: D401, D404
 
     def after_render(self, html: str) -> str:
-        """This method is called after the element is rendered.
+        """Method is called after the element is rendered.
 
         :param html: The rendered HTML of the element.
-        """
+        """  # noqa: D401
         return html
 
     def __add_event_to_attributes__(self) -> None:

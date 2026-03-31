@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-from collections import namedtuple
+from typing import NamedTuple
 
 from uiwiz.element import Element
 from uiwiz.elements.extensions.on_event import OnEvent
 
-DropdownItem = namedtuple("DropdownItem", ["name", "value"])
+
+class DropdownItem(NamedTuple):
+    name: str
+    value: str
 
 
 class Dropdown(OnEvent):
@@ -19,7 +22,7 @@ class Dropdown(OnEvent):
         items: list[str] | list[DropdownItem],
         placeholder: str | None = None,
     ) -> None:
-        """Dropdown
+        """Dropdown.
 
         A dropdown is a list in which the selected item is always visible, and the others are visible on demand.
 
@@ -33,7 +36,7 @@ class Dropdown(OnEvent):
         :param name: The name of the dropdown
         :type name: str
         :param items: List of items in the dropdown
-        :type items: Union[list[str], list[DropdownItem]]
+        :type items: list[str] | list[DropdownItem]
         :param placeholder: Placeholder text
         :type placeholder: str, optional
         """

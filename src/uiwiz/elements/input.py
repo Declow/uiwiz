@@ -15,7 +15,7 @@ class Input(OnEvent):
         value: str | None = None,
         placeholder: str | None = None,
     ) -> None:
-        """Input
+        """Input.
 
         This element is used for input data
 
@@ -58,7 +58,7 @@ class Input(OnEvent):
 
         self.parent_element.children.remove(self)
         with Element("label").classes("floating-label") as container:
-            value = label if label else self.placeholder
+            value = label or self.placeholder
             self.label_text = Element("span", content=value)
             container.children.append(self)
             self.parent_element = container

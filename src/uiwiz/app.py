@@ -79,7 +79,7 @@ class UiwizApp(FastAPI):
         self.add_middleware(AsgiRequestMiddleware)
         self.add_middleware(GZipMiddleware)
         self.add_middleware(AsgiTtlMiddleware, cache_age=cache_age)
-        # self.add_middleware(StripHiddenFormFieldMiddleware)
+        # self.add_middleware(StripHiddenFormFieldMiddleware)  # noqa: ERA001
         self.extensions: dict[str, Path] = {}
         self.app_paths: dict[str, Path] = {}
 
@@ -91,7 +91,7 @@ class UiwizApp(FastAPI):
             if resource_key not in resources:
                 return Response(status_code=404)
 
-            with open(resources[resource_key], encoding="utf-8") as f:
+            with resources[resource_key].open(encoding="utf-8") as f:
                 content = f.read()
 
             content_type, _ = guess_type(resource_key)
@@ -118,10 +118,10 @@ class UiwizApp(FastAPI):
             **kwargs,
         )
 
-    def ui(self, path: str, *args, include_js: bool = True, include_css: bool = True, **kwargs) -> PageRouter:
+    def ui(self, path: str, *, include_js: bool = True, include_css: bool = True, **kwargs: dict) -> PageRouter:
         return PageRouter().ui(path=path, include_js=include_js, include_css=include_css, router=self.router, **kwargs)
 
-    async def handle_validation_error(self, request: Request, exc: RequestValidationError) -> Response:
+    async def handle_validation_error(self, _: Request, exc: RequestValidationError) -> Response:
         error_details = exc.errors()
         fields_with_errors: list[str] = []
         for item in error_details:

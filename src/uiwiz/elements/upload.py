@@ -11,7 +11,7 @@ class Upload(OnEvent):
         self,
         name: str,
     ) -> "Upload":
-        """Upload
+        """Upload.
 
         This element is used for file uploads
 
@@ -40,7 +40,8 @@ class Upload(OnEvent):
         trigger: ON_EVENTS = "change",
         swap: SWAP_EVENTS = None,
     ) -> "Upload":
-        """
+        """Upload.
+
         :param on_upload: The function to call when the upload event is triggered or the endpoint to call
         :param target: The target to swap the response to
         :param trigger: The event to trigger the function

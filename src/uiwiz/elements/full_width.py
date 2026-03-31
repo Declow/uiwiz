@@ -5,7 +5,7 @@ class FullWidth(Element):
     root_class = "w-full"
 
     def __init__(self) -> None:
-        """FullWidth
+        """FullWidth.
 
         This element is used to create a full-width container.
 

@@ -1,6 +1,5 @@
-from typing import Literal
-
 from pathlib import Path
+from typing import Literal
 
 _type = Literal["info", "error", "success", "warning", "menu", "copy"]
 

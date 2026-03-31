@@ -15,7 +15,7 @@ page_map: dict[Callable, str] = {}
 
 @cache
 def _hash_function_extended(func: Callable) -> str:
-    """This was an interesting problem. I needed to hash the function.
+    """Interesting problem. I needed to hash the function.
 
     to be able to store the route in a dictionary. Nothing special
     but the reason for using the source code has to do with

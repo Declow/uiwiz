@@ -122,12 +122,12 @@ class PageRouter(APIRouter):
             type[PageDefinition] | None,
             Doc("""
                 The page definition class to use for this router.
-                
+
                 This enables the use of custom page definitions for rendering the HTML
                 pages. The default is `PageDefinition`, which provides a basic HTML
                 structure. You can create your own class that inherits from `PageDefinition`
                 and override the `header`, `body`, and `content` methods to customize the
-                HTML structure and content as needed. Setting the `page_definition_class` in the 
+                HTML structure and content as needed. Setting the `page_definition_class` in the
                 UiwizApp will set the default for all routers.
                 Example:
                 ```python
@@ -135,17 +135,17 @@ class PageRouter(APIRouter):
                     def header(self, header: Element) -> None:
                         # Custom header content
                         Element("link", href="/custom.css", rel="stylesheet")
-                
+
                     def body(self, body: Element) -> None:
                         # Custom body content
                         Element("div", content="Custom Body").classes("custom-body")
-                
+
                     def content(self, content: Element) -> None:
                         # Custom content
                         Element("h1", content="Custom Content").classes("custom-content")
                 """),
         ] = None,
-        **kwargs,
+        **kwargs,  # noqa: ANN003
     ):
         super().__init__(
             prefix=prefix,
@@ -164,20 +164,20 @@ class PageRouter(APIRouter):
     def page(
         self,
         path: str,
-        *args,
+        *args,  # noqa: ANN002, ARG002
         title: str | None = None,
         page_definition_class: type[PageDefinition] | None = None,
-        favicon: str | None = None,
+        favicon: str | None = None,  # noqa: ARG002
         router: APIRouter | None = None,
-        **kwargs,
+        **kwargs,  # noqa: ANN003, ARG002
     ) -> Callable:
-        def decorator(func: Callable, *args, **kwargs) -> Callable:
+        def decorator(func: Callable, *args, **kwargs) -> Callable:  # noqa: ANN002, ANN003
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
             cap_title = title
             cap_page_definition_class = page_definition_class
 
             @functools.wraps(func)
-            async def decorated(*dec_args, **dec_kwargs: DecKwargs) -> Response:
+            async def decorated(*dec_args, **dec_kwargs: DecKwargs) -> Response:  # noqa: ANN002
                 Frame.get_stack().del_stack()
                 # Create frame before function is called
 
@@ -230,10 +230,10 @@ class PageRouter(APIRouter):
         self,
         path: str,
         router: APIRouter | None = None,
-        *args,
+        *args,  # noqa: ANN002, ARG002
         include_js: bool = False,
         include_css: bool = False,
-        **kwargs,
+        **kwargs,  # noqa: ANN003
     ) -> Callable:
         def decorator(func: Callable) -> Callable:
             # Capture values at decoration time
@@ -242,7 +242,7 @@ class PageRouter(APIRouter):
             parameters_of_decorated_func = list(inspect.signature(func).parameters.keys())
 
             @functools.wraps(func)
-            async def decorated(*dec_args, **dec_kwargs) -> Response:
+            async def decorated(*dec_args, **dec_kwargs) -> Response:  # noqa: ANN002, ANN003
                 Frame.get_stack().del_stack()
                 Frame.get_stack()  # Create frame before function is called
                 response = dec_kwargs["response"]
@@ -285,7 +285,7 @@ class PageRouter(APIRouter):
     def add_ext(
         self,
         page: PageDefinition | None = None,
-        *args,
+        *args,  # noqa: ANN002, ARG002
         include_js: bool = False,
         include_css: bool = False,
     ) -> None:
@@ -299,7 +299,8 @@ class PageRouter(APIRouter):
                     with page.header_ele:
                         Element("link", href=lib, rel="stylesheet", type="text/css")
 
-                    # Hack to make aggrid work with daisyui
+                    # Make aggrid work with daisyui. We have to add the css in the header and the body for some reason,
+                    # otherwise the styles are not applied to the grid
                     with page.html_ele:
                         Element("link", href=lib, rel="stylesheet", type="text/css")
             elif lib.endswith("js") and include_js:

@@ -11,7 +11,7 @@ class Toast(Element):
     root_class: str = "alert w-full z-50 outline "
 
     def __init__(self, message: str = "", svg: _type = None) -> None:
-        """Toast
+        """Toast.
 
         Display a toast message on the client side.
         Can be used anywhere in a @page_router.ui("<path>") or @app.ui("<path>")
@@ -50,15 +50,15 @@ class Toast(Element):
     def auto_close(self, auto_close: bool) -> None:
         self._auto_close = auto_close
 
-    def set_auto_close(self, auto_close: bool) -> Toast:
-        """Set auto close
+    def set_auto_close(self, *, auto_close: bool) -> Toast:
+        """Set auto close.
 
         :param auto_close: True or False. Auto close False will keep the toast open until the user closes it
         """
         self.auto_close = auto_close
         return self
 
-    def before_render(self):
+    def before_render(self) -> None:
         with self:
             with self.inner_element.classes(self.inner_class + " relative pr-16"):
                 if self._svg:
@@ -83,8 +83,8 @@ class Toast(Element):
         self._svg = svg
         return self
 
-    def classes(self, input: str = "") -> Toast:
-        self.inner_class = self.inner_class + input
+    def classes(self, _input: str = "") -> Toast:
+        self.inner_class = self.inner_class + _input
         return self
 
     def info(self) -> Toast:

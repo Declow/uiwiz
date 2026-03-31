@@ -6,8 +6,8 @@ class Nav(Element):
     root_size: str = "navbar-{size}"
 
     def __init__(self) -> None:
-        """Nav
-        
+        """Nav.
+
         This element is used for navigation bars
 
         .. code-block:: python
@@ -16,6 +16,6 @@ class Nav(Element):
             with ui.nav():
                 ui.link("Home", "/")
                 ui.link("Docs", "/docs")
-        
+
         """
         super().__init__()

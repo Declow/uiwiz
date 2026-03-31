@@ -14,7 +14,7 @@ class TextArea(OnEvent):
         value: str | None = None,
         placeholder: str | None = None,
     ) -> None:
-        """TextArea
+        """TextArea.
 
         This element is used for text area inputs
 

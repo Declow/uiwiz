@@ -1,9 +1,9 @@
 import typing
-from typing import Literal, Optional
+from typing import Literal
 
 from uiwiz import ui
-from uiwiz.middleware.asgi_request_middleware import get_request
 from uiwiz.element import Element
+from uiwiz.middleware.asgi_request_middleware import get_request
 
 THEMES = Literal[
     "light",
@@ -42,8 +42,9 @@ THEMES = Literal[
 
 
 class ThemeSelector(Element):
-    def __init__(self, themes: Optional[THEMES] = None) -> None:
-        """Theme Selector
+    def __init__(self, themes: THEMES | None = None) -> None:
+        """Theme Selector.
+
         A dropdown to select a theme for the application.
         The selected theme will be stored in a cookie named "data-theme".
 
@@ -69,7 +70,7 @@ class ThemeSelector(Element):
         self.theme_selector.classes("min-w-32")
         self.setup_listener()
 
-    def setup_listener(self):
+    def setup_listener(self) -> None:
         self.script = f"""
 function selectTheme(value) {{
     element = document.getElementById(\"html\");
