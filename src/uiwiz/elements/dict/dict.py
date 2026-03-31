@@ -69,30 +69,32 @@ class Dict(Element, extensions=[JS_PATH]):
             indent = " " * depth
 
             if isinstance(data, list):
-                last_item = data[-1]
                 Element("pre", content=indent + "[")
-                for item in data:
-                    is_last = item == last_item
+                for idx, item in enumerate(data):
+                    is_last = idx == len(data) - 1
                     with Element().classes("flex flex-col flex-wrap"):
                         format_data(item, depth=depth + 2, is_last_item=is_last, do_indent=True)
                 Element("pre", content=indent + "]")
                 return
             if isinstance(data, dict):
-                last_item = list(data.values())[-1]
-                is_last = data == last_item
-
                 if not obj:
                     Element("pre", content=indent + "{")
-                    format_data(data, depth=depth + 2, is_last_item=is_last, obj=True)
+                    format_data(data, depth=depth + 2, is_last_item=is_last_item, obj=True)
                 else:
-                    for key, value in data.items():
-                        is_last = last_item == value
+                    items = list(data.items())
+                    for idx, (key, value) in enumerate(items):
+                        is_last = idx == len(items) - 1
                         key_content = indent + f'"{key}"' + ":"
                         if isinstance(value, list):
                             key_content += " ["
                             with Element(tag="pre", content=key_content).classes("flex flex-col flex-wrap"):
-                                for _item in value:
-                                    format_data(_item, depth=depth + 2, is_last_item=_item == value[-1], do_indent=True)
+                                for inner_idx, _item in enumerate(value):
+                                    format_data(
+                                        _item,
+                                        depth=depth + 2,
+                                        is_last_item=inner_idx == len(value) - 1,
+                                        do_indent=True,
+                                    )
                             Element(tag="pre", content=indent + "]" + ("," if not is_last else ""))
                         elif isinstance(value, dict):
                             key_content += " {"
@@ -121,6 +123,8 @@ class Dict(Element, extensions=[JS_PATH]):
                     Element(content=str(data)).classes(self.value_class)
                     Element(tag="div", content="," if not is_last_item else "")
 
+        render_data: dict | list = data if isinstance(data, dict) else list(data)
+
         with self.classes(f"{self._border_classes} {self._border_position}"):
             if self.copy_to_clipboard:
                 with Button("").classes("absolute top-2 right-2 wiz-copy-content") as btn:
@@ -128,5 +132,5 @@ class Dict(Element, extensions=[JS_PATH]):
                     icon = Html(content=get_svg("copy")).classes("w-6 h-6")
                     icon.attributes["style"] = "fill: var(--color-base-content);"
 
-                    btn.attributes["data-copy-data"] = json.dumps(data, indent=2)
-            format_data(data, is_last_item=True)
+                    btn.attributes["data-copy-data"] = json.dumps(render_data, indent=2)
+            format_data(render_data, is_last_item=True)
