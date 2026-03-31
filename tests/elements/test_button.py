@@ -15,7 +15,6 @@ def test_button_submit():
 
     btn.on_click(func)
     output = str(btn)
-    print(output)
     assert (
         '<button id="a-0" class="btn btn-md" hx-target="this" hx-swap="outerHTML" hx-post="/submit" hx-trigger="click" hx-ext="json-enc">Click me</button>'
         == output

@@ -1,19 +1,25 @@
 import pytest
 
-from uiwiz.docs.pages.docs.extract_doc import extract_text
 from uiwiz import ui
+from uiwiz.docs.pages.docs.extract_doc import extract_text
 
 
-@pytest.mark.parametrize("docstring, expected_code_snippet", [
-    (ui.ace.__init__.__doc__, 'ui.ace(name="editor")'),
-    (ui.upload.__init__.__doc__, 'ui.upload("file")'),
-    (ui.button.__init__.__doc__, 'button'),
-    (ui.textarea.__init__.__doc__, 'ui.textarea'),
-    (ui.input.__init__.__doc__, 'from uiwiz import ui\n\nui.input("username", "default_value", "Enter your username")'),
-    (ui.upload.on_upload.__doc__, 'ui.upload("file").on_upload(on_upload=handle_upload, swap="none")'),
-    #(ui.toast.__init__.__doc__, 'ui.toast("message")'),
-    #(ui.aggrid.__init__.__doc__, 'ui.aggrid("grid")'),
-])
+@pytest.mark.parametrize(
+    "docstring, expected_code_snippet",
+    [
+        (ui.ace.__init__.__doc__, 'ui.ace(name="editor")'),
+        (ui.upload.__init__.__doc__, 'ui.upload("file")'),
+        (ui.button.__init__.__doc__, "button"),
+        (ui.textarea.__init__.__doc__, "ui.textarea"),
+        (
+            ui.input.__init__.__doc__,
+            'from uiwiz import ui\n\nui.input("username", "default_value", "Enter your username")',
+        ),
+        (ui.upload.on_upload.__doc__, 'ui.upload("file").on_upload(on_upload=handle_upload, swap="none")'),
+        # (ui.toast.__init__.__doc__, 'ui.toast("message")'),
+        # (ui.aggrid.__init__.__doc__, 'ui.aggrid("grid")'),
+    ],
+)
 def test_extract_text(docstring, expected_code_snippet):
     description, code_block, parameters = extract_text(docstring)
 
@@ -23,10 +29,10 @@ def test_extract_text(docstring, expected_code_snippet):
     assert ":param" not in description
 
     # If the docstring has a code block, check for the expected snippet
-    if '.. code-block' in docstring:
+    if ".. code-block" in docstring:
         assert expected_code_snippet in code_block
-        if 'from uiwiz import ui' in docstring:
-            assert 'from uiwiz import ui' in code_block
+        if "from uiwiz import ui" in docstring:
+            assert "from uiwiz import ui" in code_block
     else:
         assert code_block == ""
 
