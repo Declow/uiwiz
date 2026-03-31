@@ -14,6 +14,7 @@ class Button(OnEvent):
 
     def __init__(self, title: str) -> None:
         """Create a button element, with the given title.
+
         Can be used to trigger events.
 
         Example:

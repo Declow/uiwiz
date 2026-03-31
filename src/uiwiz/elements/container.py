@@ -5,7 +5,7 @@ class Container(Element):
     root_class: str = "container flex flex-col mx-auto {max_w} {padding} {space_y} grow"
 
     def __init__(self, max_w: str = "max-w-[960px]", padding: str = "pt-4 pb-4", space_y: str = "space-y-4") -> None:
-        """Container
+        """Container.
 
         A container element that centers a box in the middle of the screen.
         """

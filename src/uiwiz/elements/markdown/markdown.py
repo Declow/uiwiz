@@ -13,7 +13,7 @@ CODE_HIGHLIGHT = Path(__file__).parent / "codehighlight.css"
 
 class Markdown(Element, extensions=[MARKDOWN, CODE_HIGHLIGHT]):
     def __init__(self, content: str = "", extras: list[str] | None = None) -> None:
-        """Markdown
+        """Markdown.
 
         This element is used to render markdown content.
 

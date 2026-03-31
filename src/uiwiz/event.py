@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Literal, Optional, TypedDict, Union
+from typing import TYPE_CHECKING, Literal, TypedDict, TypeVar, Union
 
 if TYPE_CHECKING:
     from uiwiz.element import Element
@@ -15,7 +15,7 @@ TRIGGER_COMBINATIONS = Literal[
     "keydown[altKey&&key=='Enter']",
 ]
 
-ON_EVENTS = Union[
+ON_EVENTS = TypeVar(
     Literal[
         "input",
         "change",
@@ -31,13 +31,13 @@ ON_EVENTS = Union[
         "copy",
         "cut",
         "paste",
-    ],
-    TRIGGER_COMBINATIONS,
-]
+    ]
+    | TRIGGER_COMBINATIONS,
+)
 
 # HTMX Swap Events
 # https://htmx.org/attributes/hx-swap/
-SWAP_EVENTS = Optional[
+SWAP_EVENTS = TypeVar(
     Literal[
         "innerHTML",
         "outerHTML",
@@ -49,10 +49,11 @@ SWAP_EVENTS = Optional[
         "delete",
         "none",
     ]
-]
+    | None,
+)
 
-TARGET_TYPE = Optional[Union[Callable[[], str], str, "Element", None]]
-FUNC_TYPE = Union[Callable, str]
+TARGET_TYPE = Union[None, Callable[[], str], str, "Element"]
+FUNC_TYPE = Callable | str
 
 
 class Event(TypedDict):

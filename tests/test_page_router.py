@@ -146,7 +146,7 @@ def test_router_ui_extensions():
     pr = PageRouter()
     route = "/path"
 
-    @pr.ui(route)
+    @pr.ui(route, include_js=True, include_css=True)
     def func():
         ui.markdown("""
 # Test
@@ -160,5 +160,5 @@ def test_router_ui_extensions():
     response = client.post(route)
     body = response.read().decode("utf-8")
     assert response.status_code == 200
-    assert "Markdown/markdown.css" not in body
-    assert "Markdown/codehighlight.css" not in body
+    assert "Markdown/markdown.css" in body
+    assert "Markdown/codehighlight.css" in body

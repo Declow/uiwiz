@@ -5,8 +5,8 @@ class Checkbox(OnEvent):
     root_class: str = "checkbox"
     root_size: str = "checkbox-{size}"
 
-    def __init__(self, name: str, checked: bool = False) -> None:
-        """Checkbox element
+    def __init__(self, name: str, *, checked: bool = False) -> None:
+        """Checkbox element.
 
         Used for forms where a user can select one or more options.
         .. code-block:: python

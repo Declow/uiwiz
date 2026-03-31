@@ -3,15 +3,13 @@ from __future__ import annotations
 import inspect
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Annotated, Literal, get_args, get_origin, get_type_hints
+from typing import TYPE_CHECKING, Annotated, Literal, get_args, get_origin, get_type_hints
 
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
 
 from uiwiz.element import Element
-from uiwiz.element_types import ELEMENT_SIZE
 from uiwiz.elements.button import Button
-from uiwiz.elements.checkbox import Checkbox
 from uiwiz.elements.datepicker import Datepicker
 from uiwiz.elements.divider import Divider
 from uiwiz.elements.dropdown import Dropdown
@@ -20,14 +18,27 @@ from uiwiz.elements.hidden_input import HiddenInput
 from uiwiz.elements.input import Input
 from uiwiz.elements.label import Label
 from uiwiz.elements.radio import Radio
-from uiwiz.elements.textarea import TextArea
 from uiwiz.elements.toggle import Toggle
 from uiwiz.models.display import display_name
+
+if TYPE_CHECKING:
+    from uiwiz.element_types import ELEMENT_SIZE
+    from uiwiz.elements.checkbox import Checkbox
+    from uiwiz.elements.textarea import TextArea
 
 
 @dataclass
 class UiAnno:
-    type: Input | HiddenInput | Toggle | Datepicker | Dropdown | TextArea | Checkbox = None
+    type: (
+        type[Input]
+        | type[HiddenInput]
+        | type[Toggle]
+        | type[Datepicker]
+        | type[Dropdown]
+        | type[TextArea]
+        | type[Checkbox]
+        | None
+    ) = None
     placeholder: str | None = None
     classes: str | None = None
 
@@ -53,13 +64,13 @@ class ModelForm(Form):
     def __init__(
         self,
         model: BaseModel,
-        compact: bool = True,
+        compact: bool = True,  # noqa: FBT001, FBT002
         card_classes: str = "border border-base-content rounded-lg shadow-lg w-full",
         label_classes: str = "flex-auto w-52",
         size: ELEMENT_SIZE = "md",
-        **kwargs,  # override fields with custom ui
+        **kwargs,  # override fields with custom ui  # noqa: ANN003
     ):
-        """ModelForm
+        """ModelForm.
 
         Create a form from a pydantic model. The form will be rendered with the fields from the model.
         The model can also be a pydantic model instance. The form will be prefilled with the instance data.
@@ -102,12 +113,12 @@ class ModelForm(Form):
         self.render_model(**kwargs)
         self.button.render_html = False
 
-    def on_submit(self, *args, **kwargs) -> ModelForm:
+    def on_submit(self, *args, **kwargs) -> ModelForm:  # noqa: ANN002, ANN003
         self.button.render_html = True
         super().on_submit(*args, **kwargs)
         return self
 
-    def render_model(self, **kwargs) -> Form:
+    def render_model(self, **kwargs) -> Form:  # noqa: ANN003
         if not issubclass(self.model, BaseModel):
             raise ValueError("type must be a pydantic model")
 
@@ -117,7 +128,7 @@ class ModelForm(Form):
                 self.render_model_attributes(key, field_type, **kwargs)
             self.button = Button("Save")
 
-    def render_model_attributes(self, key, field_type, **kwargs) -> ModelForm:
+    def render_model_attributes(self, key: str, field_type, **kwargs) -> ModelForm:  # noqa: ANN001, ANN003
         args = get_args(field_type)
         annotated = Annotated == get_origin(field_type)
         if key in kwargs:
@@ -126,7 +137,7 @@ class ModelForm(Form):
             self.render_type_hint_without_args(args, annotated, field_type, key)
             self.render_with_args_annotated(args, annotated, field_type, key)
 
-    def render_key_override(self, args: tuple, key: str, **kwargs) -> None:
+    def render_key_override(self, args: tuple, key: str, **kwargs) -> None:  # noqa: ANN003
         if key in kwargs:
             model_args: dict = kwargs[key]
             model = model_args.pop("ui")
@@ -144,19 +155,19 @@ class ModelForm(Form):
         else:
             raise ValueError("key not found in kwargs. Unable to render")
 
-    def render_type_hint_without_args(self, args: tuple, annotated: bool, field_type, key) -> Element:
+    def render_type_hint_without_args(self, args: tuple, annotated: bool, field_type, key) -> Element:  # noqa: ANN001, FBT001
         if len(args) == 0:
             if annotated:
                 self.render_element(switch.get(field_type), key, placeholder=key)
+            else:
+                self.render_element(switch.get(field_type), key, placeholder=key)
 
-            self.render_element(switch.get(field_type), key, placeholder=key)
-
-    def render_with_args_annotated(self, args: tuple, annotated: bool, field_type: tuple, key: str) -> Element:
+    def render_with_args_annotated(self, args: tuple, annotated: bool, field_type: tuple, key: str) -> Element:  # noqa: FBT001
         if len(args) > 0:
             if annotated:
                 field_type, ele = self.get_type_and_uianno(args)
                 if ele:
-                    placeholder = ele.placeholder if ele.placeholder else key
+                    placeholder = ele.placeholder or key
                     if field_args := get_args(field_type):
                         self.render_element_radio(ele, key, field_args)
                     else:
@@ -180,8 +191,7 @@ class ModelForm(Form):
         ele: Element,
         key: str,
         classes: str | None = None,
-        field_arg: str | None = None,
-        **kwargs,
+        **kwargs,  # noqa: ANN003
     ) -> None:
         kwargs = {"name": key, **kwargs}
         placeholder = "placeholder"
@@ -189,7 +199,7 @@ class ModelForm(Form):
         compact = self.compact
         with Element().classes("flex flex-nowrap w-full"):
             ele_args = [item[0] for item in inspect.signature(ele.__init__).parameters.items()]
-            compact = self.extend_kwargs(kwargs, ele_args, key, field_arg, ele)
+            compact = self.extend_kwargs(kwargs, ele_args, key, ele)
 
             label: Label | None = None
             if ele is not HiddenInput:
@@ -212,7 +222,7 @@ class ModelForm(Form):
             if label:
                 label.set_for(el)
 
-    def extend_kwargs(self, kwargs: dict, ele_args: list[str], key: str, field_arg: str, ele: Element) -> bool:
+    def extend_kwargs(self, kwargs: dict, ele_args: list[str], key: str, ele: Element) -> bool:
         compact = self.compact
         if self.instance and "value" in ele_args:
             kwargs["value"] = getattr(self.instance, key)

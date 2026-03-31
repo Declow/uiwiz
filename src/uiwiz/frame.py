@@ -23,7 +23,7 @@ def get_task_id() -> int:
 
 
 class Frame:
-    stacks: dict[int, Frame] = {}
+    stacks: dict[int, Frame] = {}  # noqa: RUF012 very intentional
 
     def __init__(self) -> None:
         self.root: list[Element] = []
@@ -42,7 +42,7 @@ class Frame:
         if swap is None:
             return f"a-{self.id_count}"
 
-        target_id = self.last_id if self.last_id else headers.get("hx-target")
+        target_id = self.last_id or headers.get("hx-target")
         if swap.lower() in ["outerhtml", "this"] and self.last_id != target_id:
             self.last_id = target_id
         else:
@@ -77,7 +77,7 @@ class Frame:
 
     @classmethod
     def del_stack(cls) -> None:
-        del cls.stacks[get_task_id()]
+        cls.stacks.pop(get_task_id(), None)
 
     @classmethod
     def set_meta_description_content(cls, content: str) -> None:

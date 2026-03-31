@@ -9,7 +9,7 @@ class Label(Bindable):
     root_size: str = "label-{size}"
 
     def __init__(self, text: str | None = None, for_: Element | None = None) -> None:
-        """Label
+        """Label.
 
         This element is used for labels that can be bound to form elements.
 
@@ -51,8 +51,8 @@ class Label(Bindable):
         self.attributes["for"] = for_.id
         return self
 
-    def _combined_label(self, text: str, for_: Element, label_first: bool = True) -> Label:
-        """Helper to create a label with text and bind it to an element, order controlled by label_first."""
+    def _combined_label(self, text: str, for_: Element, *, label_first: bool = True) -> Label:
+        """Create a label with text and bind it to an element, order controlled by label_first."""
         if text:
             self.content = text
         # Remove from previous parents

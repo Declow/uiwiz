@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Optional, get_type_hints
+from typing import TYPE_CHECKING, get_type_hints
 
 from pydantic import BaseModel
 
@@ -9,6 +9,8 @@ from uiwiz.elements.button import Button
 from uiwiz.models.model_handler import ModelForm
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     import polars as pl
 
     from uiwiz.element_types import ELEMENT_SIZE
@@ -17,7 +19,7 @@ if TYPE_CHECKING:
 
 
 class ModelFormRender(ModelForm):
-    def render_model(self, *args, **kwargs) -> Form:
+    def render_model(self, *args: object, **kwargs: dict) -> Form:  # noqa: ARG002
         self.button = Button("Save")
         self.button.render_html = False
 
@@ -30,7 +32,7 @@ class Table(Element):
     )
 
     def __init__(self, data: list[BaseModel], id_column_name: str | None = None) -> None:
-        """Creates a table from a list of pydantic models
+        """Create a table from a list of pydantic models.
 
         Example:
         .. code-block:: python
@@ -65,13 +67,13 @@ class Table(Element):
         self.container = container
         self.data = data
         self.did_render: bool = False
-        self.edit: Optional[FUNC_TYPE] = None
-        self.delete: Optional[FUNC_TYPE] = None
-        self.create: Optional[FUNC_TYPE] = None
-        self.id_column_name: Optional[str] = id_column_name
+        self.edit: FUNC_TYPE | None = None
+        self.delete: FUNC_TYPE | None = None
+        self.create: FUNC_TYPE | None = None
+        self.id_column_name: str | None = id_column_name
 
     def set_border(self, border_classes: str = "border border-base-content") -> Table:
-        """Set the border classes for the table
+        """Set the border classes for the table.
 
         :param border_classes: The border classes to set
         :return: The current instance of the element.
@@ -151,9 +153,9 @@ class Table(Element):
         save: FUNC_TYPE,
         cancel: FUNC_TYPE,
         size: ELEMENT_SIZE = "sm",
-        **kwargs,
+        **kwargs: dict,
     ) -> Element:
-        """Render a table row with inputs and cancel/save button
+        """Render a table row with inputs and cancel/save button.
 
         :param model: The Pydantic model to render
         :param id_column_name: The column that should be used with edit or delete as path param
@@ -181,7 +183,7 @@ class Table(Element):
         id_column_name: str,
         model: BaseModel,
         size: ELEMENT_SIZE = "sm",
-        **kwargs,
+        **kwargs: dict,
     ) -> Element:
         with Element("td").classes("flex justify-end join"):
             Button("Cancel").size(size).on(
@@ -245,7 +247,7 @@ class Table(Element):
         delete: FUNC_TYPE | None = None,
         size: ELEMENT_SIZE = "sm",
     ) -> Element:
-        """Render a table row
+        """Render a table row.
 
         :param row: The instance Pydantic model to render
         :param id_column_name: The optional column that should be used with edit or delete
@@ -296,7 +298,7 @@ class Table(Element):
 
     @classmethod
     def from_dataframe(cls, df: pl.DataFrame) -> Element:
-        """Render a polars.DataFrame
+        """Render a polars.DataFrame.
 
         :param df: The DataFrame to render
         :return: The container element

@@ -10,16 +10,23 @@ class Bindable(Element):
         element: Element,
         trigger: ON_EVENTS = "input delay:20ms",
         swap: SWAP_EVENTS = "outerHTML",
-    ):
-        """
-        Bind the text of this element to data of another element.
+    ) -> "Bindable":
+        """Bind the text of this element to data of another element.
+
         Requires the other element to have a name attribute.
         :param element: Element to bind to
+        :type element: Element
         :param trigger: Event trigger to bind to
+        :type trigger: ON_EVENTS, optional
+        :param swap: Swap method to use
+        :type swap: SWAP_EVENTS, optional
+        :return: The bindable element
+        :rtype: Bindable
         """
-        assert element.attributes.get("name") is not None
+        if element.attributes.get("name") is None:
+            raise ValueError("Element must have a name attribute to bind to")
 
-        async def bind_value(request: Request):
+        async def bind_value(request: Request) -> Bindable:
             data = await request.json()
             self._set_frame_and_root()
 

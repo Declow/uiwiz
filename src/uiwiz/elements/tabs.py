@@ -8,7 +8,8 @@ class Tabs(Element):
     _classes: str = "tabs-box"
 
     def __init__(self) -> None:
-        """Tabs
+        """Tabs.
+
         This element is used for tab navigation.
         It should be used as a context manager to create tabs.
 
@@ -28,10 +29,10 @@ class Tabs(Element):
         self.classes(Tabs.root_class + Tabs._classes)
         self.attributes["role"] = "tablist"
 
-    def __exit__(self, *_):
-        super().__exit__(*_)
+    def __exit__(self, *args: object, **kwargs: dict) -> None:
+        super().__exit__(*args, **kwargs)
         has_active = False
-        first_child_tab = None
+        first_child_tab: Tab | None = None
         for child in self.children:
             if not isinstance(child, Tab):
                 continue
@@ -41,15 +42,15 @@ class Tabs(Element):
 
             if "checked" in child.attributes:
                 has_active = True
-        if not has_active:
+        if not has_active and first_child_tab is not None:
             first_child_tab.active()
 
 
 class Tab(Element):
     _classes: str = "tab"
 
-    def __init__(self, title: str, active: bool | None = None) -> None:
-        """Tab
+    def __init__(self, title: str, *, active: bool | None = None) -> None:
+        """Tab.
 
         This element is used for tab navigation
         and should be used inside a :class:`Tabs` element.
@@ -70,7 +71,11 @@ class Tab(Element):
         :param active: If the tab should be active by default. Defaults to None, which will make the first tab active.
         """
         self.selector = Element("input")
-        self.selector.attributes["name"] = self.selector.parent_element.id
+        parent = self.selector.parent_element
+        if parent is None:
+            self.selector.attributes["name"] = self.selector.id
+        else:
+            self.selector.attributes["name"] = parent.id
         self.selector.attributes["type"] = "radio"
         self.selector.attributes["aria-label"] = title
         self.selector.classes(self._classes)

@@ -5,8 +5,8 @@ class Radio(OnEvent):
     root_class: str = "radio"
     root_size: str = "radio-{size}"
 
-    def __init__(self, name: str, checked: bool = False) -> None:
-        """Radio
+    def __init__(self, name: str, *, checked: bool = False) -> None:
+        """Radio.
 
         This element is used for radio buttons
 

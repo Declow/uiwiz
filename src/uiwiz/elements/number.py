@@ -10,12 +10,12 @@ class Number(OnEvent):
         self,
         name: str,
         value: int,
-        min: int,
-        max: int,
+        min: int,  # noqa: A002
+        max: int,  # noqa: A002
         step: int | None = None,
         placeholder: str | None = None,
     ) -> None:
-        """Number
+        """Number.
 
         This element is used for number inputs
 
@@ -30,7 +30,7 @@ class Number(OnEvent):
         :param max: maximum value of the number input
         :param step: step value of the number input
         :param placeholder: placeholder text for the number input
-        """
+        """  # noqa: D401
         super().__init__("input")
         self.attributes["type"] = "number"
         self.attributes["name"] = name
@@ -46,16 +46,14 @@ class Number(OnEvent):
     def min(self) -> int:
         return self.attributes["min"]
 
-    @min.setter
-    def min(self, value: int):
+    @min.setter  # noqa: A003
+    def min(self, value: int) -> None:
         self.attributes["min"] = value
-        return self
 
     @property
     def max(self) -> int:
         return self.attributes["max"]
 
-    @max.setter
-    def max(self, value: int):
+    @max.setter  # noqa: A003
+    def max(self, value: int) -> None:
         self.attributes["max"] = value
-        return self

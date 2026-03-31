@@ -12,9 +12,9 @@ class Spinner(Element):
     _classes: str = "loading-{0} loading-{1}"
 
     def __init__(self, *args: Element) -> None:
-        """Spinner
+        """Spinner.
 
-        Show a spinner while making a request
+        Show a spinner while making a request.
 
         Example:
         .. code-block:: python
@@ -39,11 +39,11 @@ class Spinner(Element):
         self.__self__format()
 
     @property
-    def spinner_for(self):
+    def spinner_for(self) -> Element:
         return self._spinner_for
 
     @spinner_for.setter
-    def spinner_for(self, elements: tuple[Element]) -> Spinner:
+    def spinner_for(self, elements: list[Element]) -> Spinner:
         self._spinner_for = elements
         if elements:
             for element in elements:

@@ -16,7 +16,7 @@ class Datepicker(OnEvent):
         name: str,
         value: datetime | None = None,
     ) -> None:
-        """Datepicker element
+        """Datepicker element.
 
         This element is used for date inputs
 

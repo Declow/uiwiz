@@ -14,7 +14,7 @@ class TextArea(OnEvent):
         value: str | None = None,
         placeholder: str | None = None,
     ) -> None:
-        """TextArea
+        """TextArea.
 
         This element is used for text area inputs
 
@@ -41,6 +41,5 @@ class TextArea(OnEvent):
         return self.attributes["placeholder"]
 
     @placeholder.setter
-    def placeholder(self, value: str):
+    def placeholder(self, value: str | None) -> None:
         self.attributes["placeholder"] = value
-        return self
